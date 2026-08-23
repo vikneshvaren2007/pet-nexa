@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu active">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Welcome to PET NEXA Management Center 🐾</p>
+            </div>
+            <div class="admin-badge">
+                <i class="fa-solid fa-user-shield" style="color: var(--primary);"></i>
+                <span>Super Admin</span>
+            </div>
+        </div>
+
+        <!-- STATS OVERVIEW -->
+        <div class="stats-grid">
+            <div class="stat-card teal">
+                <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <h3>₹{{ "%.0f"|format(total_revenue) }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+
+            <div class="stat-card blue">
+                <div class="stat-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_orders }}</h3>
+                    <p>Total Orders ({{ pending_orders }} Pending)</p>
+                </div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_bookings }}</h3>
+                    <p>Appointments ({{ pending_bookings }} Pending)</p>
+                </div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_products }}</h3>
+                    <p>Products ({{ low_stock }} Low Stock)</p>
+                </div>
+            </div>
+
+            <div class="stat-card purple">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_customers }}</h3>
+                    <p>Registered Customers</p>
+                </div>
+            </div>
+
+            <div class="stat-card red">
+                <div class="stat-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_returns }}</h3>
+                    <p>Return Requests</p>
+                </div>
+            </div>
+
+            <div class="stat-card teal">
+                <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="stat-info">
+                    <h3>{{ total_reviews }}</h3>
+                    <p>Customer Reviews</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ORDERS SECTION -->
+        <div class="card-section">
+            <div class="card-header">
+                <div>
+                    <h2>Recent Shop Orders</h2>
+                    <p>Latest customer purchases and current delivery status</p>
+                </div>
+                <a href="{{ url_for('admin_orders') }}" class="btn-secondary btn-sm">
+                    View All Orders <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                {% if orders %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ord in orders %}
+                        <tr>
+                            <td><strong>#{{ ord['id'] }}</strong></td>
+                            <td>
+                                <div><strong>{{ ord['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">{{ ord['phone'] }}</div>
+                            </td>
+                            <td><strong>₹{{ "%.0f"|format(ord['grand_total']) }}</strong></td>
+                            <td><span style="font-size:12px; font-weight:600;">{{ ord['payment_method'] }}</span></td>
+                            <td>
+                                <span class="badge {{ ord['status'].lower().replace(' ', '-') }}">{{ ord['status'] }}</span>
+                            </td>
+                            <td style="color:var(--text-muted); font-size:12px;">{{ ord['created_at']|ist_datetime }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_orders', search=ord['id']) }}" class="btn-secondary btn-sm">Manage</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">🛒</div>
+                    <h3>No orders yet</h3>
+                    <p>Customer purchases will show up here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RECENT APPOINTMENTS SECTION -->
+        <div class="card-section">
+            <div class="card-header">
+                <div>
+                    <h2>Recent Grooming Appointments</h2>
+                    <p>Latest pet spa and styling bookings</p>
+                </div>
+                <a href="{{ url_for('admin_bookings') }}" class="btn-secondary btn-sm">
+                    View All Bookings <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                {% if bookings %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Pet</th>
+                            <th>Service</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bkg in bookings %}
+                        <tr>
+                            <td>
+                                <strong>#{{ bkg['id'] }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted);">{{ bkg['created_at']|ist_datetime }}</div>
+                            </td>
+                            <td>
+                                <div><strong>{{ bkg['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">{{ bkg['phone'] }}</div>
+                            </td>
+                            <td>
+                                <strong>{{ bkg['pet_name'] }}</strong>
+                                <div style="font-size:12px; color:var(--text-muted);">{{ bkg['breed'] }} ({{ bkg['pet_type'] }})</div>
+                            </td>
+                            <td>{{ bkg['service'] }}</td>
+                            <td>
+                                <strong>{{ bkg['appointment_date'] }}</strong>
+                                <div style="font-size:12px; color:var(--text-muted);">{{ bkg['appointment_time'] }}</div>
+                            </td>
+                            <td>
+                                <span class="badge {{ bkg['status'].lower().replace(' ', '-') }}">{{ bkg['status'] }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_bookings', search=bkg['id']) }}" class="btn-secondary btn-sm">Manage</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">📅</div>
+                    <h3>No appointments yet</h3>
+                    <p>New pet grooming bookings will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

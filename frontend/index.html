@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA — Professional Pet Grooming & Premium Pet Shop</title>
+    <meta name="description" content="PET NEXA offers professional pet grooming, certified stylists, spa baths, premium nutrition, and smart AI dog & cat care in Nagercoil.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="pawzo-ai.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="services.html">Services</a>
+        <a href="#specialists">Specialists</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html">AI Pet Advisor</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <!-- MOBILE SIDE MENU -->
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero" id="home">
+    <div class="hero-container">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <i class="fa-solid fa-star" style="color:#f59e0b;"></i>
+                <span>#1 Rated Pet Care & Grooming Center</span>
+            </div>
+
+            <h1>Professional Pet Care <span>For Happy, Healthy Pets.</span></h1>
+
+            <p>
+                Pamper your beloved canine and feline companions with stress-free grooming, medicated spa baths, certified stylists, and premium vet-approved nutrition.
+            </p>
+
+            <div class="hero-cta-group">
+                <a href="services.html" class="btn-hero-primary">
+                    <i class="fa-solid fa-calendar-plus"></i> Book Grooming Session
+                </a>
+                <a href="shop.html" class="btn-hero-secondary">
+                    <i class="fa-solid fa-bag-shopping"></i> Explore Pet Shop
+                </a>
+            </div>
+
+            <div class="hero-stats-row">
+                <div class="stat-pill">
+                    <strong>10k+</strong>
+                    <span>Happy Pets Pampered</span>
+                </div>
+                <div class="stat-pill">
+                    <strong>4.9 ★</strong>
+                    <span>Customer Rating</span>
+                </div>
+                <div class="stat-pill">
+                    <strong>100%</strong>
+                    <span>Organic Pet Products</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-image-wrapper">
+            <div class="hero-blob"></div>
+            <img id="heroImage" src="images/image.png" alt="Pet Grooming Hero">
+            <div class="floating-badge badge-top">
+                <i class="fa-solid fa-shield-heart"></i> Certified Pet Stylists
+            </div>
+            <div class="floating-badge badge-bottom">
+                <i class="fa-solid fa-clock"></i> Open Mon–Sun: 9 AM–8 PM
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI PET ADVISOR SPOTLIGHT WIDGET -->
+<section class="ai-spotlight-section">
+    <div class="ai-spotlight-card">
+        <div class="ai-spotlight-left">
+            <span class="ai-tag"><i class="fa-solid fa-sparkles"></i> AI PET INTELLIGENCE</span>
+            <h2>Ask Our AI Dog & Cat Care Advisor</h2>
+            <p>Get instant personalized breed care guides, nutrition facts, grooming frequency, and feeding advice crafted specifically for dogs and cats.</p>
+            
+            <div class="ai-quick-chips">
+                <span onclick="window.location.href='ai.html'">🐕 Labrador Care</span>
+                <span onclick="window.location.href='ai.html'">🐱 Persian Cat Grooming</span>
+                <span onclick="window.location.href='ai.html'">🍖 Cat Nutrition & Taurine</span>
+                <span onclick="window.location.href='ai.html'">🐾 Indie Dog Care</span>
+                <span onclick="window.location.href='ai.html'">🛁 Medicated Skin Bath</span>
+            </div>
+        </div>
+
+        <div class="ai-spotlight-right">
+            <div class="ai-chat-preview">
+                <div class="preview-bubble bot">
+                    <i class="fa-solid fa-paw"></i>
+                    <div>
+                        <strong>PET NEXA AI Advisor</strong>
+                        <p>Ask me anything about dog or cat nutrition, breeds, training, or health habits!</p>
+                    </div>
+                </div>
+                <a href="ai.html" class="btn-launch-ai">
+                    <i class="fa-solid fa-comments"></i> Launch AI Assistant
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GROOMING SERVICES SECTION -->
+<section class="services-section" id="services">
+    <div class="section-heading">
+        <span class="section-pill">OUR SIGNATURE CARE</span>
+        <h2>Professional Grooming Services</h2>
+        <p>Tailored treatments using hypoallergenic botanicals, gentle techniques, and warm air drying. Hover to pause carousel.</p>
+    </div>
+
+    <div class="swiper-container-wrapper" style="position:relative;">
+        <div class="swiper serviceSwiper">
+            <div class="swiper-wrapper">
+                <!-- 1. Puppy Grooming -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/puppy.jpg" alt="Puppy Grooming" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 45 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Puppy Grooming</h3>
+                            <p class="service-desc">Gentle first-time grooming session crafted to make puppies calm and confident.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Gentle Herbal Bath</li>
+                                <li><i class="fa-solid fa-check"></i> Soft Brushing & Detangling</li>
+                                <li><i class="fa-solid fa-check"></i> Ear Cleaning & Nail Trim</li>
+                                <li><i class="fa-solid fa-check"></i> Mild Puppy Fragrance</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹800</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Puppy Grooming', '₹800', '45 mins', 'Gentle first-time grooming session crafted to make puppies calm and confident. Includes gentle herbal bath, soft brushing, ear cleaning, and nail trim.', 'puppy-grooming')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('puppy-grooming', 'Puppy Grooming', 800, '45 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Basic Grooming -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/basic.jpg" alt="Basic Grooming" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 60 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Basic Grooming</h3>
+                            <p class="service-desc">Complete hygienic maintenance wash and freshen-up for everyday vitality.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Deep Cleansing Bath</li>
+                                <li><i class="fa-solid fa-check"></i> Precision Nail Clipping</li>
+                                <li><i class="fa-solid fa-check"></i> Ear Cleaning & Plucking</li>
+                                <li><i class="fa-solid fa-check"></i> Blow Dry & Body Spray</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹900</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Basic Grooming', '₹900', '60 mins', 'Complete hygienic maintenance wash and freshen-up for everyday vitality. Includes deep cleansing bath, nail clipping, ear plucking, and blow dry.', 'basic-grooming')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('basic-grooming', 'Basic Grooming', 900, '60 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Premium Spa Bath -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/spa.jpg" alt="Premium Spa Bath" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 75 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Premium Spa Bath</h3>
+                            <p class="service-desc">Revitalizing conditioning bath with therapeutic natural coat oils and dental freshener.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Premium Silky Shampoo</li>
+                                <li><i class="fa-solid fa-check"></i> Deep Coat Conditioner</li>
+                                <li><i class="fa-solid fa-check"></i> Enzymatic Teeth Cleaning</li>
+                                <li><i class="fa-solid fa-check"></i> Nail Buffing & Ear Flush</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹1,200</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Premium Spa Bath', '₹1,200', '75 mins', 'Revitalizing conditioning bath with therapeutic natural coat oils, deep conditioning, enzymatic dental freshener, and nail buffing.', 'premium-spa-bath')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('premium-spa-bath', 'Premium Spa Bath', 1200, '75 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Premium Grooming -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/premium.jpg" alt="Premium Grooming" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 90 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Premium Grooming</h3>
+                            <p class="service-desc">Full styling treatment including face shaping, sanitary trim, and paw massage.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Premium Bath & Blow Dry</li>
+                                <li><i class="fa-solid fa-check"></i> Face & Sanitary Styling</li>
+                                <li><i class="fa-solid fa-check"></i> Soothing Paw Butter Massage</li>
+                                <li><i class="fa-solid fa-check"></i> Teeth Brush & Coat Shine</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹1,500</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Premium Grooming', '₹1,500', '90 mins', 'Full styling treatment including scissor face shaping, sanitary trim, soothing organic paw butter massage, and coat shine.', 'premium-grooming')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('premium-grooming', 'Premium Grooming', 1500, '90 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Medicated Skin Bath -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/medicated.jpg" alt="Medicated Bath" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 60 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Medicated Skin Bath</h3>
+                            <p class="service-desc">Targeted therapeutic care for fungal irritation, hot spots, ticks, and coat dryness.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Anti-Tick / Antifungal Treatment</li>
+                                <li><i class="fa-solid fa-check"></i> Medicated Neem & Aloe Wash</li>
+                                <li><i class="fa-solid fa-check"></i> 10-Minute Soothing Soak</li>
+                                <li><i class="fa-solid fa-check"></i> Sanitized Brushing Routine</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹1,100</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Medicated Skin Bath', '₹1,100', '60 mins', 'Targeted therapeutic care for fungal irritation, hot spots, ticks, and coat dryness with botanical neem wash.', 'medicated-bath')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('medicated-bath', 'Medicated Skin Bath', 1100, '60 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Luxury Full Grooming -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/luxury.jpg" alt="Luxury Full Grooming" onerror="this.src='images/logo.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 120 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Luxury Full Grooming</h3>
+                            <p class="service-desc">The ultimate show-quality pampering package with complete body styling and massage.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Complete Breed Haircut & Style</li>
+                                <li><i class="fa-solid fa-check"></i> Luxury Hydro-Spa Bath</li>
+                                <li><i class="fa-solid fa-check"></i> Full Body Muscle Massage</li>
+                                <li><i class="fa-solid fa-check"></i> Teeth & Ear Deep Clean</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">₹2,200</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Luxury Full Grooming', '₹2,200', '120 mins', 'The ultimate show-quality pampering package with custom breed haircut, hydro-spa bath, full body muscle relaxation, and deep hygiene.', 'luxury-full-grooming')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="bookHomeService('luxury-full-grooming', 'Luxury Full Grooming', 2200, '120 mins')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Separate Bath (7th Card - Special Selection Flow) -->
+                <div class="swiper-slide">
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="images/services/separate-bath.jpg" alt="Separate Bath" onerror="this.src='images/services/basic.jpg'">
+                            <span class="service-duration"><i class="fa-regular fa-clock"></i> 20–45 mins</span>
+                        </div>
+                        <div class="service-content">
+                            <h3>Separate Bath</h3>
+                            <p class="service-desc">Select exactly ONE individual targeted hygiene or grooming treatment tailored for your pet.</p>
+                            <ul class="service-features">
+                                <li><i class="fa-solid fa-check"></i> Single Targeted Care Treatment</li>
+                                <li><i class="fa-solid fa-check"></i> 10 Specialized Options</li>
+                                <li><i class="fa-solid fa-check"></i> Certified Stylist Gentle Handling</li>
+                                <li><i class="fa-solid fa-check"></i> Quick & Stress-Free Session</li>
+                            </ul>
+                            <div class="service-price-row">
+                                <span class="service-price">From ₹250</span>
+                                <div class="card-btn-group">
+                                    <button class="btn-view-details" onclick="openServiceModal('Separate Bath', 'From ₹250', '20–45 mins', 'Choose from 10 single hygiene treatments such as Ear Cleaning, Brushing, Nail Trimming, Bath, Teeth Cleaning, Paw Care, and more.', 'separate-bath')">Details</button>
+                                    <button type="button" class="btn-book-service" onclick="openSeparateBathModal()">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Swiper Navigation Arrows -->
+            <div class="swiper-button-prev service-prev"></div>
+            <div class="swiper-button-next service-next"></div>
+        </div>
+    </div>
+</section>
+
+<!-- SPECIALISTS SECTION -->
+<section class="doctors-section" id="specialists">
+    <div class="section-heading">
+        <span class="section-pill">CERTIFIED CARE TEAM</span>
+        <h2>Meet Our Pet Stylists & Specialists</h2>
+        <p>Passionate animal lovers certified in breed styling, coat therapy, and low-stress handling. Hover to pause carousel.</p>
+    </div>
+
+    <div class="swiper-container-wrapper" style="position:relative;">
+        <div class="swiper doctorSwiper">
+            <div class="swiper-wrapper">
+                <!-- Dr. Ethan Wilson -->
+                <div class="swiper-slide">
+                    <div class="specialist-card">
+                        <div class="specialist-img-wrap">
+                            <img src="images/doctor1.jpg" alt="Dr. Ethan Wilson">
+                            <span class="specialist-badge">Lead Stylist</span>
+                        </div>
+                        <div class="specialist-info">
+                            <h3>Dr. Ethan Wilson</h3>
+                            <span class="specialist-role">Pet Grooming Specialist</span>
+                            <p class="specialist-exp"><i class="fa-solid fa-award"></i> 5+ Years Experience • Gentle Handling</p>
+                            <p class="specialist-desc">Expert in breed-standard haircuts, scissor sculping, and fear-free grooming techniques for sensitive dogs.</p>
+                            <div class="specialist-btn-group">
+                                <button class="btn-view-profile" onclick="openDoctor('doctor1')">
+                                    <i class="fa-solid fa-user"></i> View Profile
+                                </button>
+                                <button class="btn-book-specialist" onclick="selectSpecialist('Dr. Ethan Wilson - Pet Grooming Specialist')">
+                                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dr. Emily Waston -->
+                <div class="swiper-slide">
+                    <div class="specialist-card">
+                        <div class="specialist-img-wrap">
+                            <img src="images/doctor2.jpg" alt="Dr. Emily Waston">
+                            <span class="specialist-badge">Feline Expert</span>
+                        </div>
+                        <div class="specialist-info">
+                            <h3>Dr. Emily Waston</h3>
+                            <span class="specialist-role">Cat & Dog Grooming Specialist</span>
+                            <p class="specialist-exp"><i class="fa-solid fa-award"></i> 6+ Years Experience • Low-Stress Care</p>
+                            <p class="specialist-desc">Specialized in cat grooming, gentle detangling, and calming techniques for nervous or energetic pets.</p>
+                            <div class="specialist-btn-group">
+                                <button class="btn-view-profile" onclick="openDoctor('doctor2')">
+                                    <i class="fa-solid fa-user"></i> View Profile
+                                </button>
+                                <button class="btn-book-specialist" onclick="selectSpecialist('Dr. Emily Waston - Cat & Dog Grooming Specialist')">
+                                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dr. Daniel Carten -->
+                <div class="swiper-slide">
+                    <div class="specialist-card">
+                        <div class="specialist-img-wrap">
+                            <img src="images/doctor3.jpg" alt="Dr. Daniel Carten">
+                            <span class="specialist-badge">Dermatology Care</span>
+                        </div>
+                        <div class="specialist-info">
+                            <h3>Dr. Daniel Carten</h3>
+                            <span class="specialist-role">Skin & Coat Care Specialist</span>
+                            <p class="specialist-exp"><i class="fa-solid fa-award"></i> 7+ Years Experience • Dermal Therapy</p>
+                            <p class="specialist-desc">Certified in pet dermatology baths, botanical tick therapy, hot spot relief, and allergy management.</p>
+                            <div class="specialist-btn-group">
+                                <button class="btn-view-profile" onclick="openDoctor('doctor3')">
+                                    <i class="fa-solid fa-user"></i> View Profile
+                                </button>
+                                <button class="btn-book-specialist" onclick="selectSpecialist('Dr. Daniel Carten - Skin & Coat Care Specialist')">
+                                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dr. Sophia Bennett -->
+                <div class="swiper-slide">
+                    <div class="specialist-card">
+                        <div class="specialist-img-wrap">
+                            <img src="images/doctor4.jpg" alt="Dr. Sophia Bennett">
+                            <span class="specialist-badge">Puppy Specialist</span>
+                        </div>
+                        <div class="specialist-info">
+                            <h3>Dr. Sophia Bennett</h3>
+                            <span class="specialist-role">Puppy Grooming Specialist</span>
+                            <p class="specialist-exp"><i class="fa-solid fa-award"></i> 4+ Years Experience • Confidence Building</p>
+                            <p class="specialist-desc">Dedicated to puppy first-timer confidence building, gentle nail conditioning, and positive reinforcement.</p>
+                            <div class="specialist-btn-group">
+                                <button class="btn-view-profile" onclick="openDoctor('doctor4')">
+                                    <i class="fa-solid fa-user"></i> View Profile
+                                </button>
+                                <button class="btn-book-specialist" onclick="selectSpecialist('Dr. Sophia Bennett - Puppy Grooming Specialist')">
+                                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dr. James Anderson -->
+                <div class="swiper-slide">
+                    <div class="specialist-card">
+                        <div class="specialist-img-wrap">
+                            <img src="images/doctor5.jpg" alt="Dr. James Anderson">
+                            <span class="specialist-badge">Master Stylist</span>
+                        </div>
+                        <div class="specialist-info">
+                            <h3>Dr. James Anderson</h3>
+                            <span class="specialist-role">Master Pet Stylist</span>
+                            <p class="specialist-exp"><i class="fa-solid fa-award"></i> 8+ Years Experience • Show Styling</p>
+                            <p class="specialist-desc">Master craftsman in championship show trims, luxury spa hydro-therapy, and custom double-coat restoration.</p>
+                            <div class="specialist-btn-group">
+                                <button class="btn-view-profile" onclick="openDoctor('doctor5')">
+                                    <i class="fa-solid fa-user"></i> View Profile
+                                </button>
+                                <button class="btn-book-specialist" onclick="selectSpecialist('Dr. James Anderson - Master Pet Stylist')">
+                                    <i class="fa-solid fa-calendar-check"></i> Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Swiper Navigation Arrows -->
+            <div class="swiper-button-prev doctor-prev"></div>
+            <div class="swiper-button-next doctor-next"></div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICE DETAILS MODAL -->
+<div id="serviceDetailsModal" class="modal-backdrop" style="display:none;" onclick="closeServiceModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 id="modalServiceTitle">Service Details</h3>
+            <button class="modal-close" onclick="closeServiceModal()">✖</button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; color:#8b5cf6; font-weight:700;">
+                <span id="modalServicePrice" style="font-size:20px;">₹0</span>
+                <span id="modalServiceDuration"><i class="fa-regular fa-clock"></i> 60 mins</span>
+            </div>
+            <p id="modalServiceDesc" style="color:#cbd5e1; line-height:1.7; font-size:15px; margin-bottom:20px;"></p>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn-view-details" onclick="closeServiceModal()">Close</button>
+                <a href="booking.html" id="modalBookBtn" class="btn-hero-primary" style="padding:10px 20px; font-size:14px;">Book This Service</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURED PET SHOP PRODUCTS (DYNAMIC) -->
+<section class="featured-shop-section" id="shop">
+    <div class="section-heading">
+        <span class="section-pill">PREMIUM PET STORE</span>
+        <h2>Featured Nutrition & Grooming Supplies</h2>
+        <p>Top vet-recommended dog and cat foods, medicinal shampoos, and interactive toys.</p>
+    </div>
+
+    <div class="featured-products-grid" id="featuredProductsGrid">
+        <!-- Loaded dynamically from /api/products -->
+        <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top:10px;">Loading premium pet products...</p>
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:35px;">
+        <a href="shop.html" class="btn-view-all-shop">
+            View All Products in Pet Shop <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<!-- WHY CHOOSE PET NEXA SECTION -->
+<section class="why-choose-section">
+    <div class="section-heading">
+        <span class="section-pill">THE PET NEXA ADVANTAGE</span>
+        <h2>Why Pet Parents Choose PET NEXA</h2>
+        <p>We treat every pet as our own with safety, hygiene, and genuine affection.</p>
+    </div>
+
+    <div class="pillars-grid">
+        <div class="pillar-card">
+            <div class="pillar-icon"><i class="fa-solid fa-certificate"></i></div>
+            <h3>Certified Stylists</h3>
+            <p>Our groomers are certified in breed standards, anatomy, and gentle low-stress handling.</p>
+        </div>
+        <div class="pillar-card">
+            <div class="pillar-icon"><i class="fa-solid fa-leaf"></i></div>
+            <h3>100% Organic Products</h3>
+            <p>pH-balanced botanical shampoos and natural conditioning oils safe for puppies and sensitive coats.</p>
+        </div>
+         <div class="pillar-card">
+            <div class="pillar-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            <h3>Express Doorstep Delivery</h3>
+            <p>Fast, reliable local delivery for pet foods, supplements, and supplies across Nagercoil.</p>
+        </div>
+        <div class="pillar-card">
+            <div class="pillar-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <h3>Hygienic & Safe Space</h3>
+            <p>Hospital-grade UV sterilization of all grooming tools, tubs, and tables between every session.</p>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS SECTION -->
+<section class="how-it-works-section">
+    <div class="section-heading">
+        <span class="section-pill">SEAMLESS EXPERIENCE</span>
+        <h2>How It Works in 3 Simple Steps</h2>
+    </div>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Select Service or Shop</h3>
+            <p>Choose your grooming package or add your favorite pet supplies to your cart.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Pick Schedule or Checkout</h3>
+            <p>Select your preferred specialist and time slot, or enter your delivery address with multiple easy payment options.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Pamper & Relax</h3>
+            <p>Receive instant email confirmations, live tracking updates, and enjoy a happier, fresher pet!</p>
+        </div>
+    </div>
+</section>
+
+<!-- GENUINE CUSTOMER REVIEWS (DYNAMIC) -->
+<section class="reviews-section" id="reviews">
+    <div class="section-heading">
+        <span class="section-pill">VERIFIED FEEDBACK</span>
+        <h2>Genuine Customer Reviews</h2>
+        <p>Real experiences from pet parents whose fur-babies visit PET NEXA.</p>
+    </div>
+
+    <div class="swiper reviewSwiper">
+        <div class="swiper-wrapper" id="reviewsWrapper">
+            <!-- Loaded dynamically from /api/reviews -->
+        </div>
+    </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner-section">
+    <div class="cta-banner-card">
+        <h2>Ready to Pamper Your Furry Friend?</h2>
+        <p>Book a grooming appointment today or order premium nutrition delivered directly to your doorstep.</p>
+        <div class="cta-banner-btns">
+            <a href="services.html" class="btn-hero-primary"><i class="fa-solid fa-calendar-check"></i> Book Grooming</a>
+            <a href="shop.html" class="btn-hero-secondary"><i class="fa-solid fa-bag-shopping"></i> Visit Pet Shop</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="images/logo.jpg" alt="PET NEXA Logo">
+                <h3>PET NEXA</h3>
+            </div>
+            <p style="color:#94a3b8; font-size:14px; line-height:1.6; margin-top:12px;">
+                Your trusted pet care center & premium pet nutrition store. Providing joyful, anxiety-free experiences for every pet.
+            </p>
+            <div class="footer-socials" style="margin-top:15px; display:flex; gap:12px;">
+                <a href="https://wa.me/919445437069" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="mailto:vikneshvaren2@gmail.com" class="social-icon" title="Email Us"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="shop.html">Pet Shop</a></li>
+                <li><a href="booking.html">Book Appointment</a></li>
+                <li><a href="ai.html">AI Pet Advisor</a></li>
+                <li><a href="track.html">Track Order</a></li>
+                <li><a href="booking-track.html">Manage Appointment</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Operating Hours</h4>
+            <p style="color:#cbd5e1; font-size:14px; line-height:1.8;">
+                <strong>Monday – Saturday:</strong> 9:00 AM – 8:00 PM<br>
+                <strong>Sunday:</strong> 9:00 AM – 7:00 PM<br>
+                <em>Emergency Care & Support Available</em>
+            </p>
+            <div style="margin-top:15px; background:rgba(139, 92, 246, 0.1); padding:10px; border-radius:8px; border:1px solid rgba(139, 92, 246, 0.25);">
+                <small style="color:#a78bfa; font-weight:700;">💳 Accepted Payments:</small><br>
+                <span style="color:#94a3b8; font-size:12px;">UPI • Google Pay • PhonePe • Cards • Net Banking • Cash on Delivery</span>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contact & Location</h4>
+            <p style="color:#cbd5e1; font-size:14px; line-height:1.6;">
+                📍 8/30, Church Street, Azhagappapuram, Nagercoil, Tamil Nadu - 629401<br><br>
+                📞 <strong>Phone:</strong> +91 9445437069, +91 6380576651<br>
+                ✉️ <strong>Email:</strong> vikneshvaren2@gmail.com
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+<!-- SERVICE DETAILS MODAL -->
+<div class="modal-overlay" id="serviceDetailsModal" onclick="closeServiceModal(event)" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:10000; justify-content:center; align-items:center; padding:20px;">
+    <div class="modal-box" style="background:#131b2e; border:1px solid var(--border-highlight); border-radius:16px; max-width:550px; width:100%; padding:28px; box-shadow:var(--shadow-card); position:relative;">
+        <button type="button" class="modal-close-btn" onclick="closeServiceModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">✖</button>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <i class="fa-solid fa-sparkles" style="color:var(--primary); font-size:22px;"></i>
+            <h2 id="modalServiceTitle" style="color:#ffffff; font-size:22px; margin:0; font-weight:800;">Service Details</h2>
+        </div>
+        <div style="display:flex; gap:12px; margin-bottom:15px; font-size:14px; color:var(--accent-lavender); font-weight:700;">
+            <span id="modalServicePrice" style="color:#22c55e;">₹0</span> • <span id="modalServiceDuration"><i class="fa-regular fa-clock"></i> 45 mins</span>
+        </div>
+        <p id="modalServiceDesc" style="color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:20px;"></p>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn-svc-details" onclick="closeServiceModal()" style="background:transparent; border:1px solid var(--border-color); color:#94a3b8; padding:8px 16px; border-radius:30px; cursor:pointer;">Close</button>
+            <button type="button" id="modalBookBtn" class="btn-svc-book" style="background:var(--primary); color:#fff; padding:8px 20px; border-radius:30px; border:none; font-weight:700; cursor:pointer;">Book This Service <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- SEPARATE BATH SELECTION MODAL (FOR HOME PAGE - MULTI-SELECTION) -->
+<div class="modal-overlay" id="separateBathModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:10000; justify-content:center; align-items:center; padding:20px;">
+    <div class="modal-box-selection" style="background:#131b2e; border:1px solid var(--border-highlight); border-radius:16px; max-width:680px; width:100%; max-height:90vh; display:flex; flex-direction:column; padding:28px; box-shadow:var(--shadow-card), 0 0 35px rgba(139, 92, 246, 0.25); position:relative;">
+        <button type="button" class="modal-close-btn" onclick="closeSeparateBathModal()" style="position:absolute; top:18px; right:18px; background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">✖</button>
+        
+        <div style="margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border-color);">
+            <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(139, 92, 246, 0.15); border:1px solid var(--border-highlight); color:var(--accent-lavender); padding:4px 12px; border-radius:30px; font-size:11px; font-weight:700; margin-bottom:8px; text-transform:uppercase;"><i class="fa-solid fa-bath"></i> SEPARATE BATH SELECTION</span>
+            <h2 style="font-size:22px; color:#ffffff; margin:0 0 4px 0; font-weight:800;">Select Your Services</h2>
+            <p style="font-size:13.5px; color:var(--text-sub); margin:0;">Choose any combination of treatments (<strong>1 to 10 services</strong>). Select as many individual services as your pet needs.</p>
+        </div>
+
+        <!-- 10 Individual Services (Checkboxes for Multi-Selection) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; overflow-y:auto; max-height:360px; padding-right:6px; margin-bottom:14px;">
+            
+            <!-- 1. Ear Cleaning -->
+            <div class="service-option-card" id="home-bath-card-ear-cleaning" onclick="toggleHomeBathService('ear-cleaning', 'Ear Cleaning', 350, '20 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-ear-cleaning" class="service-option-checkbox" value="Ear Cleaning" onclick="event.stopPropagation(); toggleHomeBathService('ear-cleaning', 'Ear Cleaning', 350, '20 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>1. Ear Cleaning</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹350</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Antiseptic canal flush, wax debris removal, and soothing anti-mite drops.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 20 mins</div>
+                </div>
+            </div>
+
+            <!-- 2. Brushing -->
+            <div class="service-option-card" id="home-bath-card-brushing" onclick="toggleHomeBathService('brushing', 'Brushing', 300, '20 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-brushing" class="service-option-checkbox" value="Brushing" onclick="event.stopPropagation(); toggleHomeBathService('brushing', 'Brushing', 300, '20 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>2. Brushing</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹300</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Gentle de-matting brush-out, knot detangling, and coat shine conditioning.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 20 mins</div>
+                </div>
+            </div>
+
+            <!-- 3. Bath -->
+            <div class="service-option-card" id="home-bath-card-bath" onclick="toggleHomeBathService('bath', 'Bath', 500, '40 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-bath" class="service-option-checkbox" value="Bath" onclick="event.stopPropagation(); toggleHomeBathService('bath', 'Bath', 500, '40 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>3. Bath</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹500</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Warm water herbal shampoo wash, soothing coat rinse, and fluff blow dry.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 40 mins</div>
+                </div>
+            </div>
+
+            <!-- 4. Nail Trimming -->
+            <div class="service-option-card" id="home-bath-card-nail-trimming" onclick="toggleHomeBathService('nail-trimming', 'Nail Trimming', 300, '20 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-nail-trimming" class="service-option-checkbox" value="Nail Trimming" onclick="event.stopPropagation(); toggleHomeBathService('nail-trimming', 'Nail Trimming', 300, '20 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>4. Nail Trimming</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹300</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Safe precision claw clipping, edge rotary filing, and quick-safe inspection.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 20 mins</div>
+                </div>
+            </div>
+
+            <!-- 5. Hair Trimming -->
+            <div class="service-option-card" id="home-bath-card-hair-trimming" onclick="toggleHomeBathService('hair-trimming', 'Hair Trimming', 450, '30 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-hair-trimming" class="service-option-checkbox" value="Hair Trimming" onclick="event.stopPropagation(); toggleHomeBathService('hair-trimming', 'Hair Trimming', 450, '30 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>5. Hair Trimming</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹450</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Facial contouring, sanitary area trimming, and paw pad hair neatening.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 30 mins</div>
+                </div>
+            </div>
+
+            <!-- 6. Teeth Cleaning -->
+            <div class="service-option-card" id="home-bath-card-teeth-cleaning" onclick="toggleHomeBathService('teeth-cleaning', 'Teeth Cleaning', 350, '20 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-teeth-cleaning" class="service-option-checkbox" value="Teeth Cleaning" onclick="event.stopPropagation(); toggleHomeBathService('teeth-cleaning', 'Teeth Cleaning', 350, '20 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>6. Teeth Cleaning</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹350</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Enzymatic plaque tartar gel cleanse, gum brush, and fresh breath spray.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 20 mins</div>
+                </div>
+            </div>
+
+            <!-- 7. Paw Cleaning -->
+            <div class="service-option-card" id="home-bath-card-paw-cleaning" onclick="toggleHomeBathService('paw-cleaning', 'Paw Cleaning', 300, '20 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-paw-cleaning" class="service-option-checkbox" value="Paw Cleaning" onclick="event.stopPropagation(); toggleHomeBathService('paw-cleaning', 'Paw Cleaning', 300, '20 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>7. Paw Cleaning</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹300</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Deep pad antiseptic cleanse, inter-digital wash, and organic paw butter balm.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 20 mins</div>
+                </div>
+            </div>
+
+            <!-- 8. Eye Cleaning -->
+            <div class="service-option-card" id="home-bath-card-eye-cleaning" onclick="toggleHomeBathService('eye-cleaning', 'Eye Cleaning', 250, '15 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-eye-cleaning" class="service-option-checkbox" value="Eye Cleaning" onclick="event.stopPropagation(); toggleHomeBathService('eye-cleaning', 'Eye Cleaning', 250, '15 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>8. Eye Cleaning</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹250</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Tear stain removal, gentle sterile saline wipe, and soothing eye mist.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 15 mins</div>
+                </div>
+            </div>
+
+            <!-- 9. De-shedding -->
+            <div class="service-option-card" id="home-bath-card-de-shedding" onclick="toggleHomeBathService('de-shedding', 'De-shedding', 600, '45 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-de-shedding" class="service-option-checkbox" value="De-shedding" onclick="event.stopPropagation(); toggleHomeBathService('de-shedding', 'De-shedding', 600, '45 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>9. De-shedding</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹600</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Intensive undercoat removal using carding tools to dramatically reduce shedding.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 45 mins</div>
+                </div>
+            </div>
+
+            <!-- 10. Flea & Tick Care -->
+            <div class="service-option-card" id="home-bath-card-flea-tick-care" onclick="toggleHomeBathService('flea-tick-care', 'Flea & Tick Care', 500, '40 mins', event)" style="background:#0b1120; border:1.5px solid var(--border-color); border-radius:10px; padding:12px 14px; cursor:pointer; display:flex; align-items:flex-start; gap:10px; transition:0.2s;">
+                <input type="checkbox" id="home-chk-flea-tick-care" class="service-option-checkbox" value="Flea & Tick Care" onclick="event.stopPropagation(); toggleHomeBathService('flea-tick-care', 'Flea & Tick Care', 500, '40 mins');">
+                <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; justify-content:space-between;">
+                        <span>10. Flea & Tick Care</span>
+                        <span style="color:#22c55e; font-weight:800; font-size:12.5px;">₹500</span>
+                    </div>
+                    <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin:3px 0;">Neem therapeutic parasite cleanse and long-lasting defensive protection mist.</div>
+                    <div style="font-size:11px; color:var(--accent-lavender); font-weight:600;"><i class="fa-regular fa-clock"></i> 40 mins</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Dynamic Live Selection Summary Box for Home Modal -->
+        <div style="background:#0b1120; border:1px solid var(--border-color); border-radius:10px; padding:12px 16px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-size:13px; font-weight:700; color:#cbd5e1;">
+                    <i class="fa-solid fa-sparkles" style="color:var(--primary);"></i> Selected Services: <strong id="homeBathCountBadge" style="color:#ffffff;">0</strong>
+                </span>
+                <span style="font-size:14px; font-weight:800; color:#22c55e;" id="homeBathLiveTotalPrice">₹0</span>
+            </div>
+            <div id="homeBathSelectedNamesList" style="font-size:12px; color:#94a3b8; line-height:1.5;">
+                None selected yet. Please select at least 1 service.
+            </div>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid var(--border-color); gap:12px; flex-wrap:wrap;">
+            <div id="homeValidationErrorMsg" style="color:#ef4444; font-size:12px; font-weight:600; display:none; align-items:center; gap:5px;">
+                <i class="fa-solid fa-circle-exclamation"></i> Please select at least one service to continue.
+            </div>
+
+            <div style="display:flex; gap:10px; margin-left:auto;">
+                <button type="button" class="btn-svc-details" onclick="closeSeparateBathModal()" style="background:transparent; border:1px solid var(--border-color); color:#94a3b8; padding:8px 16px; border-radius:30px; cursor:pointer;">Cancel</button>
+                <button type="button" class="btn-modal-continue" onclick="proceedWithHomeSeparateBath()" style="background:linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color:#fff; border:none; padding:10px 22px; border-radius:30px; font-weight:700; cursor:pointer;">
+                    Continue to Customer Details <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="script.js"></script>
+<script src="pawzo-ai.js"></script>
+
+</body>
+</html>

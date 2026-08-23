@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Product Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu active">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Products Management</h1>
+                <p>Add, edit, change pricing, upload images, and control shop inventory</p>
+            </div>
+            <button class="btn-primary" onclick="openAddProductModal()">
+                <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+        </div>
+
+        <!-- FILTER & SEARCH BAR -->
+        <div class="filter-bar">
+            <form method="GET" action="{{ url_for('admin_products') }}">
+                <input type="text" name="search" placeholder="Search by name or SKU..." value="{{ current_search or '' }}">
+                <select name="category">
+                    <option value="all">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat['slug'] }}" {% if current_category == cat['slug'] %}selected{% endif %}>
+                        {{ cat['name'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if current_status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+                <button type="submit" class="btn-primary btn-sm">Filter</button>
+                <a href="{{ url_for('admin_products') }}" class="btn-secondary btn-sm">Reset</a>
+            </form>
+        </div>
+
+        <!-- PRODUCTS TABLE -->
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if products %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Discount Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in products %}
+                        <tr>
+                            <td>
+                                <img src="/{{ prod['image'] }}" class="table-img" alt="{{ prod['name'] }}" onerror="this.src='https://placehold.co/100x100?text=Pet+Item'">
+                            </td>
+                            <td>
+                                <strong>{{ prod['name'] }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted);">SKU: {{ prod['sku'] or 'N/A' }}</div>
+                            </td>
+                            <td><span class="badge pending">{{ prod['category']|title }}</span></td>
+                            <td><strong>₹{{ "%.0f"|format(prod['price']) }}</strong></td>
+                            <td>
+                                {% if prod['discount_price'] and prod['discount_price'] > 0 %}
+                                <strong style="color:var(--primary);">₹{{ "%.0f"|format(prod['discount_price']) }}</strong>
+                                {% else %}
+                                <span style="color:var(--text-muted);">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if prod['stock'] <= 5 %}
+                                <span class="badge cancelled">{{ prod['stock'] }} (Low)</span>
+                                {% else %}
+                                <span class="badge delivered">{{ prod['stock'] }} in stock</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {{ prod['status'] }}">{{ prod['status'] }}</span>
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <button class="btn-secondary btn-sm" onclick='openEditProductModal({{ prod|tojson }})'>
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                    </button>
+                                    <form method="POST" action="{{ url_for('admin_toggle_product', product_id=prod['id']) }}" style="display:inline;">
+                                        <button type="submit" class="btn-secondary btn-sm" title="Toggle Active">
+                                            <i class="fa-solid {% if prod['status'] == 'active' %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin_delete_product', product_id=prod['id']) }}" onsubmit="return confirm('Are you sure you want to permanently delete this product?');" style="display:inline;">
+                                        <button type="submit" class="btn-danger btn-sm" title="Delete Product">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">📦</div>
+                    <h3>No products found</h3>
+                    <p>Click "Add New Product" to populate your shop inventory.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-overlay" id="addProductModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-plus-circle" style="color:var(--primary);"></i> Add New Product</h3>
+            <button class="modal-close" onclick="closeModal('addProductModal')">&times;</button>
+        </div>
+        <form method="POST" action="{{ url_for('admin_add_product') }}">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Product Name *</label>
+                    <input type="text" name="name" required placeholder="e.g. Royal Canin Adult Dog Food">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select name="category" required>
+                        {% for cat in categories %}
+                        {% if cat['slug'] != 'all' %}
+                        <option value="{{ cat['slug'] }}">{{ cat['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>SKU Code</label>
+                    <input type="text" name="sku" placeholder="e.g. DOG-FD-01">
+                </div>
+                <div class="form-group">
+                    <label>Regular Price (₹) *</label>
+                    <input type="number" step="0.01" name="price" required placeholder="999">
+                </div>
+                <div class="form-group">
+                    <label>Discount / Sale Price (₹)</label>
+                    <input type="number" step="0.01" name="discount_price" placeholder="849">
+                </div>
+                <div class="form-group">
+                    <label>Initial Stock Quantity *</label>
+                    <input type="number" name="stock" value="10" required>
+                </div>
+                <div class="form-group">
+                    <label>Image Path or URL *</label>
+                    <input type="text" name="image" value="images/dogfood.png" required placeholder="images/dogfood.png">
+                </div>
+                <div class="form-group full-width">
+                    <label>Product Description</label>
+                    <textarea name="description" rows="3" placeholder="Provide details regarding nutrition, benefits, or usage instructions..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="active">Active (Visible in Shop)</option>
+                        <option value="inactive">Inactive (Hidden)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:24px;">
+                    <input type="checkbox" name="is_featured" id="add_featured" value="1">
+                    <label for="add_featured" style="margin:0; cursor:pointer;">Feature on Homepage / Banner</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('addProductModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="editProductModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-pen-to-square" style="color:var(--primary);"></i> Edit Product</h3>
+            <button class="modal-close" onclick="closeModal('editProductModal')">&times;</button>
+        </div>
+        <form method="POST" id="editProductForm" action="">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Product Name *</label>
+                    <input type="text" name="name" id="edit_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select name="category" id="edit_category" required>
+                        {% for cat in categories %}
+                        {% if cat['slug'] != 'all' %}
+                        <option value="{{ cat['slug'] }}">{{ cat['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>SKU Code</label>
+                    <input type="text" name="sku" id="edit_sku">
+                </div>
+                <div class="form-group">
+                    <label>Regular Price (₹) *</label>
+                    <input type="number" step="0.01" name="price" id="edit_price" required>
+                </div>
+                <div class="form-group">
+                    <label>Discount / Sale Price (₹)</label>
+                    <input type="number" step="0.01" name="discount_price" id="edit_discount_price">
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity *</label>
+                    <input type="number" name="stock" id="edit_stock" required>
+                </div>
+                <div class="form-group">
+                    <label>Image Path or URL</label>
+                    <input type="text" name="image" id="edit_image">
+                </div>
+                <div class="form-group full-width">
+                    <label>Product Description</label>
+                    <textarea name="description" id="edit_description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status" id="edit_status">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:24px;">
+                    <input type="checkbox" name="is_featured" id="edit_featured" value="1">
+                    <label for="edit_featured" style="margin:0; cursor:pointer;">Feature on Homepage</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Update Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddProductModal() {
+    document.getElementById('addProductModal').classList.add('active');
+}
+
+function openEditProductModal(product) {
+    document.getElementById('editProductForm').action = "/admin/products/edit/" + product.id;
+    document.getElementById('edit_name').value = product.name;
+    document.getElementById('edit_category').value = product.category;
+    document.getElementById('edit_sku').value = product.sku || '';
+    document.getElementById('edit_price').value = product.price;
+    document.getElementById('edit_discount_price').value = product.discount_price || 0;
+    document.getElementById('edit_stock').value = product.stock;
+    document.getElementById('edit_image').value = product.image;
+    document.getElementById('edit_description').value = product.description || '';
+    document.getElementById('edit_status').value = product.status;
+    document.getElementById('edit_featured').checked = (product.is_featured === 1);
+    document.getElementById('editProductModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+};
+</script>
+
+</body>
+</html>

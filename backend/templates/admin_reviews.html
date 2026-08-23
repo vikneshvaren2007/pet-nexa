@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Customer Reviews</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu active">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Customer Reviews & Ratings</h1>
+                <p>Moderate genuine customer reviews submitted for pet shop products and grooming services</p>
+            </div>
+        </div>
+
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if reviews %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Review ID</th>
+                            <th>Customer</th>
+                            <th>Rating</th>
+                            <th>Review Feedback</th>
+                            <th>Related Service / Product</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rev in reviews %}
+                        <tr>
+                            <td><strong>#{{ rev['id'] }}</strong></td>
+                            <td>
+                                <div><strong>{{ rev['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">{{ rev['customer_email'] }}</div>
+                            </td>
+                            <td>
+                                <div style="color:#f59e0b; font-size:14px; white-space:nowrap;">
+                                    {% for i in range(rev['rating']) %}<i class="fa-solid fa-star"></i>{% endfor %}
+                                    <span style="font-weight:700; color:var(--navy-900); margin-left:4px;">({{ rev['rating'] }}/5)</span>
+                                </div>
+                            </td>
+                            <td style="max-width:320px; line-height:1.5;">
+                                "{{ rev['review_text'] }}"
+                            </td>
+                            <td>
+                                {% if rev['service_name'] %}
+                                <span class="badge pending">Service: {{ rev['service_name'] }}</span>
+                                {% elif rev['product_name'] %}
+                                <span class="badge confirmed">Product: {{ rev['product_name'] }}</span>
+                                {% else %}
+                                <span style="color:var(--text-muted); font-size:12px;">General Experience</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size:12px; color:var(--text-muted);">{{ rev['created_at']|ist_date }}</td>
+                            <td>
+                                {% if rev['is_approved'] == 1 %}
+                                <span class="badge active">Approved</span>
+                                {% else %}
+                                <span class="badge inactive">Hidden</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <form method="POST" action="{{ url_for('admin_toggle_review', review_id=rev['id']) }}" style="display:inline;">
+                                        <button type="submit" class="btn-secondary btn-sm" title="Toggle Public Visibility">
+                                            <i class="fa-solid {% if rev['is_approved'] == 1 %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                            {% if rev['is_approved'] == 1 %}Hide{% else %}Approve{% endif %}
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('admin_delete_review', review_id=rev['id']) }}" onsubmit="return confirm('Delete this review permanently?');" style="display:inline;">
+                                        <button type="submit" class="btn-danger btn-sm" title="Delete Review">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">⭐</div>
+                    <h3>No customer reviews yet</h3>
+                    <p>Genuine customer reviews submitted will show up here for moderation.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

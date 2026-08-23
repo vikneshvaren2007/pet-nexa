@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointment | PET NEXA</title>
+    <meta name="description" content="View, reschedule, or cancel your pet grooming appointments at PET NEXA.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .bkg-track-section {
+            padding: 100px 6% 60px;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: #ffffff;
+        }
+
+        .bkg-nav-top {
+            max-width: 850px;
+            margin: 0 auto 20px;
+        }
+
+        .bkg-track-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .bkg-track-header h1 {
+            font-size: 32px;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .bkg-track-header h1 span {
+            color: var(--primary);
+        }
+
+        .bkg-track-header p {
+            color: #94a3b8;
+            font-size: 14.5px;
+        }
+
+        /* Search Box */
+        .search-card {
+            max-width: 750px;
+            margin: 0 auto 30px;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .bkg-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bkg-input-wrap {
+            position: relative;
+        }
+
+        .bkg-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .bkg-input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 38px;
+            background: #0b1120;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        .bkg-input-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .status-msg-box {
+            max-width: 750px;
+            margin: 0 auto 20px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 24px;
+        }
+
+        /* Appointment Card */
+        .appointment-card {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
+        }
+
+        .pill-pending { background: #fef3c7; color: #b45309; }
+        .pill-confirmed { background: #e0f2fe; color: #0369a1; }
+        .pill-rescheduled { background: #e0e7ff; color: #4338ca; }
+        .pill-completed { background: #dcfce7; color: #15803d; }
+        .pill-cancelled { background: #fee2e2; color: #b91c1c; }
+
+        .btn-copy-id {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid var(--border-highlight);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-id:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-copy-id.copied {
+            background: #22c55e !important;
+            border-color: #22c55e !important;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #0b1120;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+
+        .info-item {
+            color: var(--text-sub);
+            line-height: 1.7;
+        }
+
+        .info-item strong {
+            color: #ffffff;
+        }
+
+        .services-tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .service-tag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .btn-action-appt {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13.5px;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-cancel-appt {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .btn-cancel-appt:hover {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .btn-reschedule-appt {
+            background: #e0e7ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+        }
+
+        .btn-reschedule-appt:hover {
+            background: #4f46e5;
+            color: #ffffff;
+        }
+
+        .btn-review-appt {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .btn-review-appt:hover {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #1e293b;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: #ffffff;
+        }
+
+        .modal-box select, .modal-box input, .modal-box textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0b1120;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .bkg-form-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="index.html#specialists">Specialists</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html">AI Pet Advisor</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html" class="active">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="index.html#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<main class="bkg-track-section">
+    <div class="bkg-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="bkg-track-header">
+        <h1>Manage Your <span>Appointment</span> 🗓️</h1>
+        <p>Enter your Booking Reference ID and your Email or Mobile Phone number to view or reschedule.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-card">
+        <form id="manageBookingForm" onsubmit="handleBookingSubmit(event)">
+            <div class="bkg-form-grid">
+                <div class="bkg-input-wrap">
+                    <i class="fa-solid fa-ticket"></i>
+                    <input type="text" id="bkgSearchInput" placeholder="Booking ID (e.g. BKG-2026...)" autocomplete="off">
+                </div>
+                <div class="bkg-input-wrap">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="text" id="bkgSearchContact" placeholder="Email or 10-digit Phone" autocomplete="off">
+                </div>
+                <button type="submit" class="search-btn" id="btnBkgSearch">
+                    <i class="fa-solid fa-magnifying-glass"></i> Find Booking
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="status-msg-box" id="bkgStatusMsg"></div>
+
+    <!-- Appointment Details Card -->
+    <div class="appointment-card" id="appointmentCard">
+        <div class="card-top">
+            <div>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <h2 id="dispBkgId" style="font-size:22px; font-weight:800; color:#ffffff; margin:0;">Booking #BKG-</h2>
+                    <button type="button" class="btn-copy-id" id="btnCopyBookingId" onclick="copyCurrentBookingId()">
+                        <i class="fa-regular fa-copy"></i> <span id="copyBtnText">COPY ID</span>
+                    </button>
+                </div>
+                <span id="dispCreated" style="color:#94a3b8; font-size:13px;">Booked on -</span>
+            </div>
+            <div id="dispBkgStatus" class="status-pill pill-confirmed">CONFIRMED</div>
+        </div>
+
+        <div class="info-grid">
+            <!-- Customer Details -->
+            <div class="info-item">
+                <h4 style="color:var(--accent-lavender); font-size:14px; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:4px;">
+                    <i class="fa-solid fa-user"></i> Customer Information
+                </h4>
+                <div><strong>Name:</strong> <span id="dispCustName">-</span></div>
+                <div><strong>Phone:</strong> <span id="dispCustPhone">-</span></div>
+                <div><strong>Email:</strong> <span id="dispCustEmail">-</span></div>
+                <div><strong>Address:</strong> <span id="dispCustAddress">-</span></div>
+            </div>
+
+            <!-- Pet Details -->
+            <div class="info-item">
+                <h4 style="color:var(--accent-lavender); font-size:14px; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:4px;">
+                    <i class="fa-solid fa-paw"></i> Pet Profile
+                </h4>
+                <div><strong>Pet Name:</strong> <span id="dispPetName">-</span></div>
+                <div><strong>Pet Type:</strong> <span id="dispPetType">-</span></div>
+                <div><strong>Breed:</strong> <span id="dispPetBreed">-</span></div>
+                <div><strong>Age:</strong> <span id="dispPetAge">-</span></div>
+            </div>
+
+            <!-- Appointment Details (Full Width) -->
+            <div class="info-item" style="grid-column:1/-1;">
+                <h4 style="color:var(--accent-lavender); font-size:14px; margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:4px;">
+                    <i class="fa-solid fa-calendar-check"></i> Session & Specialist Details
+                </h4>
+                <div><strong>Specialist / Stylist:</strong> <span id="dispSpecialist" style="color:var(--accent-lavender);">-</span></div>
+                <div><strong>Scheduled Date & Time:</strong> <span id="dispDateTime" style="color:var(--primary); font-weight:700;">-</span></div>
+                <div><strong>Payment Status:</strong> <span id="dispPaymentStatus" style="color:#22c55e; font-weight:700;">Confirmed (Pay at Center)</span></div>
+                <div><strong>Notes / Requests:</strong> <span id="dispCustNotes">None</span></div>
+
+                <div style="margin-top:12px; padding-top:10px; border-top:1px solid #334155;">
+                    <div style="font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Selected Service(s):</div>
+                    <div class="services-tag-list" id="dispServicesTagList"></div>
+                </div>
+
+                <div style="border-top:1px solid #334155; padding-top:10px; margin-top:10px; display:flex; justify-content:space-between; font-size:15px; font-weight:800;">
+                    <span>Total Package Price:</span>
+                    <span id="dispTotalPrice" style="color:var(--primary); font-size:16px;">₹0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminNotesBox" style="background:rgba(20,184,166,0.1); border:1px dashed var(--primary); padding:12px 16px; border-radius:10px; margin-bottom:20px; font-size:13px; display:none;">
+            <strong style="color:var(--primary);"><i class="fa-solid fa-circle-info"></i> Note from Grooming Center:</strong>
+            <p id="dispAdminNotes" style="color:#cbd5e1; margin:4px 0 0;"></p>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap;">
+            <button class="btn-action-appt btn-cancel-appt" id="btnCancelAppt" onclick="openCancelModal()">
+                <i class="fa-solid fa-calendar-xmark"></i> Cancel Appointment
+            </button>
+            <button class="btn-action-appt btn-reschedule-appt" id="btnRescheduleAppt" onclick="openRescheduleModal()">
+                <i class="fa-solid fa-clock-rotate-left"></i> Reschedule Date
+            </button>
+            <button class="btn-action-appt btn-review-appt" id="btnReviewAppt" style="display:none;" onclick="openReviewModal()">
+                <i class="fa-solid fa-star"></i> Review Experience
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- RESCHEDULE APPOINTMENT MODAL -->
+<div class="modal-overlay" id="rescheduleApptModal">
+    <div class="modal-box">
+        <h3 style="color:var(--primary); font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-calendar-days"></i> Reschedule Appointment
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Select your preferred new date and time slot for this session.
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">New Appointment Date *</label>
+        <input type="date" id="rescheduleDate" required>
+
+        <label style="font-size:13px; font-weight:600;">Preferred Time Slot *</label>
+        <select id="rescheduleTime">
+            <option value="09:00 AM">09:00 AM - 10:00 AM</option>
+            <option value="10:00 AM" selected>10:00 AM - 11:00 AM</option>
+            <option value="11:30 AM">11:30 AM - 12:30 PM</option>
+            <option value="01:30 PM">01:30 PM - 02:30 PM</option>
+            <option value="03:00 PM">03:00 PM - 04:00 PM</option>
+            <option value="04:30 PM">04:30 PM - 05:30 PM</option>
+            <option value="06:00 PM">06:00 PM - 07:00 PM</option>
+        </select>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+            <button class="btn-action-appt" style="background:#334155; color:#fff;" onclick="closeRescheduleModal()">Close</button>
+            <button class="btn-action-appt btn-reschedule-appt" id="btnSubmitReschedule" onclick="submitRescheduleAppointment()">Save Rescheduled Date</button>
+        </div>
+    </div>
+</div>
+
+<!-- CANCEL APPOINTMENT MODAL -->
+<div class="modal-overlay" id="cancelApptModal">
+    <div class="modal-box">
+        <h3 style="color:#ef4444; font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-calendar-xmark"></i> Cancel Appointment
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Please select a reason for cancelling this appointment. Email notifications will be dispatched.
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">Reason for Cancellation *</label>
+        <select id="cancelApptReason">
+            <option value="Schedule conflict / Personal emergency">Schedule conflict / Personal emergency</option>
+            <option value="Pet is unwell / Not fit for grooming">Pet is unwell / Not fit for grooming</option>
+            <option value="Need to reschedule for a later date">Need to reschedule for a later date</option>
+            <option value="Booked by mistake">Booked by mistake</option>
+            <option value="Other reason">Other reason</option>
+        </select>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+            <button class="btn-action-appt" style="background:#334155; color:#fff;" onclick="closeCancelModal()">Abort</button>
+            <button class="btn-action-appt btn-cancel-appt" id="btnSubmitApptCancel" onclick="submitCancelAppointment()">Confirm Cancellation</button>
+        </div>
+    </div>
+</div>
+
+<!-- GENUINE REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal-box">
+        <h3 style="color:#f59e0b; font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-star"></i> Share Your Pet Experience
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Submit a review about your pet's grooming session.
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">Rating (1 to 5 Stars) *</label>
+        <select id="reviewRating">
+            <option value="5">⭐⭐⭐⭐⭐ (5/5) - Outstanding Experience</option>
+            <option value="4">⭐⭐⭐⭐ (4/5) - Very Good</option>
+            <option value="3">⭐⭐⭐ (3/5) - Good</option>
+            <option value="2">⭐⭐ (2/5) - Average</option>
+            <option value="1">⭐ (1/5) - Poor</option>
+        </select>
+
+        <label style="font-size:13px; font-weight:600;">Your Review & Feedback *</label>
+        <textarea id="reviewText" rows="3" placeholder="Tell us how your pet enjoyed the grooming care..." required></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+            <button class="btn-action-appt" style="background:#334155; color:#fff;" onclick="closeReviewModal()">Cancel</button>
+            <button class="btn-action-appt btn-review-appt" id="btnSubmitReview" onclick="submitAppointmentReview()">Submit Review</button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script>
+const API_BASE = (() => {
+    const host = window.location.hostname || "127.0.0.1";
+    const port = window.location.port;
+    const isLocalDevServer = (host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.") || host.startsWith("10.") || host.startsWith("172.")) && port && port !== "5000" && port !== "80" && port !== "443" && port !== "";
+    if (isLocalDevServer) {
+        return window.location.protocol + "//" + host + ":5000";
+    }
+    return "";
+})();
+
+let currentLoadedBooking = null;
+let currentTrackingBookingId = "";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const today = new Date().toISOString().split('T')[0];
+    const resDateInput = document.getElementById("rescheduleDate");
+    if (resDateInput) resDateInput.min = today;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+    const contactParam = urlParams.get('contact') || urlParams.get('email') || urlParams.get('phone') || localStorage.getItem("email") || localStorage.getItem("phone") || "";
+
+    if (idParam) {
+        document.getElementById("bkgSearchInput").value = idParam.trim();
+        if (contactParam) {
+            document.getElementById("bkgSearchContact").value = contactParam.trim();
+        }
+        executeBookingTracking(idParam.trim(), contactParam.trim());
+    } else {
+        if (contactParam) {
+            document.getElementById("bkgSearchContact").value = contactParam.trim();
+        }
+    }
+});
+
+function handleBookingSubmit(e) {
+    if (e) e.preventDefault();
+    const bookingId = document.getElementById("bkgSearchInput").value.trim();
+    const contact = document.getElementById("bkgSearchContact").value.trim();
+
+    executeBookingTracking(bookingId, contact);
+}
+
+async function executeBookingTracking(rawBookingId, rawContact) {
+    const msg = document.getElementById("bkgStatusMsg");
+    const card = document.getElementById("appointmentCard");
+
+    let bookingId = (rawBookingId || "").trim();
+    if (bookingId.startsWith("#")) bookingId = bookingId.substring(1);
+
+    const contact = (rawContact || "").trim();
+
+    // Validation Requirements
+    if (!bookingId && !contact) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Booking ID and Email/Phone.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    if (!bookingId) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Booking ID.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    if (!contact) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Email or Mobile Phone number.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    msg.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching booking <strong>#${bookingId}</strong> from database...`;
+    card.style.display = "none";
+
+    try {
+        const fetchUrl = `${API_BASE}/api/bookings/track?booking_id=${encodeURIComponent(bookingId)}&contact=${encodeURIComponent(contact)}`;
+        const res = await fetch(fetchUrl);
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.success || !data.booking) {
+            const errText = data.error || "Booking not found. Please check your Booking ID and Email/Phone.";
+            msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-xmark"></i> ${errText}</span>`;
+            return;
+        }
+
+        currentLoadedBooking = data.booking;
+        currentTrackingBookingId = data.booking.id;
+        msg.innerHTML = "";
+        renderBooking(data.booking);
+        card.style.display = "block";
+    } catch (e) {
+        console.error("Booking search error:", e);
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Unable to retrieve your booking right now. Please try again.</span>`;
+    }
+}
+
+function formatIST(dateStr) {
+    if (!dateStr) return "Recently";
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) {
+            return dateStr.replace("T", " ").substring(0, 16);
+        }
+        return d.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }) + ", " + d.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }) + " IST";
+    } catch(e) {
+        return dateStr;
+    }
+}
+
+function renderBooking(bkg) {
+    document.getElementById("dispBkgId").textContent = `Booking #${bkg.id}`;
+    document.getElementById("dispCreated").textContent = `Booked on ${formatIST(bkg.created_at)}`;
+
+    const pill = document.getElementById("dispBkgStatus");
+    const statusSlug = (bkg.status || 'pending').toLowerCase().replace(/ /g, '-');
+    pill.textContent = bkg.status || 'Pending';
+    pill.className = `status-pill pill-${statusSlug}`;
+
+    // Customer
+    document.getElementById("dispCustName").textContent = bkg.customer_name || '-';
+    document.getElementById("dispCustPhone").textContent = bkg.phone || '-';
+    document.getElementById("dispCustEmail").textContent = bkg.email || '-';
+    document.getElementById("dispCustAddress").textContent = bkg.address || "Center Visit (Azhagappapuram, Nagercoil)";
+    document.getElementById("dispCustNotes").textContent = bkg.message || "None";
+
+    // Pet
+    document.getElementById("dispPetName").textContent = bkg.pet_name || '-';
+    document.getElementById("dispPetType").textContent = (bkg.pet_type || 'Pet').toUpperCase();
+    document.getElementById("dispPetBreed").textContent = bkg.breed || 'Standard Breed';
+    document.getElementById("dispPetAge").textContent = bkg.pet_age ? `${bkg.pet_age}` : 'Not specified';
+
+    // Specialist & Appointment
+    document.getElementById("dispSpecialist").textContent = bkg.specialist || 'Senior Grooming Stylist';
+    document.getElementById("dispDateTime").textContent = `${bkg.appointment_date} at ${bkg.appointment_time || '10:00 AM'}`;
+    document.getElementById("dispPaymentStatus").textContent = "Confirmed (Pay at Center)";
+
+    const totalPrice = Number(bkg.total_price || 0);
+    document.getElementById("dispTotalPrice").textContent = totalPrice > 0 ? `₹${Math.round(totalPrice).toLocaleString()}` : "Standard Pricing";
+
+    // Multi-service breakdown
+    const tagList = document.getElementById("dispServicesTagList");
+    const services = bkg.services || [];
+
+    if (services && services.length > 0) {
+        tagList.innerHTML = services.map(s => `
+            <div class="service-tag-item">
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-check" style="color:var(--primary); margin-right:6px;"></i> ${s.service_name || s.name}</span>
+                <span style="color:#22c55e; font-weight:700;">₹${Math.round(s.price || 0)}</span>
+            </div>
+        `).join("");
+    } else if (bkg.main_service === "Separate Bath" && bkg.sub_service) {
+        const subItems = bkg.sub_service.split(",");
+        tagList.innerHTML = subItems.map(item => `
+            <div class="service-tag-item">
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-bath" style="color:var(--primary); margin-right:6px;"></i> Separate Bath — ${item.trim()}</span>
+                <span style="color:#22c55e; font-weight:700;">₹350</span>
+            </div>
+        `).join("");
+    } else {
+        tagList.innerHTML = `
+            <div class="service-tag-item">
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-paw" style="color:var(--primary); margin-right:6px;"></i> ${bkg.service || 'Grooming Service'}</span>
+                <span style="color:#22c55e; font-weight:700;">₹${Math.round(totalPrice || 900)}</span>
+            </div>
+        `;
+    }
+
+    const notesBox = document.getElementById("adminNotesBox");
+    if (bkg.admin_notes) {
+        notesBox.style.display = "block";
+        document.getElementById("dispAdminNotes").textContent = bkg.admin_notes;
+    } else {
+        notesBox.style.display = "none";
+    }
+
+    const cancelBtn = document.getElementById("btnCancelAppt");
+    const rescheduleBtn = document.getElementById("btnRescheduleAppt");
+    const reviewBtn = document.getElementById("btnReviewAppt");
+
+    if (["Pending", "Confirmed", "Rescheduled"].includes(bkg.status)) {
+        cancelBtn.style.display = "inline-flex";
+        rescheduleBtn.style.display = "inline-flex";
+    } else {
+        cancelBtn.style.display = "none";
+        rescheduleBtn.style.display = "none";
+    }
+
+    if (bkg.status === "Completed") {
+        reviewBtn.style.display = "inline-flex";
+    } else {
+        reviewBtn.style.display = "none";
+    }
+}
+
+function copyCurrentBookingId() {
+    const idToCopy = currentTrackingBookingId || document.getElementById("bkgSearchInput").value.trim();
+    if (!idToCopy) return;
+
+    const btn = document.getElementById("btnCopyBookingId");
+    const btnText = document.getElementById("copyBtnText");
+
+    const onSuccess = () => {
+        btn.classList.add("copied");
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>COPIED ✓</span>`;
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>COPY ID</span>`;
+        }, 2000);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(idToCopy).then(onSuccess).catch(() => fallbackCopy(idToCopy, onSuccess));
+    } else {
+        fallbackCopy(idToCopy, onSuccess);
+    }
+}
+
+function fallbackCopy(text, cb) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand("copy");
+        if (cb) cb();
+    } catch (err) {
+        alert("Booking ID: " + text);
+    }
+    document.body.removeChild(textArea);
+}
+
+function openCancelModal() {
+    document.getElementById("cancelApptModal").classList.add("active");
+}
+function closeCancelModal() {
+    document.getElementById("cancelApptModal").classList.remove("active");
+}
+
+function openRescheduleModal() {
+    if (currentLoadedBooking) {
+        document.getElementById("rescheduleDate").value = currentLoadedBooking.appointment_date || "";
+        document.getElementById("rescheduleTime").value = currentLoadedBooking.appointment_time || "10:00 AM";
+    }
+    document.getElementById("rescheduleApptModal").classList.add("active");
+}
+function closeRescheduleModal() {
+    document.getElementById("rescheduleApptModal").classList.remove("active");
+}
+
+function openReviewModal() {
+    document.getElementById("reviewModal").classList.add("active");
+}
+function closeReviewModal() {
+    document.getElementById("reviewModal").classList.remove("active");
+}
+
+async function submitRescheduleAppointment() {
+    if (!currentLoadedBooking) return;
+    const newDate = document.getElementById("rescheduleDate").value;
+    const newTime = document.getElementById("rescheduleTime").value;
+
+    if (!newDate) {
+        alert("Please select a new appointment date.");
+        return;
+    }
+
+    const btn = document.getElementById("btnSubmitReschedule");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Updating...`;
+
+    try {
+        const res = await fetch(`${API_BASE}/api/bookings/${currentLoadedBooking.id}/reschedule`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                appointment_date: newDate,
+                appointment_time: newTime,
+                notes: "Rescheduled by customer"
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to reschedule appointment.");
+        }
+
+        closeRescheduleModal();
+        alert("🎉 Appointment rescheduled successfully! Confirmation emails have been sent.");
+        handleBookingSubmit();
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Save Rescheduled Date";
+    }
+}
+
+async function submitCancelAppointment() {
+    if (!currentLoadedBooking) return;
+    const btn = document.getElementById("btnSubmitApptCancel");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cancelling...`;
+
+    const reason = document.getElementById("cancelApptReason").value;
+    try {
+        const res = await fetch(`${API_BASE}/api/bookings/${currentLoadedBooking.id}/cancel`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reason: reason, cancelled_by: "Customer" })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to cancel appointment.");
+        }
+
+        closeCancelModal();
+        alert("🎉 Appointment cancelled successfully. An email notification has been dispatched.");
+        handleBookingSubmit();
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Confirm Cancellation";
+    }
+}
+
+async function submitAppointmentReview() {
+    if (!currentLoadedBooking) return;
+    const rating = document.getElementById("reviewRating").value;
+    const text = document.getElementById("reviewText").value.trim();
+
+    if (!text) {
+        alert("Please write a few words about your pet's experience.");
+        return;
+    }
+
+    const btn = document.getElementById("btnSubmitReview");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+    try {
+        const res = await fetch(API_BASE + "/api/reviews/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                customer_name: currentLoadedBooking.customer_name,
+                customer_email: currentLoadedBooking.email,
+                rating: parseInt(rating),
+                review_text: text,
+                service_name: currentLoadedBooking.service,
+                booking_id: currentLoadedBooking.id
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to submit review.");
+        }
+
+        closeReviewModal();
+        alert("⭐ Thank you! Your review has been submitted and will appear on the website.");
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Submit Review";
+    }
+}
+
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "index.html";
+    }
+}
+
+function openMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "0";
+}
+
+function closeMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "-320px";
+}
+</script>
+
+</body>
+</html>

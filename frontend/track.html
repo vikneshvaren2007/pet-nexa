@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order Live | PET NEXA</title>
+    <meta name="description" content="Track your PET NEXA pet care product order status in real-time with our live timeline tracker.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .track-section {
+            padding: 100px 6% 60px;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: #ffffff;
+        }
+
+        .track-nav-top {
+            max-width: 900px;
+            margin: 0 auto 20px;
+        }
+
+        .track-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .track-header h1 {
+            font-size: 32px;
+            color: #ffffff;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .track-header h1 span {
+            color: var(--primary);
+        }
+
+        .track-header p {
+            color: #94a3b8;
+            font-size: 14.5px;
+        }
+
+        /* Search Form */
+        .track-search-card {
+            max-width: 750px;
+            margin: 0 auto 30px;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .track-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .track-input-wrap {
+            position: relative;
+        }
+
+        .track-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .track-input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 38px;
+            background: #0b1120;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+            box-sizing: border-box;
+        }
+
+        .track-input-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .track-search-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .track-search-btn:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .status-msg-box {
+            max-width: 750px;
+            margin: 0 auto 20px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 24px;
+        }
+
+        /* Order Details Card */
+        .track-card {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .track-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .track-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending { background: #fef3c7; color: #b45309; }
+        .badge-confirmed { background: #e0f2fe; color: #0369a1; }
+        .badge-processing { background: #ede9fe; color: #6d28d9; }
+        .badge-packed { background: #e0e7ff; color: #4338ca; }
+        .badge-shipped { background: #ffedd5; color: #c2410c; }
+        .badge-out-for-delivery { background: #fef08a; color: #854d0e; }
+        .badge-delivered { background: #dcfce7; color: #15803d; }
+        .badge-cancelled { background: #fee2e2; color: #b91c1c; }
+        .badge-return-requested { background: #fef3c7; color: #b45309; }
+        .badge-refunded { background: #dcfce7; color: #15803d; }
+
+        /* Timeline Step Tracker */
+        .timeline-container {
+            margin: 30px 0 35px;
+            position: relative;
+            background: #0b1120;
+            padding: 25px 20px 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .timeline-track {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            min-width: 600px;
+        }
+
+        .timeline-track::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            right: 30px;
+            height: 4px;
+            background: #334155;
+            z-index: 1;
+        }
+
+        .timeline-progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            height: 4px;
+            background: var(--primary);
+            z-index: 2;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            width: 80px;
+        }
+
+        .step-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #0f172a;
+            border: 3px solid #334155;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .timeline-step.completed .step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .timeline-step.active .step-circle {
+            background: var(--primary-dark);
+            border-color: var(--primary);
+            color: #ffffff;
+            animation: pulseCircle 1.5s infinite;
+        }
+
+        @keyframes pulseCircle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .step-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .timeline-step.completed .step-label, .timeline-step.active .step-label {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Order Details Grid */
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: #0b1120;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            font-size: 13.5px;
+        }
+
+        .order-info-item {
+            color: var(--text-sub);
+            line-height: 1.7;
+        }
+
+        .order-info-item strong {
+            color: #ffffff;
+        }
+
+        /* Items List */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 13.5px;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #0b1120;
+            color: var(--accent-lavender);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-sub);
+        }
+
+        /* Tracking History Log */
+        .tracking-logs {
+            background: #0b1120;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .tracking-log-item {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+
+        .tracking-log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-bullet {
+            color: var(--primary);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        /* Action Buttons */
+        .track-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-action-return {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-action-return:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-copy-id {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid var(--border-highlight);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-id:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-copy-id.copied {
+            background: #22c55e !important;
+            border-color: #22c55e !important;
+        }
+
+        /* Modal Overlays */
+        .track-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .track-modal-overlay.active {
+            display: flex;
+        }
+
+        .track-modal-box {
+            background: #1e293b;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: #ffffff;
+        }
+
+        .track-modal-box select, .track-modal-box textarea, .track-modal-box input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0b1120;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .track-form-grid {
+                grid-template-columns: 1fr;
+            }
+            .order-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html">AI Pet Advisor</a>
+        <a href="track.html" class="active">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="index.html#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<main class="track-section">
+    <div class="track-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="track-header">
+        <h1>Track Your <span>Order Live</span> 🐾</h1>
+        <p>Enter your Order ID and your Email or Mobile Phone number to view real-time delivery status.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="track-search-card">
+        <form id="trackOrderForm" onsubmit="handleTrackSubmit(event)">
+            <div class="track-form-grid">
+                <div class="track-input-wrap">
+                    <i class="fa-solid fa-receipt"></i>
+                    <input type="text" id="orderSearchId" placeholder="Order ID (e.g. ORD-2026...)" autocomplete="off">
+                </div>
+                <div class="track-input-wrap">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="text" id="orderSearchContact" placeholder="Email or 10-digit Phone" autocomplete="off">
+                </div>
+                <button type="submit" class="track-search-btn" id="btnTrackSearch">
+                    <i class="fa-solid fa-magnifying-glass"></i> Track Order
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="status-msg-box" id="trackStatusMsg"></div>
+
+    <!-- Order Tracking Result Card -->
+    <div class="track-card" id="trackCard">
+        <div class="track-topbar">
+            <div>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <h2 id="dispOrderId" style="font-size:22px; font-weight:800; color:#ffffff; margin:0;">Order #ORD-</h2>
+                    <button type="button" class="btn-copy-id" id="btnCopyOrderId" onclick="copyCurrentOrderId()">
+                        <i class="fa-regular fa-copy"></i> <span id="copyBtnText">COPY ID</span>
+                    </button>
+                </div>
+                <span id="dispOrderDate" style="color:#94a3b8; font-size:13px;">Placed on -</span>
+            </div>
+            <div id="dispStatusBadge" class="track-badge badge-pending">PENDING</div>
+        </div>
+
+        <!-- 7-Stage Visual Timeline Tracker -->
+        <div class="timeline-container">
+            <div class="timeline-track">
+                <div class="timeline-progress-bar" id="timelineProgressBar"></div>
+                
+                <div class="timeline-step" id="stepPlaced">
+                    <div class="step-circle"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="step-label">Order Placed</div>
+                </div>
+                <div class="timeline-step" id="stepConfirmed">
+                    <div class="step-circle"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="step-label">Payment Confirmed</div>
+                </div>
+                <div class="timeline-step" id="stepProcessing">
+                    <div class="step-circle"><i class="fa-solid fa-gears"></i></div>
+                    <div class="step-label">Processing</div>
+                </div>
+                <div class="timeline-step" id="stepPacked">
+                    <div class="step-circle"><i class="fa-solid fa-box"></i></div>
+                    <div class="step-label">Packed</div>
+                </div>
+                <div class="timeline-step" id="stepShipped">
+                    <div class="step-circle"><i class="fa-solid fa-truck"></i></div>
+                    <div class="step-label">Shipped</div>
+                </div>
+                <div class="timeline-step" id="stepOutForDelivery">
+                    <div class="step-circle"><i class="fa-solid fa-motorcycle"></i></div>
+                    <div class="step-label">Out for Delivery</div>
+                </div>
+                <div class="timeline-step" id="stepDelivered">
+                    <div class="step-circle"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="step-label">Delivered</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Information Grid -->
+        <div class="order-info-grid">
+            <div class="order-info-item">
+                <div><strong>Customer Name:</strong> <span id="dispCustomer">-</span></div>
+                <div><strong>Phone Number:</strong> <span id="dispPhone">-</span></div>
+                <div><strong>Email Address:</strong> <span id="dispEmail">-</span></div>
+                <div><strong>Delivery Address:</strong> <span id="dispAddress">-</span></div>
+            </div>
+            <div class="order-info-item">
+                <div><strong>Payment Method:</strong> <span id="dispPayment">-</span></div>
+                <div><strong>Payment Status:</strong> <span id="dispPaymentStatus" style="color:#22c55e; font-weight:700;">-</span></div>
+                <div><strong>Current Order Status:</strong> <span id="dispCurrentStatus" style="color:var(--primary); font-weight:700;">-</span></div>
+                <div><strong>Courier / AWB:</strong> <span id="dispCourier">-</span></div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <h3 style="font-size:16px; color:var(--accent-lavender); margin-bottom:12px;">
+            <i class="fa-solid fa-basket-shopping"></i> Items in this Order
+        </h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th style="text-align:center;">Qty</th>
+                    <th style="text-align:right;">Price</th>
+                    <th style="text-align:right;">Total</th>
+                </tr>
+            </thead>
+            <tbody id="dispItemsBody"></tbody>
+        </table>
+
+        <!-- Tracking Activity History Logs -->
+        <h3 style="font-size:16px; color:var(--accent-lavender); margin-bottom:12px;">
+            <i class="fa-solid fa-clock-rotate-left"></i> Activity Timeline Log
+        </h3>
+        <div class="tracking-logs" id="dispLogsList"></div>
+
+        <!-- Customer Action Buttons -->
+        <div class="track-actions">
+            <button class="btn-action-return" id="btnCancelOrder" style="background:#fee2e2; color:#b91c1c; display:none;" onclick="openCancelModal()">
+                <i class="fa-solid fa-ban"></i> Cancel Order
+            </button>
+            <button class="btn-action-return" id="btnReturnOrder" style="background:#fef3c7; color:#b45309; display:none;" onclick="openReturnModal()">
+                <i class="fa-solid fa-rotate-left"></i> Request Return
+            </button>
+            <button class="btn-action-return" id="btnReviewOrder" style="background:var(--primary); color:#ffffff; display:none;" onclick="openOrderReviewModal()">
+                <i class="fa-solid fa-star"></i> Review Products
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- CANCEL ORDER MODAL -->
+<div class="track-modal-overlay" id="userCancelModal">
+    <div class="track-modal-box">
+        <h3 style="color:#ef4444; font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-circle-exclamation"></i> Cancel Order
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Please select the reason for cancelling this order. Any paid funds will be refunded.
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">Reason for Cancellation *</label>
+        <select id="userCancelReason">
+            <option value="Ordered by mistake">Ordered by mistake</option>
+            <option value="Item not required anymore">Item not required anymore</option>
+            <option value="Found better price elsewhere">Found better price elsewhere</option>
+            <option value="Change of delivery address">Change of delivery address</option>
+            <option value="Other reason">Other reason</option>
+        </select>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+            <button class="btn-action-return" style="background:#334155; color:#fff;" onclick="closeCancelModal()">Abort</button>
+            <button class="btn-action-return" id="btnSubmitCancel" style="background:#ef4444; color:#fff;" onclick="submitCancelOrder()">Confirm Cancellation</button>
+        </div>
+    </div>
+</div>
+
+<!-- RETURN REQUEST MODAL -->
+<div class="track-modal-overlay" id="userReturnModal">
+    <div class="track-modal-box">
+        <h3 style="color:var(--primary); font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-rotate-left"></i> Request Return
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Please select the reason for returning your delivered order. Our support team will arrange a courier pickup.
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">Reason for Return *</label>
+        <select id="userReturnReason">
+            <option value="Damaged or defective item received">Damaged or defective item received</option>
+            <option value="Wrong item delivered">Wrong item delivered</option>
+            <option value="Product not matching description">Product not matching description</option>
+            <option value="Pet did not like product / quality issue">Pet did not like product / quality issue</option>
+            <option value="Expired item or broken seal">Expired item or broken seal</option>
+        </select>
+
+        <label style="font-size:13px; font-weight:600; display:block; margin-top:12px;">Additional Comments / Instructions</label>
+        <textarea id="userReturnComments" rows="3" placeholder="Describe the issue in detail..."></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+            <button class="btn-action-return" style="background:#334155; color:#fff;" onclick="closeReturnModal()">Cancel</button>
+            <button class="btn-action-return" id="btnSubmitReturn" onclick="submitReturnOrder()">Submit Return Request</button>
+        </div>
+    </div>
+</div>
+
+<!-- ORDER REVIEW MODAL -->
+<div class="track-modal-overlay" id="orderReviewModal">
+    <div class="track-modal-box">
+        <h3 style="color:#f59e0b; font-size:18px; margin-bottom:10px;">
+            <i class="fa-solid fa-star"></i> Rate & Review Purchased Products
+        </h3>
+        <p style="font-size:13px; color:#cbd5e1; margin-bottom:15px;">
+            Share your feedback on the items received in this order. Your genuine review helps other pet parents!
+        </p>
+
+        <label style="font-size:13px; font-weight:600;">Rating (1 to 5 Stars) *</label>
+        <select id="orderReviewRating">
+            <option value="5">⭐⭐⭐⭐⭐ (5/5) - Outstanding Quality</option>
+            <option value="4">⭐⭐⭐⭐ (4/5) - Very Good</option>
+            <option value="3">⭐⭐⭐ (3/5) - Satisfactory</option>
+            <option value="2">⭐⭐ (2/5) - Average</option>
+            <option value="1">⭐ (1/5) - Poor</option>
+        </select>
+
+        <label style="font-size:13px; font-weight:600;">Your Product Feedback *</label>
+        <textarea id="orderReviewText" rows="3" placeholder="Tell us how your pet liked the items..."></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+            <button class="btn-action-return" style="background:#334155; color:#fff;" onclick="closeOrderReviewModal()">Cancel</button>
+            <button class="btn-action-return" id="btnSubmitOrderReview" style="background:#f59e0b; color:#fff;" onclick="submitOrderReview()">Submit Review</button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script>
+const API_BASE = (() => {
+    const host = window.location.hostname || "127.0.0.1";
+    const port = window.location.port;
+    const isLocalDevServer = (host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.") || host.startsWith("10.") || host.startsWith("172.")) && port && port !== "5000" && port !== "80" && port !== "443" && port !== "";
+    if (isLocalDevServer) {
+        return window.location.protocol + "//" + host + ":5000";
+    }
+    return "";
+})();
+
+let currentLoadedOrder = null;
+let currentTrackingId = "";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+    const contactParam = urlParams.get('contact') || urlParams.get('email') || urlParams.get('phone') || localStorage.getItem("email") || localStorage.getItem("phone") || "";
+
+    if (idParam) {
+        document.getElementById("orderSearchId").value = idParam.trim();
+        if (contactParam) {
+            document.getElementById("orderSearchContact").value = contactParam.trim();
+        }
+        executeOrderTracking(idParam.trim(), contactParam.trim());
+    } else {
+        // Prefill contact if saved
+        if (contactParam) {
+            document.getElementById("orderSearchContact").value = contactParam.trim();
+        }
+    }
+});
+
+function handleTrackSubmit(e) {
+    if (e) e.preventDefault();
+    const orderId = document.getElementById("orderSearchId").value.trim();
+    const contact = document.getElementById("orderSearchContact").value.trim();
+
+    executeOrderTracking(orderId, contact);
+}
+
+async function executeOrderTracking(rawOrderId, rawContact) {
+    const msg = document.getElementById("trackStatusMsg");
+    const card = document.getElementById("trackCard");
+
+    let orderId = (rawOrderId || "").trim();
+    if (orderId.startsWith("#")) orderId = orderId.substring(1);
+
+    const contact = (rawContact || "").trim();
+
+    // Validation Requirements
+    if (!orderId && !contact) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Order ID and Email/Phone.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    if (!orderId) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Order ID.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    if (!contact) {
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-exclamation"></i> Please enter your Email or Mobile Phone number.</span>`;
+        card.style.display = "none";
+        return;
+    }
+
+    msg.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching live status for Order <strong>#${orderId}</strong>...`;
+    card.style.display = "none";
+
+    try {
+        const fetchUrl = `${API_BASE}/api/orders/track?order_id=${encodeURIComponent(orderId)}&contact=${encodeURIComponent(contact)}`;
+        const res = await fetch(fetchUrl);
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.success || !data.order) {
+            const errText = data.error || "Order not found. Please check your Order ID and Email/Phone.";
+            msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-circle-xmark"></i> ${errText}</span>`;
+            return;
+        }
+
+        currentLoadedOrder = data;
+        currentTrackingId = data.order.id;
+        msg.innerHTML = "";
+        renderOrderTracking(data);
+        card.style.display = "block";
+    } catch (e) {
+        console.error("Order tracking fetch error:", e);
+        msg.innerHTML = `<span style="color:#ef4444; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Unable to retrieve your order right now. Please try again.</span>`;
+    }
+}
+
+function formatIST(dateStr) {
+    if (!dateStr) return "Recently";
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) {
+            return dateStr.replace("T", " ").substring(0, 16);
+        }
+        return d.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }) + ", " + d.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }) + " IST";
+    } catch(e) {
+        return dateStr;
+    }
+}
+
+function renderOrderTracking(data) {
+    const order = data.order;
+    const items = data.items || [];
+    const logs = data.tracking || [];
+
+    document.getElementById("dispOrderId").textContent = `Order #${order.id}`;
+    document.getElementById("dispOrderDate").textContent = `Placed on ${formatIST(order.created_at)}`;
+
+    // Status Badge
+    const badge = document.getElementById("dispStatusBadge");
+    const statusSlug = (order.status || 'Pending').toLowerCase().replace(/ /g, '-');
+    badge.textContent = order.status || 'Pending';
+    badge.className = `track-badge badge-${statusSlug}`;
+
+    // Customer & Info
+    document.getElementById("dispCustomer").textContent = order.customer_name || '-';
+    document.getElementById("dispPhone").textContent = order.phone || '-';
+    document.getElementById("dispEmail").textContent = order.email || '-';
+    document.getElementById("dispAddress").textContent = `${order.address || ''}, ${order.city || 'Nagercoil'} (${order.pincode || ''})`;
+    document.getElementById("dispPayment").textContent = order.payment_method || 'Online Simulated';
+    document.getElementById("dispPaymentStatus").textContent = order.payment_status || 'Paid';
+    document.getElementById("dispCurrentStatus").textContent = order.status || 'Pending';
+    
+    if (order.tracking_number) {
+        document.getElementById("dispCourier").textContent = `${order.courier || 'Express Dispatch'} - ${order.tracking_number}`;
+    } else {
+        document.getElementById("dispCourier").textContent = "Assigned upon dispatch";
+    }
+
+    // Render Visual Timeline
+    renderTimeline(order.status || 'Pending');
+
+    // Items Table
+    let itemsHtml = "";
+    items.forEach(itm => {
+        itemsHtml += `
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="${itm.image || 'images/logo.jpg'}" style="width:32px; height:32px; border-radius:4px; object-fit:cover;" onerror="this.src='images/logo.jpg'">
+                        <strong>${itm.product_name}</strong>
+                    </div>
+                </td>
+                <td style="text-align:center;">${itm.quantity}</td>
+                <td style="text-align:right;">₹${Math.round(itm.price)}</td>
+                <td style="text-align:right;"><strong>₹${Math.round(itm.total)}</strong></td>
+            </tr>
+        `;
+    });
+
+    const subtotal = Number(order.subtotal || 0);
+    const delivery = Number(order.delivery || 0);
+    const grandTotal = Number(order.grand_total || (subtotal + delivery));
+
+    itemsHtml += `
+        <tr style="border-top:1px solid #334155; color:#94a3b8;">
+            <td colspan="3" style="text-align:right;">Subtotal:</td>
+            <td style="text-align:right;">₹${Math.round(subtotal).toLocaleString()}</td>
+        </tr>
+        <tr style="color:#94a3b8;">
+            <td colspan="3" style="text-align:right;">Delivery Fee:</td>
+            <td style="text-align:right; color:#22c55e;">${delivery === 0 ? 'FREE' : '₹' + Math.round(delivery)}</td>
+        </tr>
+        <tr style="font-weight:bold; color:var(--primary); border-top:2px solid #334155; font-size:15px;">
+            <td colspan="3" style="text-align:right;">Grand Total:</td>
+            <td style="text-align:right;">₹${Math.round(grandTotal).toLocaleString()}</td>
+        </tr>
+    `;
+    document.getElementById("dispItemsBody").innerHTML = itemsHtml;
+
+    // Activity Logs
+    let logsHtml = "";
+    if (logs.length > 0) {
+        logs.forEach(log => {
+            logsHtml += `
+                <div class="tracking-log-item">
+                    <div class="log-bullet">●</div>
+                    <div>
+                        <div style="font-weight:700; color:#ffffff;">${log.title}</div>
+                        <div style="color:#cbd5e1;">${log.description || ''}</div>
+                        <div style="font-size:11px; color:#94a3b8; margin-top:2px;">📍 ${log.location || 'Hub'} • ${formatIST(log.created_at)}</div>
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        logsHtml = `
+            <div class="tracking-log-item">
+                <div class="log-bullet">●</div>
+                <div>
+                    <div style="font-weight:700; color:#ffffff;">Order Placed</div>
+                    <div style="color:#cbd5e1;">Order recorded in system and undergoing processing.</div>
+                </div>
+            </div>
+        `;
+    }
+    document.getElementById("dispLogsList").innerHTML = logsHtml;
+
+    // Action Buttons logic
+    const cancelBtn = document.getElementById("btnCancelOrder");
+    const returnBtn = document.getElementById("btnReturnOrder");
+    const reviewBtn = document.getElementById("btnReviewOrder");
+
+    if (["Pending", "Confirmed", "Processing"].includes(order.status)) {
+        cancelBtn.style.display = "inline-flex";
+    } else {
+        cancelBtn.style.display = "none";
+    }
+
+    if (order.status === "Delivered") {
+        if (!data.returns || data.returns.length === 0) {
+            returnBtn.style.display = "inline-flex";
+        } else {
+            returnBtn.style.display = "none";
+        }
+        reviewBtn.style.display = "inline-flex";
+    } else {
+        returnBtn.style.display = "none";
+        reviewBtn.style.display = "none";
+    }
+}
+
+function renderTimeline(status) {
+    const steps = [
+        "stepPlaced",
+        "stepConfirmed",
+        "stepProcessing",
+        "stepPacked",
+        "stepShipped",
+        "stepOutForDelivery",
+        "stepDelivered"
+    ];
+
+    const statusMap = {
+        "Pending": 1,
+        "Confirmed": 2,
+        "Processing": 3,
+        "Packed": 4,
+        "Shipped": 5,
+        "Out for Delivery": 6,
+        "Delivered": 7,
+        "Cancelled": 0,
+        "Return Requested": 7,
+        "Return Approved": 7,
+        "Refunded": 7
+    };
+
+    const level = statusMap[status] !== undefined ? statusMap[status] : 1;
+    const bar = document.getElementById("timelineProgressBar");
+
+    if (status === "Cancelled") {
+        bar.style.width = "0%";
+        steps.forEach(s => {
+            const el = document.getElementById(s);
+            if (el) el.className = "timeline-step";
+        });
+        const placed = document.getElementById("stepPlaced");
+        if (placed) placed.classList.add("completed");
+        return;
+    }
+
+    const pct = ((level - 1) / (steps.length - 1)) * 100;
+    bar.style.width = pct + "%";
+
+    steps.forEach((s, idx) => {
+        const el = document.getElementById(s);
+        if (!el) return;
+        el.className = "timeline-step";
+        if (idx + 1 < level) {
+            el.classList.add("completed");
+        } else if (idx + 1 === level) {
+            el.classList.add("active");
+        }
+    });
+}
+
+function copyCurrentOrderId() {
+    const idToCopy = currentTrackingId || document.getElementById("orderSearchId").value.trim();
+    if (!idToCopy) return;
+
+    const btn = document.getElementById("btnCopyOrderId");
+    const btnText = document.getElementById("copyBtnText");
+
+    const onSuccess = () => {
+        btn.classList.add("copied");
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>COPIED ✓</span>`;
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>COPY ID</span>`;
+        }, 2000);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(idToCopy).then(onSuccess).catch(() => fallbackCopy(idToCopy, onSuccess));
+    } else {
+        fallbackCopy(idToCopy, onSuccess);
+    }
+}
+
+function fallbackCopy(text, cb) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand("copy");
+        if (cb) cb();
+    } catch (err) {
+        alert("Order ID: " + text);
+    }
+    document.body.removeChild(textArea);
+}
+
+// Cancel & Return Modals
+function openCancelModal() {
+    document.getElementById("userCancelModal").classList.add("active");
+}
+function closeCancelModal() {
+    document.getElementById("userCancelModal").classList.remove("active");
+}
+
+async function submitCancelOrder() {
+    if (!currentLoadedOrder) return;
+    const btn = document.getElementById("btnSubmitCancel");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cancelling...`;
+
+    const reason = document.getElementById("userCancelReason").value;
+    try {
+        const res = await fetch(`${API_BASE}/api/orders/${currentLoadedOrder.order.id}/cancel`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reason: reason, cancelled_by: "Customer" })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to cancel order.");
+        }
+
+        closeCancelModal();
+        alert("🎉 Order cancelled successfully. An email confirmation has been sent.");
+        handleTrackSubmit();
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Confirm Cancellation";
+    }
+}
+
+function openReturnModal() {
+    document.getElementById("userReturnModal").classList.add("active");
+}
+function closeReturnModal() {
+    document.getElementById("userReturnModal").classList.remove("active");
+}
+
+async function submitReturnOrder() {
+    if (!currentLoadedOrder) return;
+    const btn = document.getElementById("btnSubmitReturn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+    const reason = document.getElementById("userReturnReason").value;
+    const comments = document.getElementById("userReturnComments").value.trim();
+
+    try {
+        const res = await fetch(`${API_BASE}/api/orders/${currentLoadedOrder.order.id}/return`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                reason: reason,
+                comments: comments,
+                items: currentLoadedOrder.items
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to submit return request.");
+        }
+
+        closeReturnModal();
+        alert("🎉 Return request submitted successfully. Our team will contact you shortly.");
+        handleTrackSubmit();
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Submit Return Request";
+    }
+}
+
+function openOrderReviewModal() {
+    document.getElementById("orderReviewModal").classList.add("active");
+}
+function closeOrderReviewModal() {
+    document.getElementById("orderReviewModal").classList.remove("active");
+}
+
+async function submitOrderReview() {
+    if (!currentLoadedOrder) return;
+    const rating = document.getElementById("orderReviewRating").value;
+    const text = document.getElementById("orderReviewText").value.trim();
+
+    if (!text) {
+        alert("Please write your product review feedback.");
+        return;
+    }
+
+    const btn = document.getElementById("btnSubmitOrderReview");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+    try {
+        const order = currentLoadedOrder.order;
+        const firstItem = currentLoadedOrder.items && currentLoadedOrder.items[0] ? currentLoadedOrder.items[0].product_name : "Pet Product";
+
+        const res = await fetch(API_BASE + "/api/reviews/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                customer_name: order.customer_name,
+                customer_email: order.email,
+                rating: parseInt(rating),
+                review_text: text,
+                product_name: firstItem,
+                order_id: order.id
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to submit review.");
+        }
+
+        closeOrderReviewModal();
+        alert("⭐ Thank you! Your product review has been submitted.");
+    } catch (e) {
+        alert("Error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Submit Review";
+    }
+}
+
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "shop.html";
+    }
+}
+
+function openMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "0";
+}
+
+function closeMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "-320px";
+}
+</script>
+
+</body>
+</html>

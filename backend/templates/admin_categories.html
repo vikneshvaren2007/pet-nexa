@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Categories Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu active">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Category Management</h1>
+                <p>Create and organize shop categories for easy customer navigation</p>
+            </div>
+            <button class="btn-primary" onclick="openAddCategoryModal()">
+                <i class="fa-solid fa-plus"></i> Add New Category
+            </button>
+        </div>
+
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if categories %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Icon</th>
+                            <th>Category Name</th>
+                            <th>Slug / Identifier</th>
+                            <th>Product Count</th>
+                            <th>Sort Order</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in categories %}
+                        <tr>
+                            <td style="font-size:20px; color:var(--primary);">
+                                <i class="fa-solid {{ cat['icon'] or 'fa-tag' }}"></i>
+                            </td>
+                            <td><strong>{{ cat['name'] }}</strong></td>
+                            <td><code>{{ cat['slug'] }}</code></td>
+                            <td><span class="badge pending">{{ cat['product_count'] }} products</span></td>
+                            <td>{{ cat['sort_order'] }}</td>
+                            <td>
+                                {% if cat['is_active'] == 1 %}
+                                <span class="badge active">Active</span>
+                                {% else %}
+                                <span class="badge inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <button class="btn-secondary btn-sm" onclick='openEditCategoryModal({{ cat|tojson }})'>
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                    </button>
+                                    <form method="POST" action="{{ url_for('admin_toggle_category', cat_id=cat['id']) }}" style="display:inline;">
+                                        <button type="submit" class="btn-secondary btn-sm" title="Toggle Status">
+                                            <i class="fa-solid {% if cat['is_active'] == 1 %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    {% if cat['slug'] != 'all' and cat['slug'] != 'dog' and cat['slug'] != 'cat' %}
+                                    <form method="POST" action="{{ url_for('admin_delete_category', cat_id=cat['id']) }}" onsubmit="return confirm('Delete this category?');" style="display:inline;">
+                                        <button type="submit" class="btn-danger btn-sm" title="Delete Category">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">🏷️</div>
+                    <h3>No categories found</h3>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="modal-overlay" id="addCategoryModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-tag" style="color:var(--primary);"></i> Add Category</h3>
+            <button class="modal-close" onclick="closeModal('addCategoryModal')">&times;</button>
+        </div>
+        <form method="POST" action="{{ url_for('admin_add_category') }}">
+            <div class="form-group">
+                <label>Category Name *</label>
+                <input type="text" name="name" required placeholder="e.g. Health & Care">
+            </div>
+            <div class="form-group">
+                <label>Slug (URL Identifier)</label>
+                <input type="text" name="slug" placeholder="e.g. health-care">
+            </div>
+            <div class="form-group">
+                <label>FontAwesome Icon Class</label>
+                <input type="text" name="icon" value="fa-tag" placeholder="fa-heart-pulse">
+            </div>
+            <div class="form-group">
+                <label>Sort Order Number</label>
+                <input type="number" name="sort_order" value="0">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('addCategoryModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Save Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT CATEGORY MODAL -->
+<div class="modal-overlay" id="editCategoryModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-pen" style="color:var(--primary);"></i> Edit Category</h3>
+            <button class="modal-close" onclick="closeModal('editCategoryModal')">&times;</button>
+        </div>
+        <form method="POST" id="editCategoryForm" action="">
+            <div class="form-group">
+                <label>Category Name *</label>
+                <input type="text" name="name" id="edit_cat_name" required>
+            </div>
+            <div class="form-group">
+                <label>Slug (URL Identifier)</label>
+                <input type="text" name="slug" id="edit_cat_slug" required>
+            </div>
+            <div class="form-group">
+                <label>FontAwesome Icon Class</label>
+                <input type="text" name="icon" id="edit_cat_icon">
+            </div>
+            <div class="form-group">
+                <label>Sort Order Number</label>
+                <input type="number" name="sort_order" id="edit_cat_sort">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('editCategoryModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Update Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddCategoryModal() {
+    document.getElementById('addCategoryModal').classList.add('active');
+}
+
+function openEditCategoryModal(cat) {
+    document.getElementById('editCategoryForm').action = "/admin/categories/edit/" + cat.id;
+    document.getElementById('edit_cat_name').value = cat.name;
+    document.getElementById('edit_cat_slug').value = cat.slug;
+    document.getElementById('edit_cat_icon').value = cat.icon || 'fa-tag';
+    document.getElementById('edit_cat_sort').value = cat.sort_order || 0;
+    document.getElementById('editCategoryModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+};
+</script>
+
+</body>
+</html>

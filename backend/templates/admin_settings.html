@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Shop Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu active">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Shop & System Settings</h1>
+                <p>Configure store branding, business contact information, delivery rules, and store policies</p>
+            </div>
+        </div>
+
+        <div class="card-section">
+            <form method="POST" action="{{ url_for('admin_settings') }}">
+                <h2 style="font-size:16px; margin-bottom:15px; color:var(--navy-900);">
+                    <i class="fa-solid fa-store" style="color:var(--primary);"></i> Business Information
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Shop / Brand Name</label>
+                        <input type="text" name="shop_name" value="{{ settings.get('shop_name', 'PET NEXA') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tagline</label>
+                        <input type="text" name="shop_tagline" value="{{ settings.get('shop_tagline', 'Professional Pet Grooming & Premium Pet Shop') }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Phone Numbers</label>
+                        <input type="text" name="shop_phone" value="{{ settings.get('shop_phone', '+91 9445437069, +91 6380576651') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Support / Notification Email</label>
+                        <input type="email" name="shop_email" value="{{ settings.get('shop_email', 'vikneshvaren2@gmail.com') }}" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Physical Store Address</label>
+                        <textarea name="shop_address" rows="2" required>{{ settings.get('shop_address', '8/30, Church Street, Azhagappapuram, Nagercoil, Tamil Nadu - 629401') }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Opening Hours</label>
+                        <input type="text" name="opening_hours" value="{{ settings.get('opening_hours', 'Mon - Sun: 9:00 AM - 8:00 PM') }}">
+                    </div>
+                </div>
+
+                <hr style="margin:25px 0; border:none; border-top:1px solid var(--border);">
+
+                <h2 style="font-size:16px; margin-bottom:15px; color:var(--navy-900);">
+                    <i class="fa-solid fa-truck" style="color:var(--primary);"></i> Shipping & Delivery Rules
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Standard Delivery Fee (₹)</label>
+                        <input type="number" step="0.01" name="delivery_fee" value="{{ settings.get('delivery_fee', '50') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Free Delivery Threshold Amount (₹)</label>
+                        <input type="number" step="0.01" name="free_delivery_threshold" value="{{ settings.get('free_delivery_threshold', '1000') }}" required>
+                    </div>
+                </div>
+
+                <hr style="margin:25px 0; border:none; border-top:1px solid var(--border);">
+
+                <h2 style="font-size:16px; margin-bottom:15px; color:var(--navy-900);">
+                    <i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> Policies & Conditions
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Order & Appointment Cancellation Policy</label>
+                        <textarea name="cancellation_policy" rows="3">{{ settings.get('cancellation_policy', 'Orders can be cancelled anytime before dispatch. Appointments can be cancelled up to 2 hours before scheduled time.') }}</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Return & Refund Policy</label>
+                        <textarea name="return_policy" rows="3">{{ settings.get('return_policy', 'Returns are accepted within 7 days of delivery for unused items in original packaging.') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Checkout Details | PET NEXA</title>
+    <meta name="description" content="Enter your delivery and contact details to complete your PET NEXA order.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .checkout-page {
+            padding: 100px 6% 60px;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: #ffffff;
+        }
+
+        .checkout-nav-top {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1.2fr;
+            gap: 35px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .form-card h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-card h2 i {
+            color: var(--primary);
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0b1120;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Order Summary Card */
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .checkout-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 5px;
+        }
+
+        .checkout-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .checkout-item-details {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkout-item-details img {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkout-pricing-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .checkout-pricing-row.grand-total {
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            margin-top: 14px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .btn-continue-pay {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-continue-pay:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.45);
+        }
+
+        @media (max-width: 850px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="cart.html">View Cart</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="index.html#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="cart.html" onclick="closeMenu()"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<main class="checkout-page">
+    <div class="checkout-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back to Cart
+        </button>
+    </div>
+
+    <div class="checkout-grid">
+        <!-- Customer Details Form -->
+        <div class="form-card">
+            <h2><i class="fa-solid fa-truck-ramp-box"></i> Shipping & Contact Details</h2>
+
+            <form id="checkoutDetailsForm">
+                <div class="input-group">
+                    <label for="cust_name">Full Name *</label>
+                    <input type="text" id="cust_name" placeholder="Enter recipient's full name" required>
+                </div>
+
+                <div class="two-cols">
+                    <div class="input-group">
+                        <label for="cust_phone">Mobile Number *</label>
+                        <input type="tel" id="cust_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cust_email">Email Address *</label>
+                        <input type="email" id="cust_email" placeholder="For order tracking & invoice" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="cust_address">Street Address / House No. *</label>
+                    <textarea id="cust_address" rows="2" placeholder="House/Flat number, building name, street" required></textarea>
+                </div>
+
+                <div class="two-cols">
+                    <div class="input-group">
+                        <label for="cust_city">City / Area *</label>
+                        <input type="text" id="cust_city" value="Nagercoil" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cust_pincode">Pincode *</label>
+                        <input type="text" id="cust_pincode" placeholder="e.g. 629001" pattern="[0-9]{6}" title="Please enter a 6-digit pincode" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="cust_notes">Delivery Notes (Optional)</label>
+                    <input type="text" id="cust_notes" placeholder="Landmarks, preferred delivery time, gate code...">
+                </div>
+
+                <button type="submit" class="btn-continue-pay">
+                    Proceed to Payment <i class="fa-solid fa-credit-card"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="summary-card">
+            <h3>Items in Order</h3>
+            <div class="checkout-items-list" id="checkoutItemsList">
+                <!-- Items list -->
+            </div>
+
+            <div class="checkout-pricing-row">
+                <span>Subtotal</span>
+                <strong id="checkSubtotal">₹0</strong>
+            </div>
+
+            <div class="checkout-pricing-row">
+                <span>Delivery Fee</span>
+                <strong id="checkDelivery" style="color:#22c55e;">FREE</strong>
+            </div>
+
+            <div class="checkout-pricing-row grand-total">
+                <span>Grand Total</span>
+                <strong id="checkTotal" style="color:var(--primary);">₹0</strong>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Prefill saved customer info
+    document.getElementById("cust_name").value = localStorage.getItem("customer_name") || "";
+    document.getElementById("cust_phone").value = localStorage.getItem("phone") || "";
+    document.getElementById("cust_email").value = localStorage.getItem("email") || "";
+    document.getElementById("cust_address").value = localStorage.getItem("address") || "";
+    document.getElementById("cust_city").value = localStorage.getItem("city") || "Nagercoil";
+    document.getElementById("cust_pincode").value = localStorage.getItem("pincode") || "";
+    document.getElementById("cust_notes").value = localStorage.getItem("notes") || "";
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || JSON.parse(localStorage.getItem("pawzoCart")) || [];
+    if (cart.length === 0) {
+        alert("Your cart is empty! Redirecting to Pet Shop.");
+        window.location.href = "shop.html";
+        return;
+    }
+
+    const itemsList = document.getElementById("checkoutItemsList");
+    let itemsHtml = "";
+    let subtotal = 0;
+
+    cart.forEach(item => {
+        const itemTotal = (item.price || 0) * (item.quantity || 1);
+        subtotal += itemTotal;
+        itemsHtml += `
+            <div class="checkout-item-row">
+                <div class="checkout-item-details">
+                    <img src="${item.image || 'images/logo.jpg'}" alt="${item.name}" onerror="this.src='images/logo.jpg'">
+                    <div>
+                        <div style="font-weight:700; color:#fff;">${item.name}</div>
+                        <small style="color:#94a3b8;">Qty: ${item.quantity || 1} × ₹${Math.round(item.price)}</small>
+                    </div>
+                </div>
+                <div><strong>₹${Math.round(itemTotal)}</strong></div>
+            </div>
+        `;
+    });
+
+    itemsList.innerHTML = itemsHtml;
+
+    const deliveryFee = subtotal >= 1000 ? 0 : 50;
+    const grandTotal = subtotal + deliveryFee;
+
+    document.getElementById("checkSubtotal").textContent = "₹" + Math.round(subtotal);
+    document.getElementById("checkDelivery").textContent = deliveryFee === 0 ? "FREE" : "₹" + deliveryFee;
+    document.getElementById("checkTotal").textContent = "₹" + Math.round(grandTotal);
+
+    // Handle Form Submit
+    document.getElementById("checkoutDetailsForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const custName = document.getElementById("cust_name").value.trim();
+        const custPhone = document.getElementById("cust_phone").value.trim();
+        const custEmail = document.getElementById("cust_email").value.trim();
+        const custAddress = document.getElementById("cust_address").value.trim();
+        const custCity = document.getElementById("cust_city").value.trim() || "Nagercoil";
+        const custState = "Tamil Nadu";
+        const custPincode = document.getElementById("cust_pincode").value.trim();
+        const custNotes = document.getElementById("cust_notes").value.trim();
+
+        const customerObj = {
+            name: custName,
+            phone: custPhone,
+            email: custEmail,
+            address: custAddress,
+            city: custCity,
+            state: custState,
+            pincode: custPincode,
+            notes: custNotes
+        };
+
+        localStorage.setItem("customerDetails", JSON.stringify(customerObj));
+        localStorage.setItem("customer_name", custName);
+        localStorage.setItem("phone", custPhone);
+        localStorage.setItem("email", custEmail);
+        localStorage.setItem("address", custAddress);
+        localStorage.setItem("city", custCity);
+        localStorage.setItem("state", custState);
+        localStorage.setItem("pincode", custPincode);
+        localStorage.setItem("notes", custNotes);
+        localStorage.setItem("subtotal", subtotal);
+        localStorage.setItem("delivery", deliveryFee);
+        localStorage.setItem("grandTotal", grandTotal);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        localStorage.setItem("pawzoCart", JSON.stringify(cart));
+
+        window.location.href = "payment.html";
+    });
+});
+
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "cart.html";
+    }
+}
+
+function openMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "0";
+}
+
+function closeMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "-320px";
+}
+</script>
+
+</body>
+</html>

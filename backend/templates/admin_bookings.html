@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Appointments Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu active">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Appointments Management</h1>
+                <p>Manage pet grooming appointments, confirm bookings, and manage schedules</p>
+            </div>
+        </div>
+
+        <!-- FILTER & SEARCH BAR -->
+        <div class="filter-bar">
+            <form method="GET" action="{{ url_for('admin_bookings') }}">
+                <input type="text" name="search" placeholder="Search by Booking ID, Customer, Pet..." value="{{ current_search or '' }}">
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    <option value="Pending" {% if current_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if current_status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="Completed" {% if current_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if current_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    <option value="No Show" {% if current_status == 'No Show' %}selected{% endif %}>No Show</option>
+                </select>
+                <button type="submit" class="btn-primary btn-sm">Filter</button>
+                <a href="{{ url_for('admin_bookings') }}" class="btn-secondary btn-sm">Reset</a>
+            </form>
+        </div>
+
+        <!-- APPOINTMENTS TABLE -->
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if bookings %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer Contact</th>
+                            <th>Pet Details</th>
+                            <th>Service & Specialist</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bkg in bookings %}
+                        <tr>
+                            <td>
+                                <strong>#{{ bkg['id'] }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                                    <i class="fa-regular fa-clock"></i> Booked: {{ bkg['created_at']|ist_datetime }}
+                                </div>
+                            </td>
+                            <td>
+                                <div><strong>{{ bkg['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">📞 {{ bkg['phone'] }}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">✉️ {{ bkg['email'] }}</div>
+                            </td>
+                            <td>
+                                <strong>🐾 {{ bkg['pet_name'] }}</strong>
+                                <div style="font-size:12px; color:#475569;">{{ bkg['pet_type']|title }} • {{ bkg['breed'] }}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">Age: {{ bkg['pet_age'] }}</div>
+                            </td>
+                            <td>
+                                {% if bkg.get('main_service') == 'Separate Bath' and bkg.get('sub_service') %}
+                                    <div style="font-size:12px; font-weight:700; color:var(--primary); margin-bottom:2px;"><i class="fa-solid fa-bath"></i> Separate Bath</div>
+                                    {% for sub in bkg['sub_service'].split(',') %}
+                                    <div style="font-size:12px; font-weight:600; color:var(--navy-900);">• {{ sub.strip() }}</div>
+                                    {% endfor %}
+                                    {% if bkg.get('total_price') and bkg['total_price'] > 0 %}
+                                    <div style="font-size:12px; font-weight:800; color:#16a34a; margin-top:2px;">Total: ₹{{ bkg['total_price']|int }}</div>
+                                    {% endif %}
+                                {% elif bkg.get('services_list') and bkg['services_list']|length > 0 %}
+                                    <div style="margin-bottom:4px;">
+                                        {% for s in bkg['services_list'] %}
+                                        <div style="font-size:12px; font-weight:600; color:var(--navy-900);">
+                                            • {{ s['service_name'] }} <span style="color:var(--primary); font-size:11px;">(₹{{ s['price']|int }})</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if bkg.get('total_price') and bkg['total_price'] > 0 %}
+                                    <div style="font-size:12px; font-weight:800; color:#16a34a; margin-bottom:4px;">Total: ₹{{ bkg['total_price']|int }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    <div style="font-weight:600; color:var(--navy-900);">{{ bkg['service'] }}</div>
+                                    {% if bkg.get('total_price') and bkg['total_price'] > 0 %}
+                                    <div style="font-size:12px; font-weight:800; color:#16a34a; margin-bottom:4px;">Total: ₹{{ bkg['total_price']|int }}</div>
+                                    {% endif %}
+                                {% endif %}
+                                <div style="font-size:12px; color:var(--primary); margin-top:3px;"><i class="fa-solid fa-user-doctor"></i> {{ bkg['specialist'] }}</div>
+                            </td>
+                            <td>
+                                <div style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:2px;">Scheduled Slot</div>
+                                <strong>🗓️ {{ bkg['appointment_date'] }}</strong>
+                                <div style="font-size:12px; color:#334155; font-weight:600;">⏰ {{ bkg['appointment_time'] }}</div>
+                            </td>
+                            <td>
+                                <span class="badge {{ bkg['status'].lower().replace(' ', '-') }}">{{ bkg['status'] }}</span>
+                                {% if bkg['cancellation_reason'] %}
+                                <div style="font-size:10px; color:var(--danger); margin-top:3px;">
+                                    Cancelled: {{ bkg['cancellation_reason'] }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td style="font-size:12px; max-width:180px;">
+                                {% if bkg['message'] %}
+                                <div style="font-style:italic; color:var(--text-muted);">"{{ bkg['message'] }}"</div>
+                                {% endif %}
+                                {% if bkg['admin_notes'] %}
+                                <div style="color:var(--navy-700); font-weight:600; margin-top:3px;">Admin: {{ bkg['admin_notes'] }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn-primary btn-sm" onclick='openBookingStatusModal({{ bkg|tojson }})'>
+                                    <i class="fa-solid fa-pen"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">📅</div>
+                    <h3>No appointments found</h3>
+                    <p>Customer appointment bookings will show up here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- UPDATE APPOINTMENT STATUS MODAL -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-calendar-check" style="color:var(--primary);"></i> Update Appointment Status</h3>
+            <button class="modal-close" onclick="closeModal('bookingModal')">&times;</button>
+        </div>
+        <form method="POST" id="bookingForm" action="">
+            <div class="form-group">
+                <label>Booking ID</label>
+                <input type="text" id="bkg_id_display" readonly style="background:#e2e8f0; font-weight:bold;">
+            </div>
+            <div class="form-group">
+                <label>Status *</label>
+                <select name="status" id="bkg_status_select" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="No Show">No Show</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Internal / Customer Notes</label>
+                <textarea name="admin_notes" id="bkg_admin_notes" rows="3" placeholder="e.g. Confirmed for Slot 1. Please arrive 5 minutes early."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('bookingModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Save Appointment Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openBookingStatusModal(bkg) {
+    document.getElementById('bookingForm').action = "/admin/bookings/" + bkg.id + "/status";
+    document.getElementById('bkg_id_display').value = "#" + bkg.id + " (" + bkg.customer_name + " - " + bkg.pet_name + ")";
+    document.getElementById('bkg_status_select').value = bkg.status;
+    document.getElementById('bkg_admin_notes').value = bkg.admin_notes || '';
+    document.getElementById('bookingModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pet Advisor | PET NEXA</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Base Stylesheet (Matches Homepage Exactly) -->
+    <link rel="stylesheet" href="style.css">
+    <!-- AI Pet Advisor Specific Stylesheet (Dark Theme Cohesion) -->
+    <link rel="stylesheet" href="ai.css">
+</head>
+
+<body>
+
+<!-- ==========================================================
+     NAVBAR (EXACT SAME AS HOMEPAGE)
+========================================================== -->
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#specialists">Specialists</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html" class="active">AI Pet Advisor</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="smart-ai-online-badge">
+            <span class="live-pulse"></span>
+            <span>Gemini AI Online</span>
+        </div>
+        <a href="cart.html" class="cart-btn-nav" title="Cart" style="display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <!-- MOBILE SIDE MENU -->
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="index.html#services" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()" style="color:var(--primary);"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+        <a href="cart.html" onclick="closeMenu()"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</a>
+    </nav>
+</header>
+
+<!-- ==========================================================
+     MAIN AI PET ADVISOR PAGE
+========================================================== -->
+<main class="ai-advisor-page">
+    <div style="max-width:960px; margin:0 auto 15px;">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="ai-hero-section">
+        <div class="hero-badge">
+            <i class="fa-solid fa-sparkles" style="color:#14b8a6;"></i>
+            <span>✦ REAL GOOGLE GEMINI FREE AI INTELLIGENCE</span>
+        </div>
+
+        <h1 class="ai-page-title">
+            🐾 AI PET ADVISOR
+        </h1>
+
+        <p class="ai-page-subtitle">
+            Your friendly AI assistant for dog and cat care.
+        </p>
+
+        <!-- PET SELECTION TOGGLE (🐶 DOG / 🐱 CAT) -->
+        <div class="pet-toggle-container">
+            <span class="pet-toggle-label">Choose your pet:</span>
+            <div class="pet-toggle-switch">
+                <button type="button" class="btn-pet-toggle active" id="btnDog" onclick="setPetType('dog')">
+                    <span class="pet-emoji">🐶</span>
+                    <span class="pet-name">DOG</span>
+                </button>
+                <button type="button" class="btn-pet-toggle" id="btnCat" onclick="setPetType('cat')">
+                    <span class="pet-emoji">🐱</span>
+                    <span class="pet-name">CAT</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI CHAT CARD (DARK GLASSMORPHIC CONTAINER) -->
+    <section class="ai-chat-wrapper">
+        <div class="ai-chat-card">
+
+            <!-- CHAT HEADER -->
+            <div class="ai-chat-header">
+                <div class="ai-chat-identity">
+                    <div class="ai-avatar-icon" id="chatMiniLogo">🐶</div>
+                    <div>
+                        <div class="ai-identity-name">
+                            <strong>PET NEXA AI Pet Advisor</strong>
+                            <span class="gemini-powered-tag"><i class="fa-solid fa-bolt"></i> Gemini AI</span>
+                        </div>
+                        <small class="ai-identity-status" id="chatActivePetBadge">Specialized in Dog Care & Wellness</small>
+                    </div>
+                </div>
+
+                <div class="ai-chat-header-actions">
+                    <button type="button" class="btn-reset-chat" onclick="clearChat()" title="Reset Conversation History">
+                        <i class="fa-solid fa-rotate-left"></i> <span>Clear Chat</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHAT MESSAGES SCROLL AREA -->
+            <div class="ai-chat-messages" id="aiMessages">
+                <!-- WELCOME BANNER -->
+                <div class="ai-welcome-box">
+                    <div class="ai-welcome-icon" id="welcomeIcon">🐶 🐱</div>
+                    <h3>How can I help your pet today?</h3>
+                    <p id="welcomeDescription">
+                        Ask anything about nutrition, toxic foods, grooming routines, sleep habits, puppy & kitten training, behavior, and daily pet wellness.
+                    </p>
+                </div>
+
+                <!-- INITIAL BOT MESSAGE -->
+                <div class="chat-bubble-row bot">
+                    <div class="bubble-avatar">✦</div>
+                    <div class="bubble-content bot-bubble">
+                        <strong class="bubble-sender ai-sender">AI:</strong>
+                        <div class="bubble-body">
+                            Hi! I'm your <strong>AI Pet Advisor</strong>. Ask me anything about caring for your pet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK SUGGESTIONS CHIPS -->
+            <div class="ai-quick-prompts" id="quickQuestions">
+                <!-- Injected dynamically based on selected pet -->
+            </div>
+
+            <!-- CHAT INPUT COMPONENT -->
+            <div class="ai-input-wrapper">
+                <button
+                    type="button"
+                    class="ai-mic-btn"
+                    id="micButton"
+                    onclick="startVoiceInput()"
+                    aria-label="Voice input"
+                    title="Speak your question"
+                >
+                    🎤
+                </button>
+
+                <input
+                    type="text"
+                    id="userInput"
+                    class="ai-text-input"
+                    placeholder="Ask anything about caring for your dog..."
+                    autocomplete="off"
+                    maxlength="1000"
+                >
+
+                <button
+                    type="button"
+                    class="ai-send-btn"
+                    id="sendBtn"
+                    onclick="sendAI()"
+                    aria-label="Send question"
+                >
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- DISCLAIMER -->
+            <div class="ai-disclaimer-bar">
+                ✦ Smart Pet Care AI provides general dog and cat wellness information and does not replace a licensed veterinarian.
+            </div>
+
+        </div>
+    </section>
+
+    <!-- KNOWLEDGE & SPECIALIZATION HIGHLIGHTS -->
+    <section class="ai-features-section">
+        <div class="ai-features-header">
+            <h2>Everything Your Dog & Cat Needs</h2>
+            <p>Smart Guidance powered by Google Gemini Developer API (Free Tier)</p>
+        </div>
+
+        <div class="ai-features-grid">
+            <div class="ai-feature-card">
+                <div class="feature-icon">🍖</div>
+                <h3>Nutrition & Safe Diet</h3>
+                <p>Learn balanced protein ratios, hydration needs, safe treats, and strictly prohibited toxic foods for dogs and cats.</p>
+            </div>
+
+            <div class="ai-feature-card">
+                <div class="feature-icon">🛁</div>
+                <h3>Grooming & Coat Hygiene</h3>
+                <p>Brushing frequencies, hypoallergenic shampoo recommendations, ear cleaning, and stress-free nail trimming guides.</p>
+            </div>
+
+            <div class="ai-feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3>Happiness & Behavior</h3>
+                <p>Identify tail wags, purring signals, body language, separation anxiety solutions, and positive reinforcement training.</p>
+            </div>
+
+            <div class="ai-feature-card">
+                <div class="feature-icon">🩺</div>
+                <h3>General Health & Wellness</h3>
+                <p>Understand sleep cycles, puppy/kitten growth milestones, senior pet mobility, and recognizing when to see a vet.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ==========================================================
+     FOOTER (EXACT SAME AS HOMEPAGE)
+========================================================== -->
+<!-- FOOTER -->
+<footer id="contact">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div class="footer-logo">
+                <img src="images/logo.jpg" alt="PET NEXA Logo">
+                <h3>PET NEXA</h3>
+            </div>
+            <p style="color:#94a3b8; font-size:14px; line-height:1.6; margin-top:12px;">
+                Your trusted pet care center & premium pet nutrition store. Providing joyful, anxiety-free experiences for every pet.
+            </p>
+            <div class="footer-socials" style="margin-top:15px; display:flex; gap:12px;">
+                <a href="https://wa.me/919445437069" target="_blank" rel="noopener noreferrer" class="social-icon" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="mailto:vikneshvaren2@gmail.com" class="social-icon" title="Email Us"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="shop.html">Pet Shop</a></li>
+                <li><a href="booking.html">Book Appointment</a></li>
+                <li><a href="ai.html">AI Pet Advisor</a></li>
+                <li><a href="track.html">Track Order</a></li>
+                <li><a href="booking-track.html">Manage Appointment</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Operating Hours</h4>
+            <p style="color:#cbd5e1; font-size:14px; line-height:1.8;">
+                <strong>Monday – Saturday:</strong> 9:00 AM – 8:00 PM<br>
+                <strong>Sunday:</strong> 9:00 AM – 7:00 PM<br>
+                <em>Emergency Care & Support Available</em>
+            </p>
+            <div style="margin-top:15px; background:rgba(139, 92, 246, 0.1); padding:10px; border-radius:8px; border:1px solid rgba(139, 92, 246, 0.25);">
+                <small style="color:#a78bfa; font-weight:700;">💳 Accepted Payments:</small><br>
+                <span style="color:#94a3b8; font-size:12px;">UPI • Google Pay • PhonePe • Cards • Net Banking • Cash on Delivery</span>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contact & Location</h4>
+            <p style="color:#cbd5e1; font-size:14px; line-height:1.6;">
+                📍 8/30, Church Street, Azhagappapuram, Nagercoil, Tamil Nadu - 629401<br><br>
+                📞 <strong>Phone:</strong> +91 9445437069, +91 6380576651<br>
+                ✉️ <strong>Email:</strong> vikneshvaren2@gmail.com
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+    function goSmartBack() {
+        if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+            window.history.back();
+        } else {
+            window.location.href = "index.html";
+        }
+    }
+    function openMenu() {
+        const menu = document.getElementById("sideMenu");
+        if (menu) menu.classList.add("active");
+    }
+    function closeMenu() {
+        const menu = document.getElementById("sideMenu");
+        if (menu) menu.classList.remove("active");
+    }
+</script>
+<script src="ai.js"></script>
+
+</body>
+</html>

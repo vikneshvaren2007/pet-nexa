@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Care Specialist Profile | PET NEXA</title>
+    <meta name="description" content="View profile, qualifications, and book appointments with certified pet care specialists at PET NEXA.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="doctor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#specialists">Specialists</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html">AI Pet Advisor</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="index.html#services" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="index.html#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<!-- PROFILE CONTAINER -->
+<div class="doctor-page-container">
+    <!-- Smart History Back Navigation -->
+    <div class="doctor-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="doctor-profile-card">
+        <!-- DOCTOR IMAGE COLUMN -->
+        <div class="doctor-image-col">
+            <div class="doctor-img-wrapper">
+                <img id="doctorImage" src="images/doctor1.jpg" alt="Pet Specialist">
+            </div>
+            <div class="doctor-status-badge">
+                <span class="status-dot"></span>
+                <span>Available for Booking</span>
+            </div>
+        </div>
+
+        <!-- DOCTOR DETAILS COLUMN -->
+        <div class="doctor-details-col">
+            <div class="doctor-brand-pill">
+                <i class="fa-solid fa-certificate"></i> CERTIFIED PET SPECIALIST
+            </div>
+
+            <h1 id="doctorName">Dr. Ethan Wilson</h1>
+            <h2 id="doctorSpecialist" class="doctor-role">Senior Pet Stylist & Breed Specialist</h2>
+
+            <!-- INFO METRICS -->
+            <div class="doctor-info-grid">
+                <div class="info-stat-box">
+                    <div class="info-stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+                    <div class="info-stat-text">
+                        <small>Experience</small>
+                        <strong id="doctorExperience">5+ Years</strong>
+                    </div>
+                </div>
+
+                <div class="info-stat-box">
+                    <div class="info-stat-icon"><i class="fa-solid fa-paw"></i></div>
+                    <div class="info-stat-text">
+                        <small>Specialization</small>
+                        <strong id="doctorSkills">Breed Styling & Care</strong>
+                    </div>
+                </div>
+
+                <div class="info-stat-box">
+                    <div class="info-stat-icon"><i class="fa-solid fa-star"></i></div>
+                    <div class="info-stat-text">
+                        <small>Customer Rating</small>
+                        <strong>4.9 ★ (200+ Reviews)</strong>
+                    </div>
+                </div>
+
+                <div class="info-stat-box">
+                    <div class="info-stat-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                    <div class="info-stat-text">
+                        <small>Practice</small>
+                        <strong>PET NEXA Certified</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABOUT SECTION -->
+            <div class="doctor-about-section">
+                <h4><i class="fa-solid fa-user-doctor"></i> About Specialist</h4>
+                <p id="doctorAbout">
+                    Experienced pet grooming specialist dedicated to providing gentle, anxiety-free styling and therapeutic care for dogs and cats.
+                </p>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="doctor-actions">
+                <a href="booking.html" class="btn-book-doctor" id="bookDoctorBtn">
+                    <i class="fa-solid fa-calendar-check"></i> Book Appointment With Specialist
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center; margin-top:40px;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script src="doctor.js"></script>
+<script>
+function openMenu() {
+    document.getElementById("sideMenu").style.right = "0";
+}
+function closeMenu() {
+    document.getElementById("sideMenu").style.right = "-300px";
+}
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "index.html#specialists";
+    }
+}
+</script>
+
+</body>
+</html>

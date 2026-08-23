@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Customers Directory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu active">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Customer Directory</h1>
+                <p>View registered pet owners, their lifetime spending, orders, and grooming appointments</p>
+            </div>
+        </div>
+
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if customers %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Contact Information</th>
+                            <th>Address / Location</th>
+                            <th>Total Orders</th>
+                            <th>Total Appointments</th>
+                            <th>Lifetime Spend</th>
+                            <th>First Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cust in customers %}
+                        <tr>
+                            <td>
+                                <strong>{{ cust['name'] }}</strong>
+                            </td>
+                            <td>
+                                <div>📞 {{ cust['phone'] }}</div>
+                                <div style="font-size:12px; color:var(--text-muted);">✉️ {{ cust['email'] }}</div>
+                            </td>
+                            <td>
+                                {% if cust['address'] %}
+                                <div>{{ cust['address'] }}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">
+                                    {{ cust['city'] or 'Nagercoil' }}, {{ cust['state'] or 'Tamil Nadu' }} - {{ cust['pincode'] }}
+                                </div>
+                                {% else %}
+                                <span style="color:var(--text-muted);">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_orders', search=cust['email']) }}" class="badge confirmed" style="text-decoration:none;">
+                                    {{ cust['total_orders'] }} orders
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_bookings', search=cust['email']) }}" class="badge pending" style="text-decoration:none;">
+                                    {{ cust['total_bookings'] }} bookings
+                                </a>
+                            </td>
+                            <td>
+                                <strong style="color:var(--primary);">₹{{ "%.0f"|format(cust['total_spend']) }}</strong>
+                            </td>
+                            <td style="font-size:12px; color:var(--text-muted);">
+                                {{ cust['created_at']|ist_date }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">👥</div>
+                    <h3>No customers yet</h3>
+                    <p>Customers will be automatically saved when booking or purchasing.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

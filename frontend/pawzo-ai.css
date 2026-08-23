@@ -1,0 +1,957 @@
+/* ==========================================================
+   PETCARE AI
+   PREMIUM AI ASSISTANT
+   FULLY ISOLATED
+========================================================== */
+
+.petcare-ai,
+.petcare-ai * {
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   MAIN AI CONTAINER
+========================================================== */
+
+.petcare-ai {
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    z-index: 99999;
+
+    font-family: inherit;
+}
+
+
+/* ==========================================================
+   FLOATING AI BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-btn {
+    width: 64px;
+    height: 64px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #182447,
+        #8d6ee8
+    );
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px rgba(24, 36, 71, 0.25),
+        0 0 0 5px rgba(141, 110, 232, 0.12);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* BUTTON HOVER */
+
+.petcare-ai .petcare-ai-btn:hover {
+    transform: translateY(-4px) scale(1.04);
+
+    box-shadow:
+        0 16px 38px rgba(24, 36, 71, 0.30),
+        0 0 0 7px rgba(141, 110, 232, 0.15);
+}
+
+
+/* ==========================================================
+   AI BUTTON ICON
+========================================================== */
+
+.petcare-ai .petcare-ai-icon {
+    display: block;
+
+    font-size: 30px;
+    line-height: 1;
+
+    animation:
+        petcareAIStar 2s ease-in-out infinite;
+}
+
+
+/* ==========================================================
+   AI ICON ANIMATION
+========================================================== */
+
+@keyframes petcareAIStar {
+
+    0%,
+    100% {
+        transform:
+            scale(1)
+            rotate(0deg);
+    }
+
+    50% {
+        transform:
+            scale(1.15)
+            rotate(8deg);
+    }
+
+}
+
+
+/* ==========================================================
+   CHAT WINDOW
+========================================================== */
+
+.petcare-ai .petcare-ai-chat {
+    position: absolute;
+
+    right: 0;
+    bottom: 82px;
+
+    width: 390px;
+
+    max-width:
+        calc(100vw - 30px);
+
+    height: 600px;
+
+    max-height:
+        calc(100vh - 110px);
+
+    background:
+        rgba(255, 255, 255, 0.97);
+
+    border:
+        1px solid rgba(229, 221, 255, 0.9);
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow:
+        0 25px 70px
+        rgba(24, 36, 71, 0.20);
+
+    backdrop-filter:
+        blur(18px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transform:
+        translateY(20px)
+        scale(0.96);
+
+    transform-origin:
+        bottom right;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* ==========================================================
+   CHAT OPEN
+========================================================== */
+
+.petcare-ai .petcare-ai-chat.active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.petcare-ai .petcare-ai-header {
+
+    position: relative;
+
+    padding: 18px;
+
+    background: #182447;
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+.petcare-ai .petcare-ai-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+
+/* ==========================================================
+   AI LOGO
+========================================================== */
+
+.petcare-ai .petcare-ai-logo {
+
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 255, 255, 0.13);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+
+    box-shadow:
+        inset 0 0 15px
+        rgba(255, 255, 255, 0.08);
+}
+
+
+/* ==========================================================
+   TITLE TEXT
+========================================================== */
+
+.petcare-ai .petcare-ai-title strong {
+
+    display: block;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+.petcare-ai .petcare-ai-title small {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color:
+        rgba(255, 255, 255, 0.68);
+
+    font-size: 11px;
+
+    line-height: 1.2;
+}
+
+
+/* ==========================================================
+   ONLINE STATUS
+========================================================== */
+
+.petcare-ai .petcare-ai-status {
+
+    margin-left: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color:
+        rgba(255, 255, 255, 0.75);
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+
+.petcare-ai .petcare-ai-status span {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #63e6be;
+
+    box-shadow:
+        0 0 10px
+        rgba(99, 230, 190, 0.8);
+}
+
+
+/* ==========================================================
+   CLOSE BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-close {
+
+    width: 30px;
+    height: 30px;
+
+    margin-left: 5px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    color: #ffffff;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.petcare-ai .petcare-ai-close:hover {
+
+    background:
+        rgba(255, 255, 255, 0.20);
+
+    transform:
+        rotate(90deg);
+}
+
+
+/* ==========================================================
+   AI INTRO
+========================================================== */
+
+.petcare-ai .petcare-ai-intro {
+
+    padding:
+        20px 20px 12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7f5ff 0%,
+            #ffffff 100%
+        );
+}
+
+
+/* ==========================================================
+   AI BADGE
+========================================================== */
+
+.petcare-ai .petcare-ai-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        6px 10px;
+
+    border-radius: 30px;
+
+    background: #eee8ff;
+
+    color: #6d51c4;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+}
+
+
+/* ==========================================================
+   INTRO TITLE
+========================================================== */
+
+.petcare-ai .petcare-ai-intro h3 {
+
+    margin:
+        12px 0 7px;
+
+    padding: 0;
+
+    color: #182447;
+
+    font-size: 23px;
+
+    line-height: 1.25;
+
+    font-weight: 800;
+}
+
+
+/* ==========================================================
+   INTRO DESCRIPTION
+========================================================== */
+
+.petcare-ai .petcare-ai-intro p {
+
+    margin: 0;
+
+    padding: 0;
+
+    color: #697189;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+}
+
+
+/* ==========================================================
+   MESSAGES
+========================================================== */
+
+.petcare-ai .petcare-ai-messages {
+
+    flex: 1;
+
+    min-height: 0;
+
+    padding:
+        12px 18px;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    scroll-behavior: smooth;
+}
+
+
+/* ==========================================================
+   MESSAGE
+========================================================== */
+
+.petcare-ai .petcare-ai-message {
+
+    width: fit-content;
+
+    max-width: 84%;
+
+    margin-bottom: 12px;
+
+    padding:
+        11px 13px;
+
+    border-radius: 15px;
+
+    font-size: 13px;
+
+    line-height: 1.55;
+}
+
+
+/* ==========================================================
+   BOT MESSAGE
+========================================================== */
+
+.petcare-ai .petcare-ai-message.bot {
+
+    margin-right: auto;
+
+    background: #f1edff;
+
+    color: #303957;
+
+    border-bottom-left-radius: 5px;
+}
+
+
+/* ==========================================================
+   USER MESSAGE
+========================================================== */
+
+.petcare-ai .petcare-ai-message.user {
+
+    margin-left: auto;
+
+    background: #182447;
+
+    color: #ffffff;
+
+    border-bottom-right-radius: 5px;
+}
+
+
+/* ==========================================================
+   QUICK QUESTIONS
+========================================================== */
+
+.petcare-ai .petcare-ai-quick {
+
+    padding:
+        9px 14px;
+
+    display: flex;
+
+    gap: 7px;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border-top:
+        1px solid #f0edfa;
+}
+
+
+/* ==========================================================
+   QUICK BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-quick button {
+
+    flex: 0 0 auto;
+
+    padding:
+        7px 10px;
+
+    border:
+        1px solid #e5ddff;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    color: #4f4770;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.petcare-ai .petcare-ai-quick button:hover {
+
+    background: #f1edff;
+
+    border-color: #cfc2ff;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ==========================================================
+   INPUT AREA
+========================================================== */
+
+.petcare-ai .petcare-ai-input {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding:
+        11px 13px;
+
+    background: #ffffff;
+
+    border-top:
+        1px solid #eeeaf8;
+}
+
+
+/* ==========================================================
+   TEXT INPUT
+========================================================== */
+
+.petcare-ai .petcare-ai-input input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 42px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid #e2ddf0;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #faf9fe;
+
+    color: #182447;
+
+    font-family: inherit;
+
+    font-size: 12px;
+}
+
+
+.petcare-ai .petcare-ai-input input::placeholder {
+
+    color: #9298aa;
+}
+
+
+.petcare-ai .petcare-ai-input input:focus {
+
+    border-color: #a996e8;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(141, 110, 232, 0.10);
+}
+
+
+/* ==========================================================
+   MICROPHONE BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-mic {
+
+    width: 42px;
+    height: 42px;
+
+    flex:
+        0 0 42px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #f1edff;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.petcare-ai .petcare-ai-mic:hover {
+
+    transform:
+        translateY(-2px);
+
+    background: #e8e1ff;
+}
+
+
+/* ==========================================================
+   SEND BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-send {
+
+    width: 42px;
+    height: 42px;
+
+    flex:
+        0 0 42px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #182447;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.petcare-ai .petcare-ai-send:hover {
+
+    transform:
+        translateY(-2px);
+
+    background: #8d6ee8;
+}
+
+
+/* ==========================================================
+   BOOK NOW BUTTON
+========================================================== */
+
+.petcare-ai .petcare-ai-book-btn {
+
+    display: block;
+
+    margin:
+        0 0 12px;
+
+    padding:
+        9px 15px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #182447;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.petcare-ai .petcare-ai-book-btn:hover {
+
+    background: #8d6ee8;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* ==========================================================
+   DISCLAIMER
+========================================================== */
+
+.petcare-ai .petcare-ai-disclaimer {
+
+    padding:
+        0 15px 11px;
+
+    background: #ffffff;
+
+    color: #969bae;
+
+    font-size: 8px;
+
+    line-height: 1.4;
+
+    text-align: center;
+}
+
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+.petcare-ai .petcare-ai-messages::-webkit-scrollbar {
+
+    width: 4px;
+}
+
+
+.petcare-ai .petcare-ai-messages::-webkit-scrollbar-thumb {
+
+    border-radius: 10px;
+
+    background: #d8d0f2;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .petcare-ai {
+
+        right: 15px;
+
+        bottom: 15px;
+    }
+
+
+    .petcare-ai .petcare-ai-btn {
+
+        width: 58px;
+
+        height: 58px;
+    }
+
+
+    .petcare-ai .petcare-ai-icon {
+
+        font-size: 27px;
+    }
+
+
+    .petcare-ai .petcare-ai-chat {
+
+        right: -1px;
+
+        bottom: 73px;
+
+        width:
+            calc(100vw - 30px);
+
+        height:
+            min(
+                600px,
+                calc(100vh - 100px)
+            );
+
+        border-radius: 20px;
+    }
+
+
+    .petcare-ai .petcare-ai-header {
+
+        padding: 15px;
+    }
+
+
+    .petcare-ai .petcare-ai-status {
+
+        display: none;
+    }
+
+
+    .petcare-ai .petcare-ai-intro {
+
+        padding:
+            17px 17px 10px;
+    }
+
+
+    .petcare-ai .petcare-ai-intro h3 {
+
+        font-size: 21px;
+    }
+
+
+    .petcare-ai .petcare-ai-messages {
+
+        padding:
+            10px 14px;
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 380px) {
+
+    .petcare-ai .petcare-ai-chat {
+
+        width:
+            calc(100vw - 20px);
+    }
+
+
+    .petcare-ai .petcare-ai-quick button {
+
+        font-size: 9px;
+
+        padding:
+            6px 8px;
+    }
+
+}

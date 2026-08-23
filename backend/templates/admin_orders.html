@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Orders Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu active">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Orders Management</h1>
+                <p>Track shipments, dispatch couriers, update order statuses, and handle cancellations</p>
+            </div>
+        </div>
+
+        <!-- FILTER & SEARCH BAR -->
+        <div class="filter-bar">
+            <form method="GET" action="{{ url_for('admin_orders') }}">
+                <input type="text" name="search" placeholder="Search by Order ID, Name, Phone..." value="{{ current_search or '' }}">
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    <option value="Pending" {% if current_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if current_status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="Processing" {% if current_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Shipped" {% if current_status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="Out for Delivery" {% if current_status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                    <option value="Delivered" {% if current_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="Cancelled" {% if current_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn-primary btn-sm">Filter</button>
+                <a href="{{ url_for('admin_orders') }}" class="btn-secondary btn-sm">Reset</a>
+            </form>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if orders %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer & Contact</th>
+                            <th>Items Summary</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Courier & Tracking</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ord in orders %}
+                        <tr>
+                            <td>
+                                <strong>#{{ ord['id'] }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                                    <i class="fa-regular fa-clock"></i> {{ ord['created_at']|ist_datetime }}
+                                </div>
+                            </td>
+                            <td>
+                                <div><strong>{{ ord['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">📞 {{ ord['phone'] }}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">✉️ {{ ord['email'] }}</div>
+                                <div style="font-size:11px; color:#475569; margin-top:2px;">📍 {{ ord['address'] }} - {{ ord['pincode'] }}</div>
+                            </td>
+                            <td>
+                                <div style="font-size:12px;">
+                                    {% for itm in ord['items'] %}
+                                    <div>• {{ itm['product_name'] }} <strong>x{{ itm['quantity'] }}</strong></div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <strong>₹{{ "%.0f"|format(ord['grand_total']) }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted);">Delivery: ₹{{ "%.0f"|format(ord['delivery']) }}</div>
+                            </td>
+                            <td>
+                                <span style="font-size:12px; font-weight:600;">{{ ord['payment_method'] }}</span>
+                                <div style="font-size:11px; color:var(--text-muted);">{{ ord['payment_status'] }}</div>
+                            </td>
+                            <td>
+                                <span class="badge {{ ord['status'].lower().replace(' ', '-') }}">{{ ord['status'] }}</span>
+                                {% if ord['cancellation_reason'] %}
+                                <div style="font-size:10px; color:var(--danger); margin-top:3px;">
+                                    Reason: {{ ord['cancellation_reason'] }} ({{ ord['cancelled_by'] }})
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ord['tracking_number'] %}
+                                <div style="font-size:12px; font-weight:600; color:var(--navy-900);">{{ ord['courier'] or 'Express' }}</div>
+                                <div style="font-size:11px; color:var(--primary); font-family:monospace;">{{ ord['tracking_number'] }}</div>
+                                {% else %}
+                                <span style="font-size:12px; color:var(--text-muted);">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px; flex-direction:column;">
+                                    <button class="btn-primary btn-sm" onclick='openUpdateStatusModal({{ ord|tojson }})'>
+                                        <i class="fa-solid fa-truck-fast"></i> Update
+                                    </button>
+                                    {% if ord['status'] not in ['Delivered', 'Cancelled'] %}
+                                    <button class="btn-danger btn-sm" onclick='openCancelOrderModal({{ ord|tojson }})'>
+                                        <i class="fa-solid fa-ban"></i> Cancel
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">🛒</div>
+                    <h3>No orders found</h3>
+                    <p>Orders submitted by customers will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- UPDATE STATUS MODAL -->
+<div class="modal-overlay" id="statusModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-pen" style="color:var(--primary);"></i> Update Order Status</h3>
+            <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
+        </div>
+        <form method="POST" id="statusForm" action="">
+            <div class="form-group">
+                <label>Order ID</label>
+                <input type="text" id="status_order_id" readonly style="background:#e2e8f0; font-weight:bold;">
+            </div>
+            <div class="form-group">
+                <label>New Order Status *</label>
+                <select name="status" id="status_select" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Processing">Processing / Packing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Courier Service / Partner</label>
+                <input type="text" name="courier" id="courier_input" placeholder="e.g. BlueDart, DTDC, Delhivery">
+            </div>
+            <div class="form-group">
+                <label>Tracking Number / AWB</label>
+                <input type="text" name="tracking_number" id="tracking_input" placeholder="e.g. BLU-89234982">
+            </div>
+            <div class="form-group">
+                <label>Status Update Note (Visible in customer tracking)</label>
+                <textarea name="notes" rows="2" placeholder="e.g. Package dispatched from main warehouse"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('statusModal')">Close</button>
+                <button type="submit" class="btn-primary">Update & Notify Customer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- CANCEL ORDER MODAL -->
+<div class="modal-overlay" id="cancelOrderModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="color:var(--danger);"><i class="fa-solid fa-ban"></i> Cancel Order</h3>
+            <button class="modal-close" onclick="closeModal('cancelOrderModal')">&times;</button>
+        </div>
+        <form method="POST" id="cancelOrderForm" action="">
+            <p style="font-size:14px; color:#475569; margin-bottom:15px;">
+                Cancelling this order will immediately restore the ordered product stock in the database and send cancellation emails to both the customer and admin.
+            </p>
+            <div class="form-group">
+                <label>Order ID</label>
+                <input type="text" id="cancel_order_id" readonly style="background:#e2e8f0; font-weight:bold;">
+            </div>
+            <div class="form-group">
+                <label>Cancellation Reason *</label>
+                <select name="reason" required>
+                    <option value="Customer requested cancellation">Customer requested cancellation</option>
+                    <option value="Item out of stock">Item out of stock</option>
+                    <option value="Invalid delivery address / unreachable">Invalid delivery address / unreachable</option>
+                    <option value="Payment verification failed">Payment verification failed</option>
+                    <option value="Other / Store decision">Other / Store decision</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('cancelOrderModal')">Abort</button>
+                <button type="submit" class="btn-danger">Confirm Cancellation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openUpdateStatusModal(order) {
+    document.getElementById('statusForm').action = "/admin/orders/" + order.id + "/status";
+    document.getElementById('status_order_id').value = "#" + order.id;
+    document.getElementById('status_select').value = order.status;
+    document.getElementById('courier_input').value = order.courier || '';
+    document.getElementById('tracking_input').value = order.tracking_number || '';
+    document.getElementById('statusModal').classList.add('active');
+}
+
+function openCancelOrderModal(order) {
+    document.getElementById('cancelOrderForm').action = "/admin/orders/" + order.id + "/cancel";
+    document.getElementById('cancel_order_id').value = "#" + order.id;
+    document.getElementById('cancelOrderModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+};
+</script>
+
+</body>
+</html>

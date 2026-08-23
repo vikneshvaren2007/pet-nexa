@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: pet-nexa
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_pawzocare2026
+      - key: RAZORPAY_KEY_SECRET
+        value: pawzosecretkey2026

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Booking & Appointment Details | PET NEXA</title>
+    <meta name="description" content="Book professional grooming, spa baths, and wellness appointments with certified stylists at PET NEXA.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="booking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="index.html#specialists">Specialists</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="ai.html">AI Pet Advisor</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<div class="booking-container">
+    <!-- Smart History Back Button -->
+    <div class="booking-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav" id="bookingBackBtn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Services
+        </button>
+    </div>
+
+    <div class="booking-box">
+        <div class="booking-badge-pill">
+            <i class="fa-solid fa-calendar-check"></i> FAST & SECURE APPOINTMENT
+        </div>
+
+        <h1>Customer & <span>Booking Details</span></h1>
+        <p class="subtitle">Complete the details below to schedule your pet's appointment.</p>
+
+        <!-- Selected Service Highlight Summary Card -->
+        <div id="selectedServiceBanner" class="selected-service-banner" style="display:none; flex-direction:column; align-items:stretch; gap:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="service-banner-icon" id="bannerIcon">
+                        <i class="fa-solid fa-sparkles"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:11px; text-transform:uppercase; color:var(--accent-lavender); font-weight:800; letter-spacing:0.5px;" id="bannerCategoryTag">BOOKING SUMMARY</div>
+                        <h4 id="bannerServiceName" style="margin:2px 0 0 0; font-size:16px; color:#ffffff; font-weight:800;">Your Selected Service</h4>
+                    </div>
+                </div>
+                <a href="services.html" class="service-banner-change" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--accent-lavender); background:rgba(255,255,255,0.06); padding:6px 12px; border-radius:var(--radius-full); border:1px solid var(--border-color);">
+                    <i class="fa-solid fa-sliders"></i> Change Service
+                </a>
+            </div>
+
+            <!-- Service Details Breakdown (Main Service & Selected Sub Service) -->
+            <div id="bookingServicesList" style="display:flex; flex-direction:column; gap:8px; background:#0b1120; padding:12px 16px; border-radius:10px; border:1px solid var(--border-color);">
+                <!-- Injected service details -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
+                <span style="font-size:13px; font-weight:600; color:#cbd5e1;">Total Service Estimated Price:</span>
+                <span id="bookingPackageTotal" style="font-size:19px; font-weight:800; color:#22c55e;">₹0</span>
+            </div>
+        </div>
+
+        <form id="bookingForm" novalidate>
+            <!-- Hidden Service Fields -->
+            <input type="hidden" name="Main_Service" id="mainServiceInput" value="">
+            <input type="hidden" name="Sub_Service" id="subServiceInput" value="">
+
+            <!-- CUSTOMER NAME -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Customer Name *</label>
+                <input type="text" name="Customer_Name" id="custNameInput" placeholder="Enter Your Full Name" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                <small class="field-error" id="nameError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+            </div>
+
+            <!-- PHONE & EMAIL -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Phone Number *</label>
+                    <input type="tel" name="Phone_Number" id="custPhoneInput" placeholder="10-Digit Mobile Number" maxlength="10" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <small class="field-error" id="phoneError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Email Address *</label>
+                    <input type="email" name="Email" id="custEmailInput" placeholder="Email for Appointment Slip" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <small class="field-error" id="emailError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+                </div>
+            </div>
+
+            <!-- PET DETAILS -->
+            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Name *</label>
+                    <input type="text" name="Pet_Name" id="petNameInput" placeholder="e.g. Bruno / Bella" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <small class="field-error" id="petNameError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Age *</label>
+                    <input type="text" name="Pet_Age" id="petAgeInput" placeholder="e.g. 2 yrs / 6 mos" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                </div>
+            </div>
+
+            <!-- PET TYPE & BREED -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Type *</label>
+                    <select id="petType" name="Pet_Type" required onchange="changeBreed()" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                        <option value="">Select Pet Type</option>
+                        <option value="dog">🐶 Dog</option>
+                        <option value="cat">🐱 Cat</option>
+                    </select>
+                    <small class="field-error" id="petTypeError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Breed *</label>
+                    <select id="breed" name="Breed" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                        <option value="">Select Pet Type First</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SERVICE SELECTION DROPDOWN (AUTO-POPULATED) -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Grooming / Care Service *</label>
+                <select id="serviceSelect" name="Service" required onchange="handleServiceSelectChange()" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <option value="">Loading services from database...</option>
+                </select>
+            </div>
+
+            <!-- SPECIALIST SELECTION -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Stylist / Specialist *</label>
+                <select id="specialistSelect" name="Specialist" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <option value="">Loading specialists...</option>
+                </select>
+                <small class="field-error" id="specialistError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+            </div>
+
+            <!-- APPOINTMENT DATE & TIME -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Preferred Date *</label>
+                    <input type="date" name="Appointment_Date" id="appointmentDateInput" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <small class="field-error" id="dateError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Preferred Time Slot *</label>
+                    <select name="Appointment_Time" id="appointmentTimeInput" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                        <option value="09:30 AM">09:30 AM - Morning Slot</option>
+                        <option value="11:00 AM">11:00 AM - Morning Slot</option>
+                        <option value="02:00 PM">02:00 PM - Afternoon Slot</option>
+                        <option value="03:30 PM">03:30 PM - Afternoon Slot</option>
+                        <option value="05:00 PM">05:00 PM - Evening Slot</option>
+                        <option value="06:30 PM">06:30 PM - Evening Slot</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ADDRESS IF REQUIRED -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Customer Address / Location <small style="color:var(--text-muted); font-weight:normal;">(For Home Pickup or Visit Reference)</small></label>
+                <input type="text" name="Address" id="custAddressInput" placeholder="House / Flat No., Street, Area, Nagercoil" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+            </div>
+
+            <!-- SPECIAL NOTES -->
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Special Instructions / Medical Notes</label>
+                <textarea name="Message" id="custMessageInput" rows="3" placeholder="Any temperament notes, skin allergies, coat matting, or specific grooming preferences..." style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;"></textarea>
+            </div>
+
+            <button type="submit" class="confirm-btn">
+                <i class="fa-solid fa-calendar-check"></i> Confirm Appointment
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script src="booking.js"></script>
+<script>
+function openMenu() {
+    document.getElementById("sideMenu").style.right = "0";
+}
+function closeMenu() {
+    document.getElementById("sideMenu").style.right = "-300px";
+}
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "services.html";
+    }
+}
+</script>
+
+</body>
+</html>

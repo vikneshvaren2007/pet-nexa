@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation & Success | PET NEXA</title>
+    <meta name="description" content="Order and appointment confirmation at PET NEXA.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .succ-section {
+            padding: 100px 6% 60px;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .succ-nav-top {
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .succ-card {
+            background: var(--bg-card);
+            max-width: 720px;
+            width: 100%;
+            padding: 35px 30px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            box-shadow: var(--shadow-card), var(--shadow-glow);
+            text-align: center;
+        }
+
+        .succ-icon {
+            font-size: 56px;
+            color: #22c55e;
+            margin-bottom: 12px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .header-badge-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 12px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .id-badge {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-lavender);
+            border: 1px solid var(--border-highlight);
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy-id {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid var(--border-highlight);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-id:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-copy-id.copied {
+            background: #22c55e !important;
+            border-color: #22c55e !important;
+            color: #ffffff !important;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .details-box {
+            background: #0b1120;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            font-size: 13.5px;
+        }
+
+        .details-box.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .details-box h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-lavender);
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+        .info-row strong {
+            color: #ffffff;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .product-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 13px;
+        }
+
+        .product-item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-item-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            background: #0f172a;
+        }
+
+        .service-tag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-action-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-action-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
+            transform: translateY(-2px);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-whatsapp:hover {
+            background: #1eb956;
+            transform: translateY(-2px);
+        }
+
+        .btn-home {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .btn-home:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 650px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-row strong {
+                max-width: 55%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+        <img src="images/logo.jpg" alt="PET NEXA Logo">
+        <h2>PET NEXA</h2>
+    </div>
+
+    <nav class="desktop-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="shop.html">Pet Shop</a>
+        <a href="track.html">Track Order</a>
+        <a href="booking-track.html">Manage Booking</a>
+    </nav>
+
+    <div class="header-actions">
+        <div class="menu-btn" onclick="openMenu()">☰</div>
+    </div>
+
+    <nav id="sideMenu">
+        <div class="close-btn" onclick="closeMenu()">✖</div>
+        <a href="index.html" onclick="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="services.html" onclick="closeMenu()"><i class="fa-solid fa-soap"></i> Services</a>
+        <a href="index.html#specialists" onclick="closeMenu()"><i class="fa-solid fa-user-doctor"></i> Specialists</a>
+        <a href="shop.html" onclick="closeMenu()"><i class="fa-solid fa-store"></i> Pet Shop</a>
+        <a href="ai.html" onclick="closeMenu()"><i class="fa-solid fa-brain"></i> AI Pet Advisor</a>
+        <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
+        <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
+    </nav>
+</header>
+
+<main class="succ-section">
+    <div class="succ-nav-top">
+        <button type="button" onclick="goSmartBack()" class="btn-back-nav">
+            <i class="fa-solid fa-arrow-left"></i> Back to Shop
+        </button>
+    </div>
+
+    <!-- MAIN SUCCESS CARD (Dynamically rendered for Order or Booking) -->
+    <div class="succ-card" id="mainSuccessCard">
+        <div class="succ-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h1 id="succTitle">✓ Your Order is Confirmed!</h1>
+        <p id="succSubtitle" style="color:#94a3b8; font-size:15px; margin-bottom:15px;">Payment Successful • Thank you for your order with PET NEXA!</p>
+
+        <div class="header-badge-row">
+            <div class="id-badge" id="mainIdBadge">
+                <i class="fa-solid fa-barcode"></i> <span>TRACKING ID: <strong id="mainIdText" style="color:#fff;">#ORD-LOADING...</strong></span>
+            </div>
+            <button type="button" class="btn-copy-id" id="btnCopyMainId" onclick="copyMainId()">
+                <i class="fa-regular fa-copy"></i> <span id="copyBtnText">COPY TRACKING ID</span>
+            </button>
+        </div>
+
+        <div id="dynamicDetailsContainer">
+            <!-- Populated dynamically by JS for Order vs Booking -->
+        </div>
+
+        <div class="actions-group" id="mainActionsGroup">
+            <a href="#" id="primaryActionBtn" class="btn-action-primary">
+                <i class="fa-solid fa-truck-fast"></i> VIEW / TRACK ORDER →
+            </a>
+            <a href="#" id="waBtn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Updates
+            </a>
+            <a href="shop.html" class="btn-home" id="secondaryActionBtn">
+                <i class="fa-solid fa-store"></i> CONTINUE SHOPPING
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="background:#090e1a; border-top:1px solid rgba(255,255,255,0.08); padding:30px 6%; text-align:center;">
+    <div style="max-width:1280px; margin:0 auto; color:#94a3b8; font-size:13px;">
+        <p>© 2026 PET NEXA. All Rights Reserved. Designed for Happy Pets 🐾</p>
+    </div>
+</footer>
+
+<script>
+const API_BASE = (() => {
+    const host = window.location.hostname || "127.0.0.1";
+    const port = window.location.port;
+    const isLocalDevServer = (host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.") || host.startsWith("10.") || host.startsWith("172.")) && port && port !== "5000" && port !== "80" && port !== "443" && port !== "";
+    if (isLocalDevServer) {
+        return window.location.protocol + "//" + host + ":5000";
+    }
+    return "";
+})();
+
+function safeJsonParse(str, fallback) {
+    if (!str || str === "undefined" || str === "null") return fallback;
+    try {
+        const val = JSON.parse(str);
+        return val !== null && val !== undefined ? val : fallback;
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function formatISTDisplay(dateStr) {
+    if (!dateStr) return "Just now";
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) {
+            return dateStr.replace("T", " ").substring(0, 16);
+        }
+        return d.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }) + ", " + d.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        }) + " IST";
+    } catch(e) {
+        return dateStr;
+    }
+}
+
+let currentRawId = "";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryId = (urlParams.get('id') || urlParams.get('order_id') || urlParams.get('booking_id') || localStorage.getItem("lastOrderId") || localStorage.getItem("lastBookingId") || "").trim();
+
+    if (!queryId) {
+        const fallbackId = "ORD-" + Date.now().toString().slice(-6);
+        currentRawId = fallbackId;
+        await renderOrderSuccess(fallbackId);
+        return;
+    }
+
+    currentRawId = queryId.startsWith("#") ? queryId.substring(1) : queryId;
+
+    // Detect if this is an Order (ORD-...) vs Booking (BKG-...)
+    const isOrder = currentRawId.toUpperCase().startsWith("ORD") || (!currentRawId.toUpperCase().startsWith("BKG") && localStorage.getItem("lastOrderId"));
+
+    if (isOrder) {
+        await renderOrderSuccess(currentRawId);
+    } else {
+        await renderBookingSuccess(currentRawId);
+    }
+});
+
+async function renderOrderSuccess(orderId) {
+    document.title = "Your Order is Confirmed! | PET NEXA";
+    const titleEl = document.getElementById("succTitle");
+    if (titleEl) titleEl.textContent = "✓ Your Order is Confirmed!";
+    
+    const idTextEl = document.getElementById("mainIdText");
+    if (idTextEl) idTextEl.textContent = "#" + orderId;
+
+    let order = null;
+    let items = [];
+
+    // Attempt API fetch
+    try {
+        const res = await fetch(API_BASE + "/api/orders/" + encodeURIComponent(orderId));
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.order) {
+                order = data.order;
+                items = data.items || [];
+            }
+        }
+    } catch (e) {
+        console.warn("API order fetch fallback triggered:", e);
+    }
+
+    // Fallback to cached localStorage
+    if (!order) {
+        const cachedOrder = safeJsonParse(localStorage.getItem("lastOrderData"), null);
+        const cachedCust = safeJsonParse(localStorage.getItem("customerDetails"), null);
+        const cachedItems = safeJsonParse(localStorage.getItem("lastOrderItems"), []);
+
+        if (cachedOrder && (cachedOrder.id === orderId || !cachedOrder.id || cachedOrder.id === `#${orderId}`)) {
+            order = cachedOrder;
+            items = cachedItems.length > 0 ? cachedItems : (order.items || []);
+        } else if (cachedCust) {
+            order = {
+                id: orderId,
+                customer_name: cachedCust.name || localStorage.getItem("customer_name") || "Customer",
+                email: cachedCust.email || localStorage.getItem("email") || "",
+                phone: cachedCust.phone || localStorage.getItem("phone") || "",
+                address: cachedCust.address || localStorage.getItem("address") || "Nagercoil",
+                city: cachedCust.city || localStorage.getItem("city") || "Nagercoil",
+                state: cachedCust.state || localStorage.getItem("state") || "Tamil Nadu",
+                pincode: cachedCust.pincode || localStorage.getItem("pincode") || "629001",
+                payment_method: "UPI",
+                payment_status: "Paid",
+                status: "Confirmed",
+                subtotal: parseFloat(localStorage.getItem("subtotal") || "0"),
+                delivery: parseFloat(localStorage.getItem("delivery") || "0"),
+                grand_total: parseFloat(localStorage.getItem("grandTotal") || "0"),
+                created_at: new Date().toISOString()
+            };
+            items = cachedItems;
+        } else {
+            // Default demo fallback order
+            order = {
+                id: orderId,
+                customer_name: localStorage.getItem("customer_name") || "Viknesh Varen",
+                email: localStorage.getItem("email") || "customer@petnexa.com",
+                phone: localStorage.getItem("phone") || "9445437069",
+                address: localStorage.getItem("address") || "8/30 Church Street, Azhagappapuram",
+                city: localStorage.getItem("city") || "Nagercoil",
+                state: localStorage.getItem("state") || "Tamil Nadu",
+                pincode: localStorage.getItem("pincode") || "629401",
+                payment_method: "UPI / Demo Gateway",
+                payment_status: "Paid",
+                status: "Confirmed",
+                subtotal: 849,
+                delivery: 0,
+                grand_total: 849,
+                created_at: new Date().toISOString()
+            };
+            items = [
+                {
+                    product_name: "Royal Canin Dog Food",
+                    price: 849,
+                    quantity: 1,
+                    image: "images/dogfood.png"
+                }
+            ];
+        }
+    }
+
+    const custName = order.customer_name || "Valued Customer";
+    const isCod = (order.payment_method || '').toLowerCase().includes("cash");
+    const displayPaymentStatus = isCod ? "Cash on Delivery" : "Payment Successful";
+    const displayOrderStatus = order.status || "Confirmed";
+
+    if (isCod) {
+        document.getElementById("succSubtitle").textContent = `Cash on Delivery Order Confirmed! Thank you for your order, ${custName}. Your order has been successfully placed.`;
+    } else {
+        document.getElementById("succSubtitle").textContent = `Payment Successful! Thank you for your order, ${custName}. Your order has been successfully placed.`;
+    }
+
+    const subtotal = Number(order.subtotal || 0);
+    const delivery = Number(order.delivery || 0);
+    const grandTotal = Number(order.grand_total || (subtotal + delivery));
+    const fullAddr = [order.address, order.city, order.state, order.pincode].filter(Boolean).join(", ") || "Nagercoil, Tamil Nadu";
+
+    let itemsHtml = "";
+    if (items && items.length > 0) {
+        items.forEach(itm => {
+            const pName = itm.product_name || itm.name || "Pet Care Product";
+            const pImg = itm.image || "images/logo.jpg";
+            const pPrice = Number(itm.price || 0);
+            const pQty = Number(itm.quantity || 1);
+            const pTot = Number(itm.total || (pPrice * pQty));
+
+            itemsHtml += `
+                <div class="product-item-row">
+                    <div class="product-item-info">
+                        <img src="${pImg}" alt="${pName}" class="product-item-img" onerror="this.src='images/logo.jpg'">
+                        <div>
+                            <div style="font-weight:700; color:#fff;">${pName}</div>
+                            <small style="color:#94a3b8;">Qty: ${pQty} × ₹${Math.round(pPrice)}</small>
+                        </div>
+                    </div>
+                    <div><strong style="color:var(--primary);">₹${Math.round(pTot).toLocaleString()}</strong></div>
+                </div>
+            `;
+        });
+    } else {
+        itemsHtml = `<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">Ordered items verified and registered in system.</p>`;
+    }
+
+    const container = document.getElementById("dynamicDetailsContainer");
+    container.innerHTML = `
+        <div class="details-grid">
+            <!-- Customer Details -->
+            <div class="details-box">
+                <h3><i class="fa-solid fa-user"></i> CUSTOMER DETAILS</h3>
+                <div class="info-row">
+                    <span>Name:</span>
+                    <strong>${custName}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Email:</span>
+                    <strong>${order.email || '-'}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Phone:</span>
+                    <strong>${order.phone || '-'}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Delivery Address:</span>
+                    <strong>${fullAddr}</strong>
+                </div>
+            </div>
+
+            <!-- Payment & Dispatch Details -->
+            <div class="details-box">
+                <h3><i class="fa-solid fa-credit-card"></i> PAYMENT & STATUS</h3>
+                <div class="info-row">
+                    <span>Order Date:</span>
+                    <strong>${formatISTDisplay(order.created_at)}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Payment Method:</span>
+                    <strong>${order.payment_method || 'UPI'}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Payment Status:</span>
+                    <strong style="color:#22c55e;">${displayPaymentStatus}</strong>
+                </div>
+                <div class="info-row">
+                    <span>Order Status:</span>
+                    <strong style="color:var(--primary);">${displayOrderStatus}</strong>
+                </div>
+            </div>
+
+            <!-- Ordered Items & Price Summary (Full Width) -->
+            <div class="details-box full-width">
+                <h3><i class="fa-solid fa-box-open"></i> ORDER DETAILS</h3>
+                <div style="margin-bottom:12px;">
+                    ${itemsHtml}
+                </div>
+
+                <div class="info-row" style="border-top:1px solid #334155; padding-top:10px; margin-top:8px;">
+                    <span>SUBTOTAL:</span>
+                    <strong>₹${Math.round(subtotal).toLocaleString()}</strong>
+                </div>
+                <div class="info-row">
+                    <span>DELIVERY FEE:</span>
+                    <strong style="color:${delivery === 0 ? '#22c55e' : '#fff'};">${delivery === 0 ? 'FREE' : '₹' + Math.round(delivery)}</strong>
+                </div>
+                <div class="info-row" style="border-top:2px solid var(--border-color); padding-top:12px; margin-top:8px; font-size:17px; font-weight:800;">
+                    <span style="color:#fff;">GRAND TOTAL:</span>
+                    <strong style="color:var(--primary); font-size:20px;">₹${Math.round(grandTotal).toLocaleString()}</strong>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Action buttons
+    const primaryBtn = document.getElementById("primaryActionBtn");
+    primaryBtn.href = "track.html?id=" + encodeURIComponent(orderId);
+    primaryBtn.innerHTML = `<i class="fa-solid fa-truck-fast"></i> VIEW / TRACK ORDER →`;
+
+    const secBtn = document.getElementById("secondaryActionBtn");
+    secBtn.href = "shop.html";
+    secBtn.innerHTML = `<i class="fa-solid fa-store"></i> CONTINUE SHOPPING`;
+
+    // WhatsApp updates link
+    const waMsg = `Hello PET NEXA! 🐾 I have placed order #${orderId} for ₹${Math.round(grandTotal)}. Please send me tracking updates!`;
+    document.getElementById("waBtn").href = "https://wa.me/919445437069?text=" + encodeURIComponent(waMsg);
+}
+
+async function renderBookingSuccess(bookingId) {
+    document.title = "Booking Confirmed | PET NEXA";
+    document.getElementById("succTitle").textContent = "✓ BOOKING CONFIRMED";
+    document.getElementById("succSubtitle").textContent = "Your pet grooming session has been booked with PET NEXA.";
+    document.getElementById("mainIdText").textContent = "#" + bookingId;
+
+    const primaryBtn = document.getElementById("primaryActionBtn");
+    primaryBtn.href = "booking-track.html?id=" + encodeURIComponent(bookingId);
+    primaryBtn.innerHTML = `<i class="fa-solid fa-calendar-days"></i> MANAGE BOOKING →`;
+
+    const secBtn = document.getElementById("secondaryActionBtn");
+    secBtn.href = "services.html";
+    secBtn.innerHTML = `<i class="fa-solid fa-soap"></i> EXPLORE SERVICES`;
+
+    let b = null;
+    try {
+        const res = await fetch(API_BASE + "/api/bookings/" + encodeURIComponent(bookingId));
+        if (res.ok) {
+            const data = await res.json();
+            b = data.booking;
+        }
+    } catch (e) {
+        console.warn("API booking fetch fallback triggered:", e);
+    }
+
+    if (!b) {
+        const cachedBooking = safeJsonParse(localStorage.getItem("lastBooking"), null);
+        if (cachedBooking && (cachedBooking.id === bookingId || !cachedBooking.id || cachedBooking.id === `#${bookingId}`)) {
+            b = cachedBooking;
+        }
+    }
+
+    if (!b) {
+        showNotFound();
+        return;
+    }
+
+    const totalPrice = Number(b.total_price || 0);
+    const services = b.services || [];
+    let servicesHtml = "";
+
+    if (services && services.length > 0) {
+        servicesHtml = services.map(s => `
+            <div class="service-tag-item">
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-check" style="color:var(--primary); margin-right:6px;"></i> ${s.service_name || s.name}</span>
+                <span style="color:#22c55e; font-weight:700;">₹${Math.round(s.price || 0)}</span>
+            </div>
+        `).join("");
+    } else {
+        servicesHtml = `
+            <div class="service-tag-item">
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-paw" style="color:var(--primary); margin-right:6px;"></i> ${b.service || 'Grooming Service'}</span>
+                <span style="color:#22c55e; font-weight:700;">₹${Math.round(totalPrice || 900)}</span>
+            </div>
+        `;
+    }
+
+    const container = document.getElementById("dynamicDetailsContainer");
+    container.innerHTML = `
+        <div class="details-grid">
+            <!-- Customer Details -->
+            <div class="details-box">
+                <h3><i class="fa-solid fa-user"></i> Customer Details</h3>
+                <div class="info-row"><span>Name:</span><strong>${b.customer_name || '-'}</strong></div>
+                <div class="info-row"><span>Email:</span><strong>${b.email || '-'}</strong></div>
+                <div class="info-row"><span>Phone:</span><strong>${b.phone || '-'}</strong></div>
+                <div class="info-row"><span>Address:</span><strong>${b.address || 'Center Visit'}</strong></div>
+            </div>
+
+            <!-- Pet Details -->
+            <div class="details-box">
+                <h3><i class="fa-solid fa-paw"></i> Pet Details</h3>
+                <div class="info-row"><span>Pet Name:</span><strong>${b.pet_name || '-'}</strong></div>
+                <div class="info-row"><span>Pet Type:</span><strong>${(b.pet_type || 'Pet').toUpperCase()}</strong></div>
+                <div class="info-row"><span>Breed:</span><strong>${b.breed || 'Standard Breed'}</strong></div>
+                <div class="info-row"><span>Age:</span><strong>${b.pet_age ? b.pet_age : 'Not specified'}</strong></div>
+            </div>
+
+            <!-- Service Details -->
+            <div class="details-box full-width">
+                <h3><i class="fa-solid fa-scissors"></i> Service & Appointment Details</h3>
+                <div class="info-row"><span>Specialist:</span><strong style="color:var(--accent-lavender);">${b.specialist || 'Senior Grooming Stylist'}</strong></div>
+                <div class="info-row"><span>Scheduled Session:</span><strong style="color:var(--primary);">🗓️ ${b.appointment_date} at ${b.appointment_time || '10:00 AM'}</strong></div>
+                <div class="info-row"><span>Booking Created:</span><strong>🕒 ${formatISTDisplay(b.created_at)}</strong></div>
+                <div class="info-row"><span>Payment Status:</span><strong style="color:#22c55e;">Confirmed (Pay at Center)</strong></div>
+
+                <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border-color);">
+                    <div style="font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Selected Service(s):</div>
+                    <div>${servicesHtml}</div>
+                </div>
+
+                <div class="info-row" style="border-top:1px solid #334155; padding-top:10px; margin-top:10px; font-size:16px; font-weight:800; color:#ffffff;">
+                    <span>Total Price:</span>
+                    <strong style="color:var(--primary); font-size:18px;">${totalPrice > 0 ? '₹' + Math.round(totalPrice).toLocaleString() : 'Standard Pricing'}</strong>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const waMsg = `Hello PET NEXA! 🐾 I have booked an appointment #${bookingId} for my pet ${b.pet_name} on ${b.appointment_date}.`;
+    document.getElementById("waBtn").href = "https://wa.me/919445437069?text=" + encodeURIComponent(waMsg);
+}
+
+function showNotFound() {
+    const card = document.getElementById("mainSuccessCard");
+    if (card) {
+        card.innerHTML = `
+            <div class="succ-icon" style="color:#ef4444;"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <h1 style="color:#ef4444; font-size:24px;">Details could not be found.</h1>
+            <p style="color:#94a3b8; font-size:14px; margin:15px 0 25px;">Please contact support or check your order tracking ID.</p>
+            <div class="actions-group">
+                <a href="shop.html" class="btn-action-primary"><i class="fa-solid fa-store"></i> CONTINUE SHOPPING</a>
+                <a href="track.html" class="btn-home"><i class="fa-solid fa-truck-fast"></i> TRACK ORDER</a>
+            </div>
+        `;
+    }
+}
+
+function copyMainId() {
+    const idToCopy = currentRawId;
+    if (!idToCopy) return;
+
+    const btn = document.getElementById("btnCopyMainId");
+
+    const onSuccess = () => {
+        btn.classList.add("copied");
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> <span>COPIED ✓</span>`;
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>COPY TRACKING ID</span>`;
+        }, 2000);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(idToCopy).then(onSuccess).catch(() => fallbackCopy(idToCopy, onSuccess));
+    } else {
+        fallbackCopy(idToCopy, onSuccess);
+    }
+}
+
+function fallbackCopy(text, cb) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand("copy");
+        if (cb) cb();
+    } catch (err) {
+        alert("ID: " + text);
+    }
+    document.body.removeChild(textArea);
+}
+
+function goSmartBack() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        window.location.href = "shop.html";
+    }
+}
+
+function openMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "0";
+}
+
+function closeMenu() {
+    const menu = document.getElementById("sideMenu");
+    if (menu) menu.style.right = "-320px";
+}
+</script>
+
+</body>
+</html>

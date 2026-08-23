@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET NEXA - Returns & Refunds</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="admin-logo">
+            <i class="fa-solid fa-paw"></i>
+            <span>PET NEXA</span>
+        </div>
+        <div class="panel-title">ADMIN PANEL</div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="menu">
+                <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="menu">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Products</span>
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="menu">
+                <i class="fa-solid fa-tags"></i> <span>Categories</span>
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="menu">
+                <i class="fa-solid fa-bag-shopping"></i> <span>Orders</span>
+            </a>
+            <a href="{{ url_for('admin_returns') }}" class="menu active">
+                <i class="fa-solid fa-rotate-left"></i> <span>Returns & Refunds</span>
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="menu">
+                <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="menu">
+                <i class="fa-solid fa-star"></i> <span>Customer Reviews</span>
+            </a>
+            <a href="{{ url_for('admin_customers') }}" class="menu">
+                <i class="fa-solid fa-users"></i> <span>Customers</span>
+            </a>
+            <a href="{{ url_for('admin_settings') }}" class="menu">
+                <i class="fa-solid fa-gear"></i> <span>Shop Settings</span>
+            </a>
+        </nav>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Logout</span>
+        </a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Returns & Refund Requests</h1>
+                <p>Review customer return requests, approve/reject pickups, and process refunds</p>
+            </div>
+        </div>
+
+        <div class="card-section">
+            <div class="table-responsive">
+                {% if returns %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Return ID</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Reason & Details</th>
+                            <th>Refund Amount</th>
+                            <th>Status</th>
+                            <th>Admin Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ret in returns %}
+                        <tr>
+                            <td>
+                                <strong>#{{ ret['id'] }}</strong>
+                                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">{{ ret['created_at']|ist_datetime }}</div>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin_orders', search=ret['order_id']) }}" style="color:var(--primary); font-weight:600; text-decoration:none;">
+                                    #{{ ret['order_id'] }}
+                                </a>
+                            </td>
+                            <td>
+                                <div><strong>{{ ret['customer_name'] }}</strong></div>
+                                <div style="font-size:12px; color:var(--text-muted);">📞 {{ ret['customer_phone'] }}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">✉️ {{ ret['customer_email'] }}</div>
+                            </td>
+                            <td>
+                                <div><strong>{{ ret['reason'] }}</strong></div>
+                                {% if ret['comments'] %}
+                                <div style="font-size:12px; color:var(--text-muted); font-style:italic;">"{{ ret['comments'] }}"</div>
+                                {% endif %}
+                            </td>
+                            <td><strong>₹{{ "%.0f"|format(ret['refund_amount']) }}</strong></td>
+                            <td>
+                                <span class="badge {{ ret['status'].lower().replace(' ', '-') }}">{{ ret['status'] }}</span>
+                            </td>
+                            <td style="font-size:12px; color:#475569;">
+                                {{ ret['admin_notes'] or '-' }}
+                            </td>
+                            <td>
+                                <button class="btn-primary btn-sm" onclick='openReturnActionModal({{ ret|tojson }})'>
+                                    <i class="fa-solid fa-gavel"></i> Manage
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <div class="icon">🔄</div>
+                    <h3>No return requests</h3>
+                    <p>When customers request a return for delivered orders, they will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MANAGE RETURN MODAL -->
+<div class="modal-overlay" id="returnActionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-rotate-left" style="color:var(--primary);"></i> Process Return Request</h3>
+            <button class="modal-close" onclick="closeModal('returnActionModal')">&times;</button>
+        </div>
+        <form method="POST" id="returnForm" action="">
+            <div class="form-group">
+                <label>Return ID</label>
+                <input type="text" id="ret_id_display" readonly style="background:#e2e8f0; font-weight:bold;">
+            </div>
+            <div class="form-group">
+                <label>Update Return Decision / Status *</label>
+                <select name="status" id="ret_status_select" required>
+                    <option value="Requested">Requested (Under Review)</option>
+                    <option value="Approved">Approved (Arrange Pickup)</option>
+                    <option value="Item Received">Item Received in Warehouse</option>
+                    <option value="Refund Processing">Refund Processing</option>
+                    <option value="Refund Completed">Refund Completed</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Admin Notes / Instructions for Customer</label>
+                <textarea name="admin_notes" id="ret_admin_notes" rows="3" placeholder="e.g. Approved. Our pickup courier will collect the package within 48 hours. Refund will be credited to UPI/Bank."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal('returnActionModal')">Cancel</button>
+                <button type="submit" class="btn-primary">Save Decision & Notify Customer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openReturnActionModal(ret) {
+    document.getElementById('returnForm').action = "/admin/returns/" + ret.id + "/status";
+    document.getElementById('ret_id_display').value = "#" + ret.id + " (Order #" + ret.order_id + ")";
+    document.getElementById('ret_status_select').value = ret.status;
+    document.getElementById('ret_admin_notes').value = ret.admin_notes || '';
+    document.getElementById('returnActionModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('active');
+    }
+};
+</script>
+
+</body>
+</html>

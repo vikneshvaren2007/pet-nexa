@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=success.html">
+    <title>Order Confirmed | PET NEXA</title>
+</head>
+<body style="background:#0f172a; color:#fff; font-family:sans-serif; text-align:center; padding-top:100px;">
+    <h2>🎉 Order Confirmed! Loading details...</h2>
+    <p><a href="success.html" style="color:#8b5cf6;">Click here if not redirected automatically.</a></p>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id') || localStorage.getItem('lastOrderId') || '';
+        window.location.href = id ? ("success.html?id=" + encodeURIComponent(id)) : "success.html";
+    </script>
+</body>
+</html>
