@@ -29,12 +29,14 @@ A production-ready full-stack Flask web application providing comprehensive pet 
 4. Click **Advanced** -> **Add Environment Variable** and configure:
    | Key | Example Value | Description |
    | :--- | :--- | :--- |
+   | `RESEND_API_KEY` | `your_resend_api_key_here` | Resend API key for cloud email delivery |
+   | `RESEND_FROM` | `PET NEXA <onboarding@resend.dev>` | Verified Resend sender format |
    | `SECRET_KEY` | `pawzo-care-super-secret-key-2026` | Flask session encryption key |
-   | `EMAIL_USER` | `your_email@gmail.com` | Gmail SMTP sender address |
-   | `EMAIL_PASSWORD` | `your_16_char_google_app_password` | Google App Password (16 chars) |
+   | `EMAIL_USER` | `your_email@gmail.com` | Gmail SMTP sender address (fallback) |
+   | `EMAIL_PASSWORD` | `your_16_char_google_app_password` | Google App Password (fallback) |
    | `ADMIN_EMAIL` | `admin@example.com` | Dual admin alert recipients |
    | `GEMINI_API_KEY` | `your_gemini_api_key_here` | Google Gemini AI Key |
-   | `GEMINI_MODEL` | `gemini-1.5-flash` | Gemini model version |
+   | `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model version |
    | `RAZORPAY_KEY_ID` | `rzp_test_pawzocare2026` | Razorpay Sandbox Key ID |
    | `RAZORPAY_KEY_SECRET` | `pawzosecretkey2026` | Razorpay Sandbox Secret |
 

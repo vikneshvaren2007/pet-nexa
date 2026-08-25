@@ -623,15 +623,14 @@ def get_admin_emails():
     return emails
 
 def send_email_async(to_email, subject, body_text, body_html=None):
+    """
+    High-deliverability asynchronous email engine:
+    1. Primary: Resend HTTPS API (zero SMTP port blocking, works seamlessly on Render / cloud servers)
+    2. Fallback: Gmail SMTP SSL (port 465) if Resend is unconfigured or returns an error.
+    """
     def _send():
-        # Authenticate with primary sender user
-        raw_user = os.getenv("EMAIL_USER", "vikneshvaren2@gmail.com")
-        sender_email = raw_user.split(",")[0].strip()
-        sender_password = os.getenv("EMAIL_PASSWORD", "").strip()
-
-        if not sender_email or not sender_password or "your_email" in sender_email:
-            print(f"[EMAIL MOCK] Email to {to_email}: {subject}")
-            return
+        resend_key = os.getenv("RESEND_API_KEY", "").strip()
+        resend_from = os.getenv("RESEND_FROM", os.getenv("RESEND_FROM_EMAIL", "PET NEXA <onboarding@resend.dev>")).strip()
 
         # Handle list or comma-separated recipients
         recipients = []
@@ -644,22 +643,70 @@ def send_email_async(to_email, subject, body_text, body_html=None):
             return
 
         for recipient in recipients:
-            try:
-                msg = EmailMessage()
-                msg["Subject"] = subject
-                msg["From"] = f"PET NEXA <{sender_email}>"
-                msg["To"] = recipient
-                msg.set_content(body_text)
+            delivered = False
 
-                if body_html:
-                    msg.add_alternative(body_html, subtype="html")
+            # --- 1. TRY RESEND HTTPS API ---
+            if resend_key:
+                try:
+                    payload = {
+                        "from": resend_from,
+                        "to": [recipient],
+                        "subject": subject,
+                        "text": body_text or ""
+                    }
+                    if body_html:
+                        payload["html"] = body_html
 
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
-                    server.login(sender_email, sender_password)
-                    server.send_message(msg)
-                print(f"[SUCCESS] EMAIL SENT successfully to {recipient}: {subject}")
-            except Exception as e:
-                print(f"[ERROR] EMAIL SENDING FAILED for {recipient}: {e}")
+                    req_data = json.dumps(payload).encode("utf-8")
+                    req = urllib.request.Request(
+                        "https://api.resend.com/emails",
+                        data=req_data,
+                        headers={
+                            "Authorization": f"Bearer {resend_key}",
+                            "Content-Type": "application/json",
+                            "User-Agent": "resend-python:2.0.0"
+                        },
+                        method="POST"
+                    )
+                    with urllib.request.urlopen(req, timeout=12) as response:
+                        resp_content = response.read().decode("utf-8")
+                        print(f"[RESEND SUCCESS] Sent email to {recipient}: {subject} | Response: {resp_content}")
+                        delivered = True
+                except urllib.error.HTTPError as he:
+                    err_msg = he.read().decode("utf-8") if he.fp else str(he)
+                    print(f"[RESEND HTTP {he.code}] Could not send to {recipient}: {err_msg}")
+                except Exception as rex:
+                    print(f"[RESEND ERROR] Error sending to {recipient}: {rex}")
+
+            if delivered:
+                continue
+
+            # --- 2. FALLBACK TO GMAIL SMTP SSL ---
+            raw_user = os.getenv("EMAIL_USER", "vikneshvaren2@gmail.com")
+            sender_email = raw_user.split(",")[0].strip()
+            sender_password = os.getenv("EMAIL_PASSWORD", "").strip()
+
+            if sender_email and sender_password and "your_email" not in sender_email:
+                try:
+                    msg = EmailMessage()
+                    msg["Subject"] = subject
+                    msg["From"] = f"PET NEXA <{sender_email}>"
+                    msg["To"] = recipient
+                    msg.set_content(body_text or "")
+
+                    if body_html:
+                        msg.add_alternative(body_html, subtype="html")
+
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+                        server.login(sender_email, sender_password)
+                        server.send_message(msg)
+                    print(f"[SMTP SUCCESS] EMAIL SENT successfully to {recipient}: {subject}")
+                    delivered = True
+                except Exception as e:
+                    print(f"[SMTP ERROR] EMAIL SENDING FAILED for {recipient}: {e}")
+
+            if not delivered and not resend_key:
+                print(f"[EMAIL MOCK] Email to {recipient}: {subject}")
 
     threading.Thread(target=_send, daemon=True).start()
 
