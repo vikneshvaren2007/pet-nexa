@@ -1,6 +1,6 @@
 /* ==========================================================
    PET NEXA — AI PET ADVISOR (GOOGLE GEMINI DEVELOPER API)
-   Dog & Cat Specialization + Conversational Memory + Voice
+   Dog & Cat Specialization + Persistent Storage + Voice Input
 ========================================================== */
 
 const API_BASE = (() => {
@@ -13,9 +13,55 @@ const API_BASE = (() => {
     return "";
 })();
 
+// LocalStorage Keys for persistent chat memory
+const STORAGE_KEYS = {
+    MESSAGES: "petnexa_ai_chat_messages_v1",
+    HISTORY: "petnexa_ai_chat_history_v1",
+    PET_TYPE: "petnexa_ai_pet_type_v1"
+};
+
 let currentPetType = "dog";
 let chatHistory = [];
 let isSending = false;
+
+/* ==========================================================
+   PERSISTENCE STORAGE HELPERS
+========================================================== */
+function getStoredMessages() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        console.warn("Could not read stored messages:", e);
+        return [];
+    }
+}
+
+function saveStoredMessages(messages) {
+    try {
+        localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    } catch (e) {
+        console.warn("Could not save messages to storage:", e);
+    }
+}
+
+function loadStoredChatHistory() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEYS.HISTORY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        console.warn("Could not read stored chat history:", e);
+        return [];
+    }
+}
+
+function saveStoredChatHistory(history) {
+    try {
+        localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+    } catch (e) {
+        console.warn("Could not save chat history to storage:", e);
+    }
+}
 
 /* ==========================================================
    QUICK SUGGESTIONS DATA
@@ -42,9 +88,15 @@ const SUGGESTIONS = {
 /* ==========================================================
    SET PET TYPE (DOG / CAT)
 ========================================================== */
-function setPetType(type) {
+function setPetType(type, saveToStorage = true) {
     if (type !== "dog" && type !== "cat") return;
     currentPetType = type;
+
+    if (saveToStorage) {
+        try {
+            localStorage.setItem(STORAGE_KEYS.PET_TYPE, type);
+        } catch (e) {}
+    }
 
     // Toggle button active states
     const btnDog = document.getElementById("btnDog");
@@ -122,9 +174,9 @@ function formatAIResponse(text) {
 }
 
 /* ==========================================================
-   ADD USER MESSAGE TO CHAT UI
+   DOM BUILDERS FOR USER & BOT MESSAGES
 ========================================================== */
-function addUserMessage(text) {
+function renderUserMessageDOM(text) {
     const messages = document.getElementById("aiMessages");
     if (!messages) return;
 
@@ -146,14 +198,9 @@ function addUserMessage(text) {
     content.appendChild(body);
     wrapper.appendChild(content);
     messages.appendChild(wrapper);
-
-    messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
 }
 
-/* ==========================================================
-   ADD BOT MESSAGE TO CHAT UI
-========================================================== */
-function addBotMessage(text, isError = false) {
+function renderBotMessageDOM(text, isError = false, petType = currentPetType) {
     const messages = document.getElementById("aiMessages");
     if (!messages) return;
 
@@ -162,14 +209,14 @@ function addBotMessage(text, isError = false) {
 
     const avatar = document.createElement("div");
     avatar.className = "bubble-avatar";
-    avatar.textContent = isError ? "⚠️" : (currentPetType === "dog" ? "🐶" : "🐱");
+    avatar.textContent = isError ? "⚠️" : (petType === "dog" ? "🐶" : "🐱");
 
     const content = document.createElement("div");
     content.className = "bubble-content bot-bubble";
 
     const label = document.createElement("strong");
     label.className = "bubble-sender ai-sender";
-    label.innerHTML = `AI: <span class="ai-badge-pet">${currentPetType.toUpperCase()} ADVISOR</span>`;
+    label.innerHTML = `AI: <span class="ai-badge-pet">${(petType || "PET").toUpperCase()} ADVISOR</span>`;
 
     const body = document.createElement("div");
     body.className = "bubble-body";
@@ -179,7 +226,7 @@ function addBotMessage(text, isError = false) {
     content.appendChild(body);
 
     // If query mentions grooming/booking/spa, render quick booking action
-    const lower = text.toLowerCase();
+    const lower = (text || "").toLowerCase();
     if (lower.includes("grooming") || lower.includes("booking") || lower.includes("appointment") || lower.includes("spa")) {
         const ctaBox = document.createElement("div");
         ctaBox.className = "ai-action-box";
@@ -199,26 +246,12 @@ function addBotMessage(text, isError = false) {
     wrapper.appendChild(avatar);
     wrapper.appendChild(content);
     messages.appendChild(wrapper);
-
-    messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
 }
 
 /* ==========================================================
-   QUICK QUESTION CHIP HANDLER
+   RESTORE CHAT & INITIAL WELCOME
 ========================================================== */
-function askAI(question) {
-    if (isSending) return;
-    const input = document.getElementById("userInput");
-    if (!input) return;
-    input.value = question;
-    sendAI();
-}
-
-/* ==========================================================
-   CLEAR CHAT
-========================================================== */
-function clearChat() {
-    chatHistory = [];
+function renderInitialWelcome() {
     const messages = document.getElementById("aiMessages");
     if (!messages) return;
 
@@ -241,12 +274,139 @@ function clearChat() {
             </div>
         </div>
     `;
+}
+
+function restoreChatMessages() {
+    const messagesContainer = document.getElementById("aiMessages");
+    if (!messagesContainer) return;
+
+    const storedMsgs = getStoredMessages();
+    chatHistory = loadStoredChatHistory();
+
+    if (!storedMsgs || storedMsgs.length === 0) {
+        renderInitialWelcome();
+        return;
+    }
+
+    // Clear container and render stored conversation
+    messagesContainer.innerHTML = "";
+
+    storedMsgs.forEach(msg => {
+        if (msg.sender === "user") {
+            renderUserMessageDOM(msg.text);
+        } else {
+            renderBotMessageDOM(msg.text, msg.isError, msg.petType || currentPetType);
+        }
+    });
+
+    // Scroll to latest message
+    setTimeout(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 50);
+}
+
+/* ==========================================================
+   ADD USER MESSAGE TO CHAT UI & PERSIST
+========================================================== */
+function addUserMessage(text) {
+    const stored = getStoredMessages();
+
+    // If starting fresh from welcome banner, clean initial welcome greeting
+    if (stored.length === 0) {
+        const messages = document.getElementById("aiMessages");
+        if (messages) messages.innerHTML = "";
+    }
+
+    renderUserMessageDOM(text);
+
+    stored.push({
+        sender: "user",
+        text: text,
+        timestamp: Date.now()
+    });
+    if (stored.length > 60) stored.splice(0, stored.length - 60);
+    saveStoredMessages(stored);
+
+    const messages = document.getElementById("aiMessages");
+    if (messages) messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+}
+
+/* ==========================================================
+   ADD BOT MESSAGE TO CHAT UI & PERSIST
+========================================================== */
+function addBotMessage(text, isError = false, petType = currentPetType) {
+    renderBotMessageDOM(text, isError, petType);
+
+    const stored = getStoredMessages();
+    stored.push({
+        sender: "bot",
+        text: text,
+        isError: isError,
+        petType: petType,
+        timestamp: Date.now()
+    });
+    if (stored.length > 60) stored.splice(0, stored.length - 60);
+    saveStoredMessages(stored);
+
+    const messages = document.getElementById("aiMessages");
+    if (messages) messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+}
+
+/* ==========================================================
+   QUICK QUESTION CHIP HANDLER
+========================================================== */
+function askAI(question) {
+    if (isSending) return;
+    const input = document.getElementById("userInput");
+    if (!input) return;
+    input.value = question;
+    sendAI();
+}
+
+/* ==========================================================
+   TOAST NOTIFICATION HELPER
+========================================================== */
+function showAIToast(msg) {
+    let toast = document.getElementById("pawzoToast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "pawzoToast";
+        toast.style.cssText = "position:fixed; bottom:25px; right:25px; background:#14b8a6; color:#ffffff; padding:12px 22px; border-radius:10px; font-weight:700; font-size:14px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:none; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border:1px solid rgba(255,255,255,0.2);";
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`;
+    toast.style.display = "block";
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(10px)";
+        setTimeout(() => { toast.style.display = "none"; }, 300);
+    }, 2500);
+}
+
+/* ==========================================================
+   CLEAR CHAT (MANUAL RESET ONLY)
+========================================================== */
+function clearChat() {
+    try {
+        localStorage.removeItem(STORAGE_KEYS.MESSAGES);
+        localStorage.removeItem(STORAGE_KEYS.HISTORY);
+    } catch (e) {
+        console.warn("Failed to clear local storage:", e);
+    }
+
+    chatHistory = [];
+    renderInitialWelcome();
 
     const input = document.getElementById("userInput");
     if (input) {
         input.value = "";
         input.focus();
     }
+
+    showAIToast("Chat history cleared 🐾");
 }
 
 /* ==========================================================
@@ -262,13 +422,12 @@ async function sendAI() {
     const message = input.value.trim();
     if (!message) {
         input.focus();
-        // Shake or highlight input briefly
         input.style.boxShadow = "0 0 0 2px #ef4444";
         setTimeout(() => { input.style.boxShadow = ""; }, 1500);
         return;
     }
 
-    // Display user message in UI
+    // Display user message in UI and persist to localStorage
     addUserMessage(message);
     input.value = "";
 
@@ -291,8 +450,10 @@ async function sendAI() {
             </div>
         </div>
     `;
-    messages.appendChild(thinking);
-    messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+    if (messages) {
+        messages.appendChild(thinking);
+        messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+    }
 
     try {
         const response = await fetch(API_BASE + "/api/pet-advisor", {
@@ -312,14 +473,15 @@ async function sendAI() {
         const data = await response.json().catch(() => ({}));
 
         if (response.ok && data.success && data.answer) {
-            addBotMessage(data.answer);
-            // Save to conversational memory
+            addBotMessage(data.answer, false, currentPetType);
+            // Save to conversational memory and persist to localStorage
             chatHistory.push({ role: "user", text: message });
             chatHistory.push({ role: "model", text: data.answer });
             if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+            saveStoredChatHistory(chatHistory);
         } else {
             const errorText = data.error || data.answer || "AI Pet Advisor is temporarily unavailable. Please try again.";
-            addBotMessage(errorText, true);
+            addBotMessage(errorText, true, currentPetType);
         }
 
     } catch (error) {
@@ -327,7 +489,7 @@ async function sendAI() {
         const thinkingMsg = document.getElementById("aiThinkingBubble");
         if (thinkingMsg) thinkingMsg.remove();
 
-        addBotMessage("AI Pet Advisor is temporarily unavailable. Please try again.", true);
+        addBotMessage("AI Pet Advisor is temporarily unavailable. Please try again.", true, currentPetType);
     } finally {
         isSending = false;
         if (sendBtn) sendBtn.disabled = false;
@@ -417,6 +579,34 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Initial render
-    setPetType("dog");
+    // Check URL parameters for pet type override (e.g., ai.html?pet=cat)
+    const urlParams = new URLSearchParams(window.location.search);
+    const petParam = urlParams.get("pet");
+    const queryParam = urlParams.get("q") || urlParams.get("query");
+
+    // Restore saved pet type preference or use URL parameter
+    let targetPetType = "dog";
+    if (petParam === "dog" || petParam === "cat") {
+        targetPetType = petParam;
+    } else {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEYS.PET_TYPE);
+            if (saved === "dog" || saved === "cat") targetPetType = saved;
+        } catch (e) {}
+    }
+    setPetType(targetPetType, true);
+
+    // Restore chat history from localStorage across page visits
+    restoreChatMessages();
+
+    // If a query was passed in URL (from index.html chips), automatically ask
+    if (queryParam && queryParam.trim()) {
+        setTimeout(() => {
+            askAI(queryParam.trim());
+            // Clean URL query params without reloading
+            try {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (e) {}
+        }, 150);
+    }
 });

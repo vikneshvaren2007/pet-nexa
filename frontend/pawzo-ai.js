@@ -2,13 +2,81 @@
 // PET NEXA — PETCARE AI FLOATING ASSISTANT
 // ==========================================================
 
+const FLOATING_AI_STORAGE_KEY = "petnexa_floating_ai_messages_v1";
+
+function getStoredFloatingMessages() {
+    try {
+        const raw = localStorage.getItem(FLOATING_AI_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveStoredFloatingMessages(msgs) {
+    try {
+        localStorage.setItem(FLOATING_AI_STORAGE_KEY, JSON.stringify(msgs));
+    } catch (e) {}
+}
+
+function restoreFloatingAIMessages() {
+    const messages = document.getElementById("petcareAIMessages");
+    if (!messages) return;
+
+    const list = getStoredFloatingMessages();
+    if (!list || list.length === 0) return;
+
+    messages.innerHTML = "";
+    list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = `petcare-ai-message ${item.sender}`;
+        if (item.sender === "user") {
+            div.textContent = item.text;
+        } else {
+            div.innerHTML = formatFloatingAIMarkdown(item.text);
+            if (item.hasBooking) {
+                const btnWrap = document.createElement("div");
+                btnWrap.style.marginTop = "8px";
+                btnWrap.innerHTML = `
+                    <a href="booking.html" class="petcare-ai-book-btn" style="background:#8b5cf6; color:#fff; padding:6px 14px; border-radius:50px; font-size:12px; text-decoration:none; display:inline-block; font-weight:700;">
+                        📅 Book Grooming Now
+                    </a>
+                `;
+                div.appendChild(btnWrap);
+            }
+        }
+        messages.appendChild(div);
+    });
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function clearFloatingAIChat() {
+    try {
+        localStorage.removeItem(FLOATING_AI_STORAGE_KEY);
+    } catch (e) {}
+
+    const messages = document.getElementById("petcareAIMessages");
+    if (messages) {
+        messages.innerHTML = `
+            <div class="petcare-ai-message bot">
+                🐾 Hi! I am your <strong>PetCare AI Assistant</strong>. Ask me anything about grooming, pet care, or appointments!
+            </div>
+        `;
+    }
+}
+
 function togglePetCareAI() {
     const chat = document.getElementById("petcareAIChat");
     if (!chat) {
         console.error("PetCare AI chat box not found!");
         return;
     }
-    chat.style.display = (chat.style.display === "flex") ? "none" : "flex";
+    const isFlex = chat.style.display === "flex";
+    chat.style.display = isFlex ? "none" : "flex";
+    if (!isFlex) {
+        restoreFloatingAIMessages();
+    }
 }
 
 function formatFloatingAIMarkdown(text) {
@@ -37,6 +105,12 @@ async function sendPetCareAI() {
     userMessage.className = "petcare-ai-message user";
     userMessage.textContent = message;
     messages.appendChild(userMessage);
+
+    // Save to storage
+    const stored = getStoredFloatingMessages();
+    stored.push({ sender: "user", text: message, timestamp: Date.now() });
+    if (stored.length > 30) stored.splice(0, stored.length - 30);
+    saveStoredFloatingMessages(stored);
 
     input.value = "";
     messages.scrollTop = messages.scrollHeight;
@@ -68,11 +142,14 @@ async function sendPetCareAI() {
         if (!response.ok) throw new Error("Server error: " + response.status);
 
         const data = await response.json();
-        botMessage.innerHTML = formatFloatingAIMarkdown(data.reply || "🐾 Sorry, PetCare AI could not answer that.");
+        const replyText = data.reply || "🐾 Sorry, PetCare AI could not answer that.";
+        botMessage.innerHTML = formatFloatingAIMarkdown(replyText);
 
         // If booking mentioned, show Book Now button
-        const lowerMessage = message.toLowerCase();
+        const lowerMessage = (message + " " + replyText).toLowerCase();
+        let hasBooking = false;
         if (lowerMessage.includes("book") || lowerMessage.includes("grooming") || lowerMessage.includes("appointment")) {
+            hasBooking = true;
             const btnWrap = document.createElement("div");
             btnWrap.style.marginTop = "8px";
             btnWrap.innerHTML = `
@@ -82,6 +159,11 @@ async function sendPetCareAI() {
             `;
             botMessage.appendChild(btnWrap);
         }
+
+        const updatedStored = getStoredFloatingMessages();
+        updatedStored.push({ sender: "bot", text: replyText, hasBooking: hasBooking, timestamp: Date.now() });
+        if (updatedStored.length > 30) updatedStored.splice(0, updatedStored.length - 30);
+        saveStoredFloatingMessages(updatedStored);
 
     } catch (error) {
         console.error("PetCare AI Error:", error);
@@ -128,3 +210,7 @@ function startFloatingVoiceInput() {
         input.placeholder = "Ask PetCare AI...";
     };
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    restoreFloatingAIMessages();
+});
