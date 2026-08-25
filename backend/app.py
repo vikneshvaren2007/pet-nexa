@@ -106,7 +106,7 @@ def format_ist_display(dt_val):
     else:
         dt_ist = dt_obj.replace(tzinfo=INDIA_TZ)
         
-    return dt_ist.strftime("%d %b %Y, %I:%M %p IST")
+    return dt_ist.strftime("%d %b %Y, %I:%M:%S %p IST")
 
 # Custom Jinja filters
 @app.template_filter("ist_datetime")
@@ -1221,6 +1221,8 @@ def api_create_order_internal(data, payment_status="Pending", payment_method="Ca
         now_ist = get_now_ist()
         now_ist_str = get_now_ist_str()
         now_ist_iso = get_now_ist_iso()
+        print("INDIA CREATED_AT:", now_ist.isoformat())
+        print("DATABASE CREATED_AT:", now_ist_str)
         order_id = f"ORD-{now_ist.strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
 
         # Save or update customer record
@@ -1797,6 +1799,8 @@ def api_create_booking():
         now_ist = get_now_ist()
         now_ist_str = get_now_ist_str()
         now_ist_iso = get_now_ist_iso()
+        print("INDIA CREATED_AT:", now_ist.isoformat())
+        print("DATABASE CREATED_AT:", now_ist_str)
         booking_id = f"BKG-{now_ist.strftime('%Y%m%d')}-{uuid.uuid4().hex[:5].upper()}"
 
         # Save or update customer

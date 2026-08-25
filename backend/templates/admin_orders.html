@@ -88,7 +88,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
+                            <th>Order ID & Placed At</th>
                             <th>Customer & Contact</th>
                             <th>Items Summary</th>
                             <th>Total</th>
@@ -103,8 +103,8 @@
                         <tr>
                             <td>
                                 <strong>#{{ ord['id'] }}</strong>
-                                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-                                    <i class="fa-regular fa-clock"></i> {{ ord['created_at']|ist_datetime }}
+                                <div style="font-size:11px; color:#4f46e5; font-weight:700; margin-top:2px;">
+                                    <i class="fa-regular fa-clock"></i> Placed: {{ ord['created_at']|ist_datetime }}
                                 </div>
                             </td>
                             <td>

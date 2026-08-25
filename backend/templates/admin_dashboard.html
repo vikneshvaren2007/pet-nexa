@@ -147,7 +147,7 @@
                             <th>Amount</th>
                             <th>Payment</th>
                             <th>Status</th>
-                            <th>Date</th>
+                            <th>Order Placed</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -164,7 +164,7 @@
                             <td>
                                 <span class="badge {{ ord['status'].lower().replace(' ', '-') }}">{{ ord['status'] }}</span>
                             </td>
-                            <td style="color:var(--text-muted); font-size:12px;">{{ ord['created_at']|ist_datetime }}</td>
+                            <td style="color:#4f46e5; font-size:12px; font-weight:700;"><i class="fa-regular fa-clock"></i> {{ ord['created_at']|ist_datetime }}</td>
                             <td>
                                 <a href="{{ url_for('admin_orders', search=ord['id']) }}" class="btn-secondary btn-sm">Manage</a>
                             </td>
@@ -199,11 +199,11 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Booking ID</th>
+                            <th>Booking ID & Created At</th>
                             <th>Customer</th>
                             <th>Pet</th>
                             <th>Service</th>
-                            <th>Date & Time</th>
+                            <th>Scheduled Slot</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -213,7 +213,9 @@
                         <tr>
                             <td>
                                 <strong>#{{ bkg['id'] }}</strong>
-                                <div style="font-size:11px; color:var(--text-muted);">{{ bkg['created_at']|ist_datetime }}</div>
+                                <div style="font-size:11px; color:#4f46e5; font-weight:700;">
+                                    <i class="fa-regular fa-clock"></i> Booked: {{ bkg['created_at']|ist_datetime }}
+                                </div>
                             </td>
                             <td>
                                 <div><strong>{{ bkg['customer_name'] }}</strong></div>
@@ -225,8 +227,8 @@
                             </td>
                             <td>{{ bkg['service'] }}</td>
                             <td>
-                                <strong>{{ bkg['appointment_date'] }}</strong>
-                                <div style="font-size:12px; color:var(--text-muted);">{{ bkg['appointment_time'] }}</div>
+                                <strong>🗓️ {{ bkg['appointment_date'] }}</strong>
+                                <div style="font-size:12px; color:#334155; font-weight:600;">⏰ {{ bkg['appointment_time'] }}</div>
                             </td>
                             <td>
                                 <span class="badge {{ bkg['status'].lower().replace(' ', '-') }}">{{ bkg['status'] }}</span>

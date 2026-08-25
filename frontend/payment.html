@@ -861,40 +861,70 @@
 
                 await sleep(700);
 
-                // Create local demo order
-                const orderId = `ORD-${Date.now()}`;
-
-                const finalOrderObj = {
-                    id: orderId,
+                // Create Order on Backend with exact Indian Standard Time
+                const orderPayload = {
                     customer_name: customerData.name || "Customer",
                     email: customerData.email || "",
                     phone: customerData.phone || "",
                     address: customerData.address || "",
-                    city: customerData.city || "",
-                    state: customerData.state || "",
-                    pincode: customerData.pincode || "",
-                    subtotal: grandTotal >= 1000
-                        ? grandTotal
-                        : Math.max(0, grandTotal - 50),
+                    city: customerData.city || "Nagercoil",
+                    state: customerData.state || "Tamil Nadu",
+                    pincode: customerData.pincode || "629001",
+                    subtotal: grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50),
                     delivery: grandTotal >= 1000 ? 0 : 50,
                     grand_total: grandTotal,
                     payment_method: activePaymentName,
-                    payment_status:
-                        selectedMethod === "cod" ? "Pending" : "Paid",
+                    payment_status: selectedMethod === "cod" ? "Pending" : "Paid",
+                    items: cartItems.map(itm => ({
+                        id: itm.id || null,
+                        name: itm.name || itm.product_name || "Pet Product",
+                        price: parseFloat(itm.price) || 0,
+                        quantity: parseInt(itm.quantity) || 1,
+                        image: itm.image || "images/logo.jpg"
+                    }))
+                };
+
+                let serverOrderId = null;
+                let serverOrderObj = null;
+
+                try {
+                    const res = await fetch(API_BASE + "/api/orders/create", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(orderPayload)
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (data && data.success && data.order_id) {
+                        serverOrderId = data.order_id;
+                        serverOrderObj = data.order;
+                    }
+                } catch(apiErr) {
+                    console.warn("Backend order creation warning:", apiErr);
+                }
+
+                const finalOrderId = serverOrderId || `ORD-${Date.now()}`;
+                const finalOrderObj = serverOrderObj || {
+                    id: finalOrderId,
+                    customer_name: customerData.name || "Customer",
+                    email: customerData.email || "",
+                    phone: customerData.phone || "",
+                    address: customerData.address || "",
+                    city: customerData.city || "Nagercoil",
+                    state: customerData.state || "Tamil Nadu",
+                    pincode: customerData.pincode || "629001",
+                    subtotal: grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50),
+                    delivery: grandTotal >= 1000 ? 0 : 50,
+                    grand_total: grandTotal,
+                    payment_method: activePaymentName,
+                    payment_status: selectedMethod === "cod" ? "Pending" : "Paid",
                     status: "Confirmed",
                     created_at: new Date().toISOString()
                 };
 
                 // Save order information
-                localStorage.setItem("lastOrderId", orderId);
-                localStorage.setItem(
-                    "lastOrderData",
-                    JSON.stringify(finalOrderObj)
-                );
-                localStorage.setItem(
-                    "lastOrderItems",
-                    JSON.stringify(cartItems)
-                );
+                localStorage.setItem("lastOrderId", finalOrderId);
+                localStorage.setItem("lastOrderData", JSON.stringify(finalOrderObj));
+                localStorage.setItem("lastOrderItems", JSON.stringify(cartItems));
 
                 // Clear cart
                 localStorage.removeItem("cart");
@@ -917,7 +947,7 @@
 
                 // IMPORTANT: Redirect to success.html
                 window.location.replace(
-                    "./success.html?id=" + encodeURIComponent(orderId)
+                    "./success.html?id=" + encodeURIComponent(finalOrderId)
                 );
 
             } catch (error) {

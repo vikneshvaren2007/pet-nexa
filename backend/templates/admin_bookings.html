@@ -86,11 +86,11 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Booking ID</th>
+                            <th>Booking ID & Created At</th>
                             <th>Customer Contact</th>
                             <th>Pet Details</th>
                             <th>Service & Specialist</th>
-                            <th>Date & Time</th>
+                            <th>Scheduled Appointment Slot</th>
                             <th>Status</th>
                             <th>Notes</th>
                             <th>Actions</th>
@@ -101,7 +101,7 @@
                         <tr>
                             <td>
                                 <strong>#{{ bkg['id'] }}</strong>
-                                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                                <div style="font-size:11px; color:#4f46e5; font-weight:700; margin-top:2px;">
                                     <i class="fa-regular fa-clock"></i> Booked: {{ bkg['created_at']|ist_datetime }}
                                 </div>
                             </td>

@@ -49,10 +49,10 @@ Scroll down to the **Environment Variables** section and add the following keys:
 
 1. `SECRET_KEY` = `pawzo-care-super-secret-key-2026`
 2. `EMAIL_USER` = `your_email@gmail.com`
-3. `EMAIL_PASSWORD` = `your_16_char_google_app_password`
+3. `EMAIL_PASSWORD` = `your_16_character_google_app_password`
 4. `ADMIN_EMAIL` = `your_admin_email@gmail.com`
-5. `GEMINI_API_KEY` = `your_gemini_developer_key_here`
-6. `GEMINI_MODEL` = `gemini-2.5-flash`
+5. `GEMINI_API_KEY` = `your_gemini_api_key_here`
+6. `GEMINI_MODEL` = `gemini-1.5-flash`
 7. `RAZORPAY_KEY_ID` = `rzp_test_pawzocare2026`
 8. `RAZORPAY_KEY_SECRET` = `pawzosecretkey2026`
 9. `BASE_URL` = `https://pet-nexa.onrender.com` *(optional: Render provides RENDER_EXTERNAL_URL automatically)*
