@@ -39,6 +39,9 @@ A production-ready full-stack Flask web application providing comprehensive pet 
    | `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model version |
    | `RAZORPAY_KEY_ID` | `rzp_test_pawzocare2026` | Razorpay Sandbox Key ID |
    | `RAZORPAY_KEY_SECRET` | `pawzosecretkey2026` | Razorpay Sandbox Secret |
+   | `WHATSAPP_PHONE_NUMBER_ID` | `104928374829102` | Meta WhatsApp Cloud Phone Number ID |
+   | `WHATSAPP_ACCESS_TOKEN` | `EAABw...` | Meta WhatsApp Cloud Access Token |
+   | `WHATSAPP_RECIPIENT_NUMBER` | `919445437069` | Admin WhatsApp number for order & booking alerts |
 
 5. Click **Deploy Web Service**.
 6. Render will automatically build the service, install dependencies, initialize the database (`pawzo.db`), and make the site live at `https://pet-nexa.onrender.com`!

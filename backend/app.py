@@ -731,6 +731,70 @@ def send_email_async(to_email, subject, body_text, body_html=None):
 
     threading.Thread(target=_send, daemon=True).start()
 
+
+# ==========================================================
+# ASYNCHRONOUS WHATSAPP ENGINE (META BUSINESS CLOUD API)
+# ==========================================================
+def send_whatsapp_async(message_text, recipient=None):
+    """
+    Asynchronous WhatsApp notification engine using Meta WhatsApp Business Cloud API.
+    Sends instant WhatsApp message alerts to the administrator when orders or appointments are created/updated.
+    - WHATSAPP_PHONE_NUMBER_ID: Meta Phone Number ID
+    - WHATSAPP_ACCESS_TOKEN: Permanent or System User Access Token
+    - WHATSAPP_RECIPIENT_NUMBER: Administrator WhatsApp number (e.g. 919445437069)
+    """
+    def _send():
+        phone_number_id = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "").strip()
+        access_token = os.getenv("WHATSAPP_ACCESS_TOKEN", "").strip()
+        raw_recipient = recipient or os.getenv("WHATSAPP_RECIPIENT_NUMBER", "919445437069").strip()
+
+        # Clean recipient number (remove '+', '-', spaces)
+        to_number = re.sub(r"\D", "", raw_recipient)
+        if len(to_number) == 10 and not to_number.startswith("91"):
+            to_number = "91" + to_number
+
+        # If credentials are not configured, log mock message safely without breaking execution
+        if not phone_number_id or not access_token or not to_number or "your_" in phone_number_id.lower() or "your_" in access_token.lower():
+            print(f"[WHATSAPP MOCK] Message to +{to_number}:\n{message_text}\n(Note: Configure WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_ACCESS_TOKEN in .env for live WhatsApp delivery)")
+            return
+
+        try:
+            url = f"https://graph.facebook.com/v19.0/{phone_number_id}/messages"
+            payload = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": to_number,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": message_text
+                }
+            }
+
+            req_data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(
+                url,
+                data=req_data,
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json",
+                    "User-Agent": "petnexa-whatsapp-engine:1.0"
+                },
+                method="POST"
+            )
+
+            with urllib.request.urlopen(req, timeout=12) as response:
+                resp_content = response.read().decode("utf-8")
+                print(f"[WHATSAPP SUCCESS] Notification sent to +{to_number} | Response: {resp_content}")
+
+        except urllib.error.HTTPError as he:
+            err_msg = he.read().decode("utf-8") if he.fp else str(he)
+            print(f"[WHATSAPP HTTP ERROR {he.code}] Could not send to +{to_number}: {err_msg}")
+        except Exception as ex:
+            print(f"[WHATSAPP ERROR] Failed sending to +{to_number}: {ex}")
+
+    threading.Thread(target=_send, daemon=True).start()
+
 def get_app_base_url():
     """Dynamically determine the base application URL for email links and redirects."""
     env_base = os.getenv("BASE_URL") or os.getenv("RENDER_EXTERNAL_URL")
@@ -860,6 +924,22 @@ def notify_order_placed(order, items):
     """
     send_email_async(admin_emails, f"🚨 NEW ORDER #{order['id']} from {order['customer_name']} (₹{order['grand_total']:.0f}) - PET NEXA", f"New order #{order['id']} received on {format_ist_display(order.get('created_at'))}.", admin_html)
 
+    # Format & Dispatch WhatsApp Alert to Admin
+    item_lines = "\n".join([f"• {item['product_name']} x {item['quantity']} - ₹{float(item['total']):.0f}" for item in items])
+    whatsapp_order_msg = (
+        f"🚨 *NEW ORDER PLACED - PET NEXA* 🐾\n\n"
+        f"*Order ID:* #{order['id']}\n"
+        f"*Customer:* {order['customer_name']}\n"
+        f"*Phone:* {order['phone']}\n"
+        f"*Email:* {order['email']}\n"
+        f"*Address:* {order['address']}, {order['city'] or 'Nagercoil'} - {order['pincode']}\n"
+        f"*Payment:* {order['payment_method']} ({order['payment_status']})\n\n"
+        f"*Items Ordered:*\n{item_lines}\n\n"
+        f"*Grand Total:* ₹{float(order['grand_total']):.0f}\n"
+        f"*Date Placed:* {format_ist_display(order.get('created_at'))}"
+    )
+    send_whatsapp_async(whatsapp_order_msg)
+
 
 # 2. Order Cancellation Notification
 def notify_order_cancelled(order, reason, cancelled_by="Customer"):
@@ -899,6 +979,17 @@ def notify_order_cancelled(order, reason, cancelled_by="Customer"):
     </div>
     """
     send_email_async(admin_emails, f"⚠️ ORDER CANCELLED #{order['id']} - {order['customer_name']} - PET NEXA", f"Order #{order['id']} cancelled.", admin_html)
+
+    # Format & Dispatch WhatsApp Cancellation Alert
+    whatsapp_cancel_msg = (
+        f"⚠️ *ORDER CANCELLED - PET NEXA* 🐾\n\n"
+        f"*Order ID:* #{order['id']}\n"
+        f"*Customer:* {order['customer_name']} ({order['phone']})\n"
+        f"*Total:* ₹{float(order['grand_total']):.0f}\n"
+        f"*Reason:* {reason}\n"
+        f"*Cancelled By:* {cancelled_by}"
+    )
+    send_whatsapp_async(whatsapp_cancel_msg)
 
 
 # 3. Order Status Updated Notification
@@ -1041,6 +1132,27 @@ def notify_booking_created(booking):
     """
     send_email_async(admin_emails, f"🗓️ NEW APPOINTMENT #{booking['id']} - {booking['pet_name']} ({booking['service']}) - PET NEXA", f"New appointment #{booking['id']} received.", admin_html)
 
+    # Format & Dispatch WhatsApp Booking Alert to Admin
+    service_str = booking.get("main_service") or booking.get("service") or "Grooming"
+    if booking.get("sub_service"):
+        service_str += f" ({booking.get('sub_service')})"
+
+    whatsapp_booking_msg = (
+        f"🗓️ *NEW APPOINTMENT BOOKED - PET NEXA* 🐾\n\n"
+        f"*Booking ID:* #{booking['id']}\n"
+        f"*Name:* {booking['customer_name']}\n"
+        f"*Phone:* {booking['phone']}\n"
+        f"*Email:* {booking['email']}\n"
+        f"*Pet:* {booking['pet_name']} ({booking['pet_type']} - {booking['breed']}, Age: {booking['pet_age']})\n"
+        f"*Service:* {service_str}\n"
+        f"*Specialist:* {booking['specialist']}\n"
+        f"*Date/Time:* {booking['appointment_date']} at {booking['appointment_time']}\n"
+        f"*Total Price:* ₹{total_price:.0f}\n"
+        f"*Address:* {booking.get('address') or 'Salon Visit'}\n"
+        f"*Notes:* {booking.get('message') or 'None'}"
+    )
+    send_whatsapp_async(whatsapp_booking_msg)
+
 
 # 5. Booking Rescheduled Notification
 def notify_booking_rescheduled(booking, old_date, old_time, new_date, new_time):
@@ -1087,6 +1199,17 @@ def notify_booking_rescheduled(booking, old_date, old_time, new_date, new_time):
     """
     send_email_async(admin_emails, f"🔄 APPOINTMENT RESCHEDULED #{booking['id']} - {booking['pet_name']} - PET NEXA", f"Appointment #{booking['id']} rescheduled.", admin_html)
 
+    whatsapp_resched_msg = (
+        f"🔄 *APPOINTMENT RESCHEDULED - PET NEXA* 🐾\n\n"
+        f"*Booking ID:* #{booking['id']}\n"
+        f"*Customer:* {booking['customer_name']} ({booking['phone']})\n"
+        f"*Pet:* {booking['pet_name']}\n"
+        f"*Previous:* {old_date} at {old_time}\n"
+        f"*New Date/Time:* {new_date} at {new_time}\n"
+        f"*Service:* {booking['service']}"
+    )
+    send_whatsapp_async(whatsapp_resched_msg)
+
 
 # 6. Booking Cancellation Notification
 def notify_booking_cancelled(booking, reason, cancelled_by="Customer"):
@@ -1126,6 +1249,18 @@ def notify_booking_cancelled(booking, reason, cancelled_by="Customer"):
     </div>
     """
     send_email_async(admin_emails, f"⚠️ APPOINTMENT CANCELLED #{booking['id']} - {booking['pet_name']} - PET NEXA", f"Appointment #{booking['id']} cancelled.", admin_html)
+
+    whatsapp_bkg_cancel_msg = (
+        f"⚠️ *APPOINTMENT CANCELLED - PET NEXA* 🐾\n\n"
+        f"*Booking ID:* #{booking['id']}\n"
+        f"*Customer:* {booking['customer_name']} ({booking['phone']})\n"
+        f"*Pet:* {booking['pet_name']} ({booking['breed']})\n"
+        f"*Service:* {booking['service']}\n"
+        f"*Scheduled:* {booking['appointment_date']} at {booking['appointment_time']}\n"
+        f"*Reason:* {reason}\n"
+        f"*Cancelled By:* {cancelled_by}"
+    )
+    send_whatsapp_async(whatsapp_bkg_cancel_msg)
 
 
 # 7. Return / Refund Notification
@@ -3337,6 +3472,24 @@ def test_email():
         "Hello!\n\nThis is a test email confirming your Gmail SMTP configuration is fully working and dispatching to BOTH admin email addresses!\n\nPET NEXA 🐾"
     )
     return jsonify({"success": True, "message": f"Test email dispatched to {', '.join(admin_emails)}"})
+
+
+@app.route("/test-whatsapp")
+def test_whatsapp():
+    recipient = request.args.get("phone") or os.getenv("WHATSAPP_RECIPIENT_NUMBER", "919445437069")
+    test_msg = (
+        "🐾 *PET NEXA - WhatsApp Business Cloud API Test*\n\n"
+        "Hello! This is a test notification confirming that Meta WhatsApp Business Cloud API integration is fully operational!\n\n"
+        "PET NEXA 🐾"
+    )
+    send_whatsapp_async(test_msg, recipient)
+    return jsonify({
+        "success": True,
+        "message": f"WhatsApp test alert dispatched to +{re.sub(r'\\D', '', recipient)}",
+        "phone_number_id_configured": bool(os.getenv("WHATSAPP_PHONE_NUMBER_ID")),
+        "access_token_configured": bool(os.getenv("WHATSAPP_ACCESS_TOKEN")),
+        "recipient_configured": recipient
+    })
 
 
 def get_local_ip():
