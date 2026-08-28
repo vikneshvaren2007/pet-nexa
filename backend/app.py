@@ -461,6 +461,20 @@ def init_db():
         )
     """)
 
+    # 15. Contact Inquiries Table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS contact_inquiries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT,
+            subject TEXT,
+            message TEXT NOT NULL,
+            status TEXT DEFAULT 'New',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     # Create indexes for optimal search performance
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone)")
@@ -596,7 +610,7 @@ def seed_database(conn):
         ("shop_name", "PET NEXA"),
         ("shop_tagline", "Professional Pet Care & Premium Pet Shop"),
         ("shop_phone", "+91 9445437069, +91 6380576651"),
-        ("shop_email", "vikneshvaren2@gmail.com"),
+        ("shop_email", "vikneshvaren2@gmail.com, karthikthanesh92@gmail.com"),
         ("shop_address", "8/30, Church Street, Azhagappapuram, Nagercoil, Tamil Nadu - 629401"),
         ("delivery_fee", "50"),
         ("free_delivery_threshold", "1000"),
@@ -606,11 +620,12 @@ def seed_database(conn):
         ("return_policy", "Returns are accepted within 7 days of delivery for unused items in original packaging.")
     ]
     for k, v in settings:
-        cursor.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)", (k, v))
+        cursor.execute("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)", (k, v))
 
     conn.commit()
 
 
+# ==========================================================
 # ==========================================================
 # ASYNCHRONOUS EMAIL ENGINE (DUAL RECIPIENTS SUPPORT)
 # ==========================================================
@@ -625,8 +640,8 @@ def get_admin_emails():
 def send_email_async(to_email, subject, body_text, body_html=None):
     """
     High-deliverability asynchronous email engine:
-    1. Primary: Resend HTTPS API (zero SMTP port blocking, works seamlessly on Render / cloud servers)
-    2. Fallback: Gmail SMTP SSL (port 465) if Resend is unconfigured or returns an error.
+    1. Primary: Resend HTTPS API (zero SMTP port blocking on cloud servers)
+    2. Fallback: Gmail SMTP SSL (port 465) for direct deliverability to all recipients (dual admins and customers).
     """
     def _send():
         resend_key = os.getenv("RESEND_API_KEY", "").strip()
@@ -641,6 +656,8 @@ def send_email_async(to_email, subject, body_text, body_html=None):
 
         if not recipients:
             return
+
+        smtp_recipients = []
 
         for recipient in recipients:
             delivered = False
@@ -668,7 +685,7 @@ def send_email_async(to_email, subject, body_text, body_html=None):
                         },
                         method="POST"
                     )
-                    with urllib.request.urlopen(req, timeout=12) as response:
+                    with urllib.request.urlopen(req, timeout=10) as response:
                         resp_content = response.read().decode("utf-8")
                         print(f"[RESEND SUCCESS] Sent email to {recipient}: {subject} | Response: {resp_content}")
                         delivered = True
@@ -678,35 +695,39 @@ def send_email_async(to_email, subject, body_text, body_html=None):
                 except Exception as rex:
                     print(f"[RESEND ERROR] Error sending to {recipient}: {rex}")
 
-            if delivered:
-                continue
+            if not delivered:
+                smtp_recipients.append(recipient)
 
-            # --- 2. FALLBACK TO GMAIL SMTP SSL ---
+        # --- 2. FALLBACK TO GMAIL SMTP SSL FOR REMAINING RECIPIENTS ---
+        if smtp_recipients:
             raw_user = os.getenv("EMAIL_USER", "vikneshvaren2@gmail.com")
             sender_email = raw_user.split(",")[0].strip()
-            sender_password = os.getenv("EMAIL_PASSWORD", "").strip()
+            sender_password = os.getenv("EMAIL_PASSWORD", "").replace(" ", "").strip()
 
             if sender_email and sender_password and "your_email" not in sender_email:
                 try:
-                    msg = EmailMessage()
-                    msg["Subject"] = subject
-                    msg["From"] = f"PET NEXA <{sender_email}>"
-                    msg["To"] = recipient
-                    msg.set_content(body_text or "")
-
-                    if body_html:
-                        msg.add_alternative(body_html, subtype="html")
-
-                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
                         server.login(sender_email, sender_password)
-                        server.send_message(msg)
-                    print(f"[SMTP SUCCESS] EMAIL SENT successfully to {recipient}: {subject}")
-                    delivered = True
-                except Exception as e:
-                    print(f"[SMTP ERROR] EMAIL SENDING FAILED for {recipient}: {e}")
+                        for recipient in smtp_recipients:
+                            try:
+                                msg = EmailMessage()
+                                msg["Subject"] = subject
+                                msg["From"] = f"PET NEXA <{sender_email}>"
+                                msg["To"] = recipient
+                                msg.set_content(body_text or "")
 
-            if not delivered and not resend_key:
-                print(f"[EMAIL MOCK] Email to {recipient}: {subject}")
+                                if body_html:
+                                    msg.add_alternative(body_html, subtype="html")
+
+                                server.send_message(msg)
+                                print(f"[SMTP SUCCESS] EMAIL SENT successfully to {recipient}: {subject}")
+                            except Exception as sub_e:
+                                print(f"[SMTP ERROR] Failed sending to {recipient}: {sub_e}")
+                except Exception as e:
+                    print(f"[SMTP ERROR] SMTP connection failed: {e}")
+            else:
+                for recipient in smtp_recipients:
+                    print(f"[EMAIL MOCK] Email to {recipient}: {subject}")
 
     threading.Thread(target=_send, daemon=True).start()
 
@@ -733,7 +754,7 @@ def get_email_header_footer():
     footer = """
     <div style="background:#f8fafc; padding:20px; text-align:center; border-radius:0 0 12px 12px; border-top:1px solid #e2e8f0; font-family:sans-serif; font-size:12px; color:#64748b;">
         <p style="margin:0 0 5px 0;">📍 8/30, Church Street, Azhagappapuram, Nagercoil, Tamil Nadu - 629401</p>
-        <p style="margin:0 0 5px 0;">📞 +91 9445437069 | ✉️ vikneshvaren2@gmail.com</p>
+        <p style="margin:0 0 5px 0;">📞 +91 9445437069 | ✉️ vikneshvaren2@gmail.com, karthikthanesh92@gmail.com</p>
         <p style="margin:8px 0 0 0; color:#94a3b8;">© 2026 PET NEXA. All Rights Reserved.</p>
     </div>
     """
@@ -911,6 +932,26 @@ def notify_order_status_updated(order, new_status, tracking_number=None, courier
     </div>
     """
     send_email_async(customer_email, f"📦 Order Update #{order['id']}: {new_status} - PET NEXA", f"Order #{order['id']} is now {new_status}.", cust_html)
+
+    admin_emails = get_admin_emails()
+    admin_html = f"""
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
+        {header}
+        <div style="padding:30px; font-family:sans-serif; color:#1e293b; line-height:1.6;">
+            <h2 style="color:#7c3aed; margin-top:0;">📦 Order Status Updated #{order['id']} &rarr; {new_status}</h2>
+            <p><strong>Customer:</strong> {order['customer_name']} ({order['phone']})<br>
+               <strong>Email:</strong> {order['email']}<br>
+               <strong>New Status:</strong> {new_status}<br>
+               {f'<strong>Tracking (AWB):</strong> {tracking_number}<br>' if tracking_number else ''}
+               {f'<strong>Courier:</strong> {courier}<br>' if courier else ''}</p>
+            <p style="text-align:center; margin-top:25px;">
+                <a href="{base_url}/admin/orders" style="background:#0f172a; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Open Admin Panel</a>
+            </p>
+        </div>
+        {footer}
+    </div>
+    """
+    send_email_async(admin_emails, f"📦 ORDER STATUS UPDATED #{order['id']}: {new_status} - PET NEXA", f"Order #{order['id']} status updated to {new_status}.", admin_html)
 
 
 # 4. Booking Created Notification
@@ -1092,6 +1133,7 @@ def notify_return_status_updated(ret, order, new_status, admin_notes):
     admin_emails = get_admin_emails()
     customer_email = ret.get("customer_email") or order.get("email")
     header, footer = get_email_header_footer()
+    base_url = get_app_base_url()
 
     cust_html = f"""
     <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
@@ -1109,7 +1151,101 @@ def notify_return_status_updated(ret, order, new_status, admin_notes):
         {footer}
     </div>
     """
-    send_email_async(customer_email, f"🔄 Return Request Update #{ret['id']} ({new_status}) - PET NEXA", f"Return request #{ret['id']} is now {new_status}.", cust_html)
+    if customer_email:
+        send_email_async(customer_email, f"🔄 Return Request Update #{ret['id']} ({new_status}) - PET NEXA", f"Return request #{ret['id']} is now {new_status}.", cust_html)
+
+    admin_html = f"""
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
+        {header}
+        <div style="padding:30px; font-family:sans-serif; color:#1e293b; line-height:1.6;">
+            <h2 style="color:#b91c1c; margin-top:0;">⚠️ Return Request Alert #{ret['id']} ({new_status})</h2>
+            <p><strong>Customer:</strong> {ret.get('customer_name') or order.get('customer_name')} ({ret.get('customer_phone') or order.get('phone')})<br>
+               <strong>Email:</strong> {ret.get('customer_email') or order.get('email')}<br>
+               <strong>Order ID:</strong> #{ret['order_id']}<br>
+               <strong>Refund Value:</strong> ₹{float(ret.get('refund_amount', 0)):.0f}<br>
+               <strong>Reason:</strong> {ret.get('reason', 'Customer Return')}<br>
+               <strong>Status:</strong> {new_status}<br>
+               <strong>Notes:</strong> {admin_notes or 'None'}</p>
+            <p style="text-align:center; margin-top:25px;">
+                <a href="{base_url}/admin/returns" style="background:#0f172a; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Open Returns Panel</a>
+            </p>
+        </div>
+        {footer}
+    </div>
+    """
+    send_email_async(admin_emails, f"⚠️ RETURN REQUEST #{ret['id']} ({new_status}) - Order #{ret['order_id']} - PET NEXA", f"Return request #{ret['id']} status: {new_status}.", admin_html)
+
+
+# 8. Customer Review Notification
+def notify_review_submitted(review):
+    admin_emails = get_admin_emails()
+    header, footer = get_email_header_footer()
+    base_url = get_app_base_url()
+
+    admin_html = f"""
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
+        {header}
+        <div style="padding:30px; font-family:sans-serif; color:#1e293b; line-height:1.6;">
+            <h2 style="color:#7c3aed; margin-top:0;">⭐ New Customer Review Submitted</h2>
+            <div style="background:#f5f3ff; border-left:4px solid #8b5cf6; padding:15px; border-radius:4px; margin:20px 0;">
+                <p style="margin:0 0 6px 0; font-size:18px; color:#f59e0b;">{'★' * int(review.get('rating', 5))}{'☆' * (5 - int(review.get('rating', 5)))} ({review.get('rating')}/5 Stars)</p>
+                <p style="margin:0 0 8px 0; font-style:italic; color:#334155;">"{review.get('review_text')}"</p>
+                <p style="margin:0; font-size:13px; color:#64748b;">
+                    <strong>Customer:</strong> {review.get('customer_name')} ({review.get('customer_email')})<br>
+                    {f"<strong>Item:</strong> {review.get('product_name') or review.get('service_name')}<br>" if (review.get('product_name') or review.get('service_name')) else ""}
+                    <strong>Submitted at:</strong> {format_ist_display(review.get('created_at'))}
+                </p>
+            </div>
+            <p style="text-align:center; margin-top:25px;">
+                <a href="{base_url}/admin/reviews" style="background:#0f172a; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block;">Moderate in Admin Panel</a>
+            </p>
+        </div>
+        {footer}
+    </div>
+    """
+    send_email_async(admin_emails, f"⭐ NEW REVIEW ({review.get('rating')}/5★) from {review.get('customer_name')} - PET NEXA", f"New review submitted by {review.get('customer_name')}: {review.get('review_text')}", admin_html)
+
+
+# 9. Contact Inquiry Notification
+def notify_contact_submission(contact):
+    admin_emails = get_admin_emails()
+    customer_email = contact.get("email")
+    header, footer = get_email_header_footer()
+
+    admin_html = f"""
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
+        {header}
+        <div style="padding:30px; font-family:sans-serif; color:#1e293b; line-height:1.6;">
+            <h2 style="color:#7c3aed; margin-top:0;">📬 New Contact Inquiry / Message</h2>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:18px; border-radius:8px; margin:20px 0;">
+                <p style="margin:0 0 6px 0;"><strong>Name:</strong> {contact.get('name')}</p>
+                <p style="margin:0 0 6px 0;"><strong>Email:</strong> {contact.get('email')}</p>
+                <p style="margin:0 0 6px 0;"><strong>Phone:</strong> {contact.get('phone', 'N/A')}</p>
+                <p style="margin:0 0 6px 0;"><strong>Subject:</strong> {contact.get('subject', 'General Inquiry')}</p>
+                <p style="margin:10px 0 0 0; padding-top:10px; border-top:1px solid #e2e8f0;"><strong>Message:</strong><br>{contact.get('message')}</p>
+            </div>
+        </div>
+        {footer}
+    </div>
+    """
+    send_email_async(admin_emails, f"📬 NEW INQUIRY from {contact.get('name')} ({contact.get('subject', 'Contact')}) - PET NEXA", f"New contact inquiry from {contact.get('name')} ({contact.get('email')}): {contact.get('message')}", admin_html)
+
+    if customer_email:
+        cust_html = f"""
+        <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px;">
+            {header}
+            <div style="padding:30px; font-family:sans-serif; color:#1e293b; line-height:1.6;">
+                <h2 style="color:#7c3aed; margin-top:0;">🐾 We Received Your Message</h2>
+                <p>Dear <strong>{contact.get('name')}</strong>,</p>
+                <p>Thank you for reaching out to PET NEXA! Our team has received your message and will respond as soon as possible.</p>
+                <div style="background:#f5f3ff; border-left:4px solid #8b5cf6; padding:12px; margin:20px 0;">
+                    <p style="margin:0;"><strong>Your Message:</strong> {contact.get('message')}</p>
+                </div>
+            </div>
+            {footer}
+        </div>
+        """
+        send_email_async(customer_email, f"🐾 We Received Your Inquiry - PET NEXA", f"Hi {contact.get('name')}, we received your message and will get back to you shortly.", cust_html)
 
 
 # ==========================================================
@@ -2162,6 +2298,21 @@ def api_submit_review():
         rev_id = cursor.lastrowid
         conn.close()
 
+        # Trigger dual admin notification for customer reviews
+        review_dict = {
+            "id": rev_id,
+            "customer_name": customer_name,
+            "customer_email": customer_email,
+            "rating": rating,
+            "review_text": review_text,
+            "product_name": product_name,
+            "service_name": service_name,
+            "order_id": order_id,
+            "booking_id": booking_id,
+            "created_at": now_ist_str
+        }
+        notify_review_submitted(review_dict)
+
         return jsonify({
             "success": True,
             "message": "Thank you! Your genuine review has been submitted.",
@@ -2173,7 +2324,58 @@ def api_submit_review():
         print(f"[ERROR] REVIEW SUBMISSION ERROR: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
-# 17. Customer History Lookup API
+# 17. Contact Inquiry Submission API
+@app.route("/api/contact", methods=["POST"])
+@app.route("/api/inquiries", methods=["POST"])
+def api_submit_contact():
+    try:
+        data = request.get_json() or {}
+        name = data.get("name", "").strip()
+        email = data.get("email", "").strip()
+        phone = data.get("phone", "").strip()
+        subject = data.get("subject", "General Inquiry").strip()
+        message = data.get("message", "").strip()
+
+        if not name or not email or not message:
+            return jsonify({"success": False, "error": "Please provide your name, email, and message."}), 400
+
+        now_ist_str = get_now_ist_str()
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO contact_inquiries (name, email, phone, subject, message, status, created_at)
+            VALUES (?, ?, ?, ?, ?, 'New', ?)
+        """, (name, email, phone, subject, message, now_ist_str))
+        conn.commit()
+        inquiry_id = cursor.lastrowid
+        conn.close()
+
+        contact_dict = {
+            "id": inquiry_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "subject": subject,
+            "message": message,
+            "created_at": now_ist_str
+        }
+
+        # Send notification to both admin emails + confirmation to customer
+        notify_contact_submission(contact_dict)
+
+        return jsonify({
+            "success": True,
+            "message": "Thank you! Your message has been received. Our team will contact you shortly.",
+            "inquiry_id": inquiry_id,
+            "created_at": now_ist_str
+        }), 201
+
+    except Exception as e:
+        print(f"[ERROR] CONTACT INQUIRY ERROR: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# 18. Customer History Lookup API
 @app.route("/api/customer/lookup", methods=["GET"])
 def api_customer_lookup():
     email = request.args.get("email", "").strip()

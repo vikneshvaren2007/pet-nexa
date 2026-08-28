@@ -45,7 +45,7 @@ function initCarousels() {
             },
             breakpoints: {
                 0: { slidesPerView: 1, spaceBetween: 15 },
-                640: { slidesPerView: 1.5, spaceBetween: 20 },
+                640: { slidesPerView: 2, spaceBetween: 20 },
                 768: { slidesPerView: 2, spaceBetween: 20 },
                 1024: { slidesPerView: 3, spaceBetween: 25 }
             }
@@ -71,7 +71,7 @@ function initCarousels() {
             },
             breakpoints: {
                 0: { slidesPerView: 1, spaceBetween: 15 },
-                640: { slidesPerView: 1.5, spaceBetween: 20 },
+                640: { slidesPerView: 2, spaceBetween: 20 },
                 768: { slidesPerView: 2, spaceBetween: 20 },
                 1024: { slidesPerView: 3, spaceBetween: 25 }
             }
@@ -92,16 +92,25 @@ function updateCartCount() {
     });
 }
 
-// Hero Image Carousel
+// Hero Image Slider with smooth cross-fade and zero layout shift
 function initHeroImageSlider() {
     const heroImg = document.getElementById("heroImage");
     if (!heroImg) return;
     const images = ["images/image.png", "images/image2.png"];
+    // Preload images
+    images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
     let idx = 0;
     setInterval(() => {
         idx = (idx + 1) % images.length;
-        heroImg.src = images[idx];
-    }, 4000);
+        heroImg.style.opacity = "0.2";
+        setTimeout(() => {
+            heroImg.src = images[idx];
+            heroImg.style.opacity = "1";
+        }, 200);
+    }, 4500);
 }
 
 // Mobile Menu
@@ -414,7 +423,7 @@ async function loadCustomerReviews() {
                 spaceBetween: 25,
                 breakpoints: {
                     0: { slidesPerView: 1, spaceBetween: 15 },
-                    640: { slidesPerView: 1.5, spaceBetween: 20 },
+                    640: { slidesPerView: 2, spaceBetween: 20 },
                     768: { slidesPerView: 2, spaceBetween: 20 },
                     1024: { slidesPerView: 3, spaceBetween: 25 }
                 }

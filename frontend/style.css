@@ -40,12 +40,18 @@
     --shadow-glow: 0 10px 35px rgba(139, 92, 246, 0.25);
 }
 
+html {
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    scroll-behavior: smooth;
 }
 
 body {
@@ -53,6 +59,8 @@ body {
     color: var(--text-main);
     overflow-x: hidden;
     line-height: 1.6;
+    min-height: 100vh;
+    width: 100%;
 }
 
 a {
@@ -77,7 +85,7 @@ header {
     left: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .logo {
@@ -374,15 +382,25 @@ header {
 .hero-image-wrapper {
     position: relative;
     text-align: center;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-image-wrapper img {
     width: 100%;
+    height: 100%;
     max-width: 480px;
     border-radius: var(--radius-lg);
     position: relative;
     z-index: 2;
-    transition: transform 0.5s ease;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease;
 }
 
 .hero-blob {
@@ -400,7 +418,7 @@ header {
 
 .floating-badge {
     position: absolute;
-    background: rgba(30, 41, 59, 0.9);
+    background: rgba(30, 41, 59, 0.95);
     border: 1px solid var(--border-highlight);
     backdrop-filter: blur(10px);
     padding: 10px 18px;
@@ -413,6 +431,9 @@ header {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
+    max-width: calc(100% - 20px);
+    pointer-events: none;
 }
 
 .floating-badge i {
@@ -420,14 +441,14 @@ header {
 }
 
 .badge-top {
-    top: 20px;
-    left: -10px;
+    top: 15px;
+    left: 0px;
     animation: floatAnim 4s ease-in-out infinite;
 }
 
 .badge-bottom {
-    bottom: 20px;
-    right: -10px;
+    bottom: 15px;
+    right: 0px;
     animation: floatAnim 4s ease-in-out infinite 2s;
 }
 
@@ -593,6 +614,12 @@ header {
     max-width: 1280px;
     margin: 0 auto;
     padding: 10px 0;
+}
+
+.swiper-slide {
+    height: auto !important;
+    display: flex;
+    box-sizing: border-box;
 }
 
 .serviceSwiper, .doctorSwiper, .reviewSwiper {
@@ -1042,8 +1069,9 @@ header {
     max-width: 1280px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 25px;
+    min-height: 320px;
 }
 
 .product-item-card {
@@ -1266,6 +1294,11 @@ header {
 .reviews-section {
     padding: 70px 6%;
     background: var(--bg-card-alt);
+    min-height: 380px;
+}
+
+#reviewsWrapper {
+    min-height: 200px;
 }
 
 .review-card {

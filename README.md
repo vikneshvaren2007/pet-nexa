@@ -34,7 +34,7 @@ A production-ready full-stack Flask web application providing comprehensive pet 
    | `SECRET_KEY` | `pawzo-care-super-secret-key-2026` | Flask session encryption key |
    | `EMAIL_USER` | `your_email@gmail.com` | Gmail SMTP sender address (fallback) |
    | `EMAIL_PASSWORD` | `your_16_char_google_app_password` | Google App Password (fallback) |
-   | `ADMIN_EMAIL` | `admin@example.com` | Dual admin alert recipients |
+   | `ADMIN_EMAIL` | `vikneshvaren2@gmail.com,karthikthanesh92@gmail.com` | Dual admin alert recipients |
    | `GEMINI_API_KEY` | `your_gemini_api_key_here` | Google Gemini AI Key |
    | `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model version |
    | `RAZORPAY_KEY_ID` | `rzp_test_pawzocare2026` | Razorpay Sandbox Key ID |
