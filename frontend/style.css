@@ -233,6 +233,31 @@ header {
     box-shadow: -10px 0 30px rgba(0,0,0,0.7);
 }
 
+/* Mobile Side Menu Backdrop Overlay */
+.menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Show backdrop when sideMenu is open (right: 0) */
+#sideMenu[style*="right: 0"] ~ .menu-backdrop,
+#sideMenu[style*="right: 0px"] ~ .menu-backdrop,
+#sideMenu[style*="right:0"] ~ .menu-backdrop,
+#sideMenu[style*="right:0px"] ~ .menu-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 #sideMenu .close-btn {
     align-self: flex-end;
     font-size: 22px;
@@ -1749,8 +1774,27 @@ footer {
         padding: 4px 10px;
     }
     .stat-pill {
-        flex: 1 1 100%;
-        width: 100%;
+        flex: 1 1 calc(50% - 8px);
+        min-width: 120px;
+        padding: 8px 10px;
+    }
+    .stat-pill h3 {
+        font-size: 18px !important;
+    }
+    .stat-pill p {
+        font-size: 11px !important;
+    }
+    .floating-badge {
+        font-size: 10px !important;
+        padding: 4px 8px !important;
+    }
+    .badge-top {
+        top: 5px !important;
+        left: 5px !important;
+    }
+    .badge-bottom {
+        bottom: 5px !important;
+        right: 5px !important;
     }
     .cta-banner-card {
         padding: 30px 16px;

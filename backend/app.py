@@ -1427,10 +1427,14 @@ def api_get_products():
         term = f"%{search}%"
         params.extend([term, term, term])
 
-    if sort == "price_asc":
+    if sort in ("price_low", "price_asc"):
         query += " ORDER BY CASE WHEN discount_price > 0 THEN discount_price ELSE price END ASC"
-    elif sort == "price_desc":
+    elif sort in ("price_high", "price_desc"):
         query += " ORDER BY CASE WHEN discount_price > 0 THEN discount_price ELSE price END DESC"
+    elif sort == "name_asc":
+        query += " ORDER BY name ASC"
+    elif sort == "featured":
+        query += " ORDER BY id ASC"
     elif sort == "newest":
         query += " ORDER BY created_at DESC"
     else:

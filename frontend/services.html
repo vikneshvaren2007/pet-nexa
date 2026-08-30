@@ -108,7 +108,7 @@
         /* Services Grid */
         .services-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
             gap: 28px;
             max-width: 1280px;
             margin: 0 auto;
@@ -591,6 +591,11 @@
                 justify-content: center;
             }
         }
+
+        /* Hide cart button specifically on the Services page */
+        .cart-btn-nav, .cart-nav-btn, .cart-count-badge {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -613,9 +618,6 @@
     </nav>
 
     <div class="header-actions">
-        <a href="cart.html" class="cart-btn-nav" title="Cart" style="display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
         <div class="menu-btn" onclick="openMenu()">☰</div>
     </div>
 
@@ -629,6 +631,7 @@
         <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
         <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
     </nav>
+    <div class="menu-backdrop" onclick="closeMenu()"></div>
 </header>
 
 <main class="services-page">

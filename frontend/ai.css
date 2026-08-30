@@ -454,7 +454,12 @@
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     overflow-x: auto;
-    scrollbar-width: thin;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none;  /* Hide scrollbar for IE/Edge */
+    -webkit-overflow-scrolling: touch; /* iOS Momentum */
+}
+.ai-quick-prompts::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari/Opera */
 }
 
 .ai-quick-prompts button {
@@ -698,5 +703,9 @@
     .ai-text-input {
         height: 42px;
         font-size: 13.5px;
+    }
+
+    .ai-quick-prompts {
+        padding: 10px 14px;
     }
 }

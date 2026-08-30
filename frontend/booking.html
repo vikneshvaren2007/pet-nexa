@@ -46,6 +46,7 @@
         <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
         <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
     </nav>
+    <div class="menu-backdrop" onclick="closeMenu()"></div>
 </header>
 
 <div class="booking-container">
@@ -105,7 +106,7 @@
             </div>
 
             <!-- PHONE & EMAIL -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+            <div class="form-row-grid">
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Phone Number *</label>
                     <input type="tel" name="Phone_Number" id="custPhoneInput" placeholder="10-Digit Mobile Number" maxlength="10" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
@@ -119,7 +120,7 @@
             </div>
 
             <!-- PET DETAILS -->
-            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:14px; margin-bottom:16px;">
+            <div class="form-row-grid pet-details-row">
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Name *</label>
                     <input type="text" name="Pet_Name" id="petNameInput" placeholder="e.g. Bruno / Bella" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
@@ -132,7 +133,7 @@
             </div>
 
             <!-- PET TYPE & BREED -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+            <div class="form-row-grid">
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Pet Type *</label>
                     <select id="petType" name="Pet_Type" required onchange="changeBreed()" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
@@ -168,7 +169,7 @@
             </div>
 
             <!-- APPOINTMENT DATE & TIME -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+            <div class="form-row-grid">
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Preferred Date *</label>
                     <input type="date" name="Appointment_Date" id="appointmentDateInput" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">

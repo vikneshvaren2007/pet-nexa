@@ -283,6 +283,17 @@ textarea {
     box-shadow: 0 4px 15px var(--primary-glow);
 }
 
+.form-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.form-row-grid.pet-details-row {
+    grid-template-columns: 1.2fr 0.8fr;
+}
+
 @media (max-width: 768px) {
     .booking-container {
         padding: 85px 12px 40px;
@@ -304,7 +315,7 @@ textarea {
         align-self: flex-start;
     }
     /* Collapse all 2-column form grids on mobile */
-    form div[style*="grid-template-columns"] {
+    .form-row-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
     }

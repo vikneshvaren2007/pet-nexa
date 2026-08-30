@@ -521,9 +521,47 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        .category-pills {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            -webkit-overflow-scrolling: touch; /* iOS Momentum */
+        }
+        .category-pills::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
         @media (max-width: 768px) {
             .shop-page {
                 padding: 85px 15px 40px;
+            }
+            .cart-btn-text {
+                display: none;
+            }
+            .cart-nav-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            .shop-controls {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 16px;
+                gap: 12px;
+            }
+            .search-box {
+                max-width: 100%;
+                width: 100%;
+                min-width: unset;
+            }
+            .sort-box {
+                width: 100%;
+            }
+            .sort-box select {
+                width: 100%;
+                box-sizing: border-box;
             }
             .prod-modal-box {
                 grid-template-columns: 1fr;
@@ -533,6 +571,38 @@
             }
             .category-section-block {
                 padding: 20px 15px;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            .product-card {
+                padding: 10px !important;
+            }
+            .product-img-box {
+                height: 120px !important;
+            }
+            .product-title {
+                font-size: 13px !important;
+                min-height: 36px !important;
+                margin-bottom: 6px !important;
+            }
+            .product-price {
+                font-size: 15px !important;
+            }
+            .product-old-price {
+                font-size: 11px !important;
+            }
+            .product-actions {
+                grid-template-columns: 1fr !important;
+                gap: 6px !important;
+            }
+            .btn-cart, .btn-buy {
+                padding: 7px !important;
+                font-size: 11px !important;
             }
         }
     </style>
@@ -558,7 +628,7 @@
 
     <div class="header-actions">
         <a href="cart.html" class="cart-nav-btn" id="shopHeaderCartBtn" title="View Shopping Cart">
-            <i class="fa-solid fa-cart-shopping"></i> View Cart <span class="cart-count-badge" id="navCartCount">0</span>
+            <i class="fa-solid fa-cart-shopping"></i> <span class="cart-btn-text">View Cart</span> <span class="cart-count-badge" id="navCartCount">0</span>
         </a>
         <div class="menu-btn" onclick="openMenu()">☰</div>
     </div>
@@ -573,6 +643,7 @@
         <a href="track.html" onclick="closeMenu()"><i class="fa-solid fa-truck-fast"></i> Track Order</a>
         <a href="booking-track.html" onclick="closeMenu()"><i class="fa-solid fa-calendar-days"></i> Manage Booking</a>
     </nav>
+    <div class="menu-backdrop" onclick="closeMenu()"></div>
 </header>
 
 <!-- Shop Page Main Section -->
@@ -764,16 +835,29 @@ function renderShopCatalog(products) {
         return;
     }
 
-    // If a single specific category is selected OR user is searching, render a single direct grid
+    // If a single specific category is selected OR user is searching OR sorting is active, render a single direct grid
+    const sortVal = document.getElementById("sortSelect") ? document.getElementById("sortSelect").value : "featured";
     const searchVal = document.getElementById("searchInput").value.trim();
-    if ((activeCategory && activeCategory !== "all") || searchVal) {
+    if ((activeCategory && activeCategory !== "all") || searchVal || sortVal !== "featured") {
         const iconClass = searchVal ? "fa-magnifying-glass" : (activeCategory === "dog" ? "fa-dog" : (activeCategory === "cat" ? "fa-cat" : (CATEGORY_CONFIG[activeCategory]?.icon || "fa-list-check")));
+        
+        let sectionTitle = getCategoryDisplayName(activeCategory);
+        if (searchVal) {
+            sectionTitle = `Search Results for "${searchVal}"`;
+        } else if (sortVal === "price_low") {
+            sectionTitle = `${sectionTitle} — Sorted by Price: Low to High`;
+        } else if (sortVal === "price_high") {
+            sectionTitle = `${sectionTitle} — Sorted by Price: High to Low`;
+        } else if (sortVal === "name_asc") {
+            sectionTitle = `${sectionTitle} — Sorted alphabetically (A to Z)`;
+        }
+
         container.innerHTML = `
             <div class="category-section-block">
                 <div class="category-section-header">
                     <div class="category-title-wrap">
                         <div class="category-icon-box"><i class="fa-solid ${iconClass}"></i></div>
-                        <h2>${searchVal ? `Search Results for "${searchVal}"` : getCategoryDisplayName(activeCategory)}</h2>
+                        <h2>${sectionTitle}</h2>
                     </div>
                     <span class="category-count-badge">${products.length} Products</span>
                 </div>
