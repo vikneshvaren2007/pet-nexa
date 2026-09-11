@@ -251,7 +251,7 @@
                 <div class="two-cols">
                     <div class="input-group">
                         <label for="cust_phone">Mobile Number *</label>
-                        <input type="tel" id="cust_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required>
+                        <input type="tel" id="cust_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" value="9445437069" required>
                     </div>
                     <div class="input-group">
                         <label for="cust_email">Email Address *</label>
@@ -321,13 +321,25 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // Prefill saved customer info
-    document.getElementById("cust_name").value = localStorage.getItem("customer_name") || "";
-    document.getElementById("cust_phone").value = localStorage.getItem("phone") || "";
-    document.getElementById("cust_email").value = localStorage.getItem("email") || "";
-    document.getElementById("cust_address").value = localStorage.getItem("address") || "";
+    // Prefill saved customer info (defaults to 9445437069 and removes legacy 9488259088)
+    let savedPhone = localStorage.getItem("phone");
+    if (!savedPhone || savedPhone === "9488259088") {
+        savedPhone = "9445437069";
+        localStorage.setItem("phone", "9445437069");
+    }
+
+    let custDetails = JSON.parse(localStorage.getItem("customerDetails") || "null");
+    if (custDetails && (custDetails.phone === "9488259088" || !custDetails.phone)) {
+        custDetails.phone = "9445437069";
+        localStorage.setItem("customerDetails", JSON.stringify(custDetails));
+    }
+
+    document.getElementById("cust_name").value = localStorage.getItem("customer_name") || "Viknesh Varen";
+    document.getElementById("cust_phone").value = savedPhone;
+    document.getElementById("cust_email").value = localStorage.getItem("email") || "vikneshvaren2@gmail.com";
+    document.getElementById("cust_address").value = localStorage.getItem("address") || "8/30 Church Street";
     document.getElementById("cust_city").value = localStorage.getItem("city") || "Nagercoil";
-    document.getElementById("cust_pincode").value = localStorage.getItem("pincode") || "";
+    document.getElementById("cust_pincode").value = localStorage.getItem("pincode") || "629401";
     document.getElementById("cust_notes").value = localStorage.getItem("notes") || "";
 
     const cart = JSON.parse(localStorage.getItem("cart")) || JSON.parse(localStorage.getItem("pawzoCart")) || [];
