@@ -242,42 +242,61 @@
         <div class="form-card">
             <h2><i class="fa-solid fa-truck-ramp-box"></i> Shipping & Contact Details</h2>
 
-            <form id="checkoutDetailsForm">
+            <form id="checkoutDetailsForm" autocomplete="on">
                 <div class="input-group">
                     <label for="cust_name">Full Name *</label>
-                    <input type="text" id="cust_name" placeholder="Enter recipient's full name" required>
+                    <input type="text" id="cust_name" name="name" autocomplete="section-checkout name" placeholder="Enter recipient's full name" required>
                 </div>
 
                 <div class="two-cols">
                     <div class="input-group">
                         <label for="cust_phone">Mobile Number *</label>
-                        <input type="tel" id="cust_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" value="9445437069" required>
+                        <input type="tel" id="cust_phone" name="tel" autocomplete="section-checkout tel" placeholder="10-digit mobile number" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required>
                     </div>
                     <div class="input-group">
                         <label for="cust_email">Email Address *</label>
-                        <input type="email" id="cust_email" placeholder="For order tracking & invoice" required>
+                        <input type="email" id="cust_email" name="email" autocomplete="section-checkout email" placeholder="For order tracking & invoice" required>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label for="cust_address">Street Address / House No. *</label>
-                    <textarea id="cust_address" rows="2" placeholder="House/Flat number, building name, street" required></textarea>
+                    <textarea id="cust_address" name="address" autocomplete="section-checkout street-address" rows="2" placeholder="House/Flat number, building name, street" required></textarea>
                 </div>
 
                 <div class="two-cols">
                     <div class="input-group">
                         <label for="cust_city">City / Area *</label>
-                        <input type="text" id="cust_city" value="Nagercoil" required>
+                        <input type="text" id="cust_city" name="city" autocomplete="section-checkout address-level2" placeholder="City or Town" required>
                     </div>
                     <div class="input-group">
-                        <label for="cust_pincode">Pincode *</label>
-                        <input type="text" id="cust_pincode" placeholder="e.g. 629001" pattern="[0-9]{6}" title="Please enter a 6-digit pincode" required>
+                        <label for="cust_state">State *</label>
+                        <input type="text" id="cust_state" name="state" autocomplete="section-checkout address-level1" placeholder="State (e.g. Tamil Nadu)" required>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="cust_notes">Delivery Notes (Optional)</label>
-                    <input type="text" id="cust_notes" placeholder="Landmarks, preferred delivery time, gate code...">
+                <div class="two-cols">
+                    <div class="input-group">
+                        <label for="cust_pincode">Pincode *</label>
+                        <input type="text" id="cust_pincode" name="postal-code" autocomplete="section-checkout postal-code" placeholder="e.g. 629001" pattern="[0-9]{6}" title="Please enter a 6-digit pincode" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cust_notes">Delivery Notes (Optional)</label>
+                        <input type="text" id="cust_notes" name="notes" placeholder="Landmarks, preferred delivery time, gate code...">
+                    </div>
+                </div>
+
+                <!-- Remember Details Opt-in -->
+                <div style="margin:16px 0; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; display:flex; flex-direction:column; gap:8px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; color:#cbd5e1; user-select:none; margin:0;">
+                        <input type="checkbox" id="remember_details" style="width:17px; height:17px; accent-color:var(--primary); cursor:pointer;">
+                        <span><strong>Remember my details on this device</strong> <span style="font-size:11px; color:#94a3b8;">(Only saves locally on your current browser)</span></span>
+                    </label>
+                    <div id="clearSavedBox" style="display:none; justify-content:flex-end;">
+                        <button type="button" onclick="clearSavedCustomerDetails()" style="background:transparent; border:none; color:#ef4444; font-size:12px; cursor:pointer; text-decoration:underline; padding:0; display:inline-flex; align-items:center; gap:5px;">
+                            <i class="fa-solid fa-trash-can"></i> Clear Saved Details
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-continue-pay">
@@ -320,27 +339,112 @@
 </footer>
 
 <script>
+// Safe legacy data migration helper: purge hardcoded developer/admin customer details
+function purgeLegacyPersonalData() {
+    const legacyValues = [
+        "viknesh varen", "viknesh", "9445437069", "9488259088",
+        "vikneshvaren2@gmail.com", "karthikthanesh92@gmail.com",
+        "8/30 church street", "azhagappapuram"
+    ];
+    function containsLegacy(val) {
+        if (!val || typeof val !== "string") return false;
+        const lower = val.toLowerCase();
+        return legacyValues.some(leg => lower.includes(leg));
+    }
+
+    const keysToCheck = ["customer_name", "phone", "email", "address", "city", "state", "pincode", "notes"];
+    keysToCheck.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (containsLegacy(v)) {
+            localStorage.removeItem(k);
+        }
+    });
+
+    const custDetailsStr = localStorage.getItem("customerDetails");
+    if (custDetailsStr && containsLegacy(custDetailsStr)) {
+        localStorage.removeItem("customerDetails");
+    }
+
+    const savedDetailsStr = localStorage.getItem("petnexa_saved_customer");
+    if (savedDetailsStr && containsLegacy(savedDetailsStr)) {
+        localStorage.removeItem("petnexa_saved_customer");
+        localStorage.removeItem("petnexa_remember_customer");
+    }
+}
+
+function clearSavedCustomerDetails() {
+    localStorage.removeItem("petnexa_saved_customer");
+    localStorage.removeItem("petnexa_remember_customer");
+    localStorage.removeItem("customerDetails");
+    localStorage.removeItem("customer_name");
+    localStorage.removeItem("phone");
+    localStorage.removeItem("email");
+    localStorage.removeItem("address");
+    localStorage.removeItem("city");
+    localStorage.removeItem("state");
+    localStorage.removeItem("pincode");
+    localStorage.removeItem("notes");
+
+    document.getElementById("cust_name").value = "";
+    document.getElementById("cust_phone").value = "";
+    document.getElementById("cust_email").value = "";
+    document.getElementById("cust_address").value = "";
+    document.getElementById("cust_city").value = "";
+    document.getElementById("cust_state").value = "";
+    document.getElementById("cust_pincode").value = "";
+    document.getElementById("cust_notes").value = "";
+
+    const rememberCheckbox = document.getElementById("remember_details");
+    if (rememberCheckbox) rememberCheckbox.checked = false;
+
+    const clearBox = document.getElementById("clearSavedBox");
+    if (clearBox) clearBox.style.display = "none";
+
+    alert("Saved details have been cleared from this browser.");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    // Prefill saved customer info (defaults to 9445437069 and removes legacy 9488259088)
-    let savedPhone = localStorage.getItem("phone");
-    if (!savedPhone || savedPhone === "9488259088") {
-        savedPhone = "9445437069";
-        localStorage.setItem("phone", "9445437069");
-    }
+    // 1. Purge legacy hardcoded defaults
+    purgeLegacyPersonalData();
 
-    let custDetails = JSON.parse(localStorage.getItem("customerDetails") || "null");
-    if (custDetails && (custDetails.phone === "9488259088" || !custDetails.phone)) {
-        custDetails.phone = "9445437069";
-        localStorage.setItem("customerDetails", JSON.stringify(custDetails));
-    }
+    // 2. Check if the user has explicitly opted to remember their details on this device
+    const isRemembered = localStorage.getItem("petnexa_remember_customer") === "true";
+    const rememberCheckbox = document.getElementById("remember_details");
+    const clearBox = document.getElementById("clearSavedBox");
 
-    document.getElementById("cust_name").value = localStorage.getItem("customer_name") || "Viknesh Varen";
-    document.getElementById("cust_phone").value = savedPhone;
-    document.getElementById("cust_email").value = localStorage.getItem("email") || "vikneshvaren2@gmail.com";
-    document.getElementById("cust_address").value = localStorage.getItem("address") || "8/30 Church Street";
-    document.getElementById("cust_city").value = localStorage.getItem("city") || "Nagercoil";
-    document.getElementById("cust_pincode").value = localStorage.getItem("pincode") || "629401";
-    document.getElementById("cust_notes").value = localStorage.getItem("notes") || "";
+    if (isRemembered) {
+        if (rememberCheckbox) rememberCheckbox.checked = true;
+        if (clearBox) clearBox.style.display = "flex";
+
+        let saved = {};
+        try {
+            saved = JSON.parse(localStorage.getItem("petnexa_saved_customer") || "{}");
+        } catch(e) {
+            saved = {};
+        }
+
+        document.getElementById("cust_name").value = saved.name || localStorage.getItem("customer_name") || "";
+        document.getElementById("cust_phone").value = saved.phone || localStorage.getItem("phone") || "";
+        document.getElementById("cust_email").value = saved.email || localStorage.getItem("email") || "";
+        document.getElementById("cust_address").value = saved.address || localStorage.getItem("address") || "";
+        document.getElementById("cust_city").value = saved.city || localStorage.getItem("city") || "";
+        document.getElementById("cust_state").value = saved.state || localStorage.getItem("state") || "";
+        document.getElementById("cust_pincode").value = saved.pincode || localStorage.getItem("pincode") || "";
+        document.getElementById("cust_notes").value = saved.notes || localStorage.getItem("notes") || "";
+    } else {
+        // Fresh customer / new device / private window: START WITH COMPLETELY EMPTY FIELDS
+        if (rememberCheckbox) rememberCheckbox.checked = false;
+        if (clearBox) clearBox.style.display = "none";
+
+        document.getElementById("cust_name").value = "";
+        document.getElementById("cust_phone").value = "";
+        document.getElementById("cust_email").value = "";
+        document.getElementById("cust_address").value = "";
+        document.getElementById("cust_city").value = "";
+        document.getElementById("cust_state").value = "";
+        document.getElementById("cust_pincode").value = "";
+        document.getElementById("cust_notes").value = "";
+    }
 
     const cart = JSON.parse(localStorage.getItem("cart")) || JSON.parse(localStorage.getItem("pawzoCart")) || [];
     if (cart.length === 0) {
@@ -387,10 +491,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const custPhone = document.getElementById("cust_phone").value.trim();
         const custEmail = document.getElementById("cust_email").value.trim();
         const custAddress = document.getElementById("cust_address").value.trim();
-        const custCity = document.getElementById("cust_city").value.trim() || "Nagercoil";
-        const custState = "Tamil Nadu";
+        const custCity = document.getElementById("cust_city").value.trim();
+        const custState = document.getElementById("cust_state").value.trim();
         const custPincode = document.getElementById("cust_pincode").value.trim();
         const custNotes = document.getElementById("cust_notes").value.trim();
+        const shouldRemember = document.getElementById("remember_details") ? document.getElementById("remember_details").checked : false;
+
+        if (!custName || !custPhone || !custEmail || !custAddress || !custCity || !custState || !custPincode) {
+            alert("Please fill in all required customer details.");
+            return;
+        }
 
         const customerObj = {
             name: custName,
@@ -403,6 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
             notes: custNotes
         };
 
+        // Always store customerDetails transiently for the immediate payment flow
         localStorage.setItem("customerDetails", JSON.stringify(customerObj));
         localStorage.setItem("customer_name", custName);
         localStorage.setItem("phone", custPhone);
@@ -417,6 +528,15 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("grandTotal", grandTotal);
         localStorage.setItem("cart", JSON.stringify(cart));
         localStorage.setItem("pawzoCart", JSON.stringify(cart));
+
+        // Save persistently only if customer intentionally requested it
+        if (shouldRemember) {
+            localStorage.setItem("petnexa_remember_customer", "true");
+            localStorage.setItem("petnexa_saved_customer", JSON.stringify(customerObj));
+        } else {
+            localStorage.removeItem("petnexa_remember_customer");
+            localStorage.removeItem("petnexa_saved_customer");
+        }
 
         window.location.href = "payment.html";
     });

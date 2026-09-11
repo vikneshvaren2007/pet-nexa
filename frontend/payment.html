@@ -718,7 +718,7 @@
 
                         <div style="margin-top:12px;">
                             <label class="input-label" for="rzpCardHolder">Cardholder Name:</label>
-                            <input type="text" id="rzpCardHolder" class="pay-input" placeholder="Name on card" value="Viknesh Varen">
+                            <input type="text" id="rzpCardHolder" class="pay-input" placeholder="Name on card" autocomplete="cc-name">
                         </div>
 
                         <div style="background:rgba(14, 165, 233, 0.08); border:1px dashed rgba(56, 189, 248, 0.35); border-radius:var(--radius-sm); padding:10px 14px; margin-top:14px; font-size:12px; color:#cbd5e1; display:flex; align-items:center; gap:10px;">
@@ -838,26 +838,68 @@
         let grandTotal = 0;
         let isProcessingPayment = false;
 
+        // Legacy customer purge helper
+        function purgeLegacyPersonalData() {
+            const legacyValues = [
+                "viknesh varen", "viknesh", "9445437069", "9488259088",
+                "vikneshvaren2@gmail.com", "karthikthanesh92@gmail.com",
+                "8/30 church street", "azhagappapuram"
+            ];
+            function containsLegacy(val) {
+                if (!val || typeof val !== "string") return false;
+                const lower = val.toLowerCase();
+                return legacyValues.some(leg => lower.includes(leg));
+            }
+
+            const keysToCheck = ["customer_name", "phone", "email", "address", "city", "state", "pincode", "notes"];
+            keysToCheck.forEach(k => {
+                const v = localStorage.getItem(k);
+                if (containsLegacy(v)) {
+                    localStorage.removeItem(k);
+                }
+            });
+
+            const custDetailsStr = localStorage.getItem("customerDetails");
+            if (custDetailsStr && containsLegacy(custDetailsStr)) {
+                localStorage.removeItem("customerDetails");
+            }
+
+            const savedDetailsStr = localStorage.getItem("petnexa_saved_customer");
+            if (savedDetailsStr && containsLegacy(savedDetailsStr)) {
+                localStorage.removeItem("petnexa_saved_customer");
+                localStorage.removeItem("petnexa_remember_customer");
+            }
+        }
+
+        function ensureCustomerDetails() {
+            if (!customerData || !customerData.name || !customerData.phone || !customerData.address) {
+                alert("Please provide your shipping and contact details first before proceeding with payment.");
+                window.location.href = "customer.html";
+                return false;
+            }
+            return true;
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             isProcessingPayment = false;
 
-            // 1. Read Customer Data from LocalStorage
-            customerData = JSON.parse(localStorage.getItem("customerDetails")) || {
-                name: localStorage.getItem("customer_name") || "Viknesh Varen",
-                phone: localStorage.getItem("phone") || "9445437069",
-                email: localStorage.getItem("email") || "vikneshvaren2@gmail.com",
-                address: localStorage.getItem("address") || "8/30 Church Street, Azhagappapuram",
-                city: localStorage.getItem("city") || "Nagercoil",
-                state: localStorage.getItem("state") || "Tamil Nadu",
-                pincode: localStorage.getItem("pincode") || "629401",
-                notes: localStorage.getItem("notes") || ""
-            };
+            // 1. Purge legacy hardcoded personal data
+            purgeLegacyPersonalData();
 
-            // Purge and replace any legacy 9445437069 with 9445437069
-            if (customerData.phone === "9445437069" || !customerData.phone) {
-                customerData.phone = "9445437069";
-                localStorage.setItem("phone", "9445437069");
-                localStorage.setItem("customerDetails", JSON.stringify(customerData));
+            // 2. Read Customer Data from storage
+            try {
+                customerData = JSON.parse(localStorage.getItem("customerDetails") || "null") || {};
+            } catch(e) {
+                customerData = {};
+            }
+
+            // If not found in customerDetails, check intentionally remembered customer data
+            if ((!customerData || !customerData.name) && localStorage.getItem("petnexa_remember_customer") === "true") {
+                try {
+                    customerData = JSON.parse(localStorage.getItem("petnexa_saved_customer") || "{}");
+                } catch(e) {
+                    customerData = {};
+                }
             }
 
             // 2. Read Cart Items
@@ -900,14 +942,21 @@
                 el.textContent = "₹" + Math.round(grandTotal).toLocaleString();
             });
 
-            // Delivery info
-            document.getElementById("summaryCustName").textContent = customerData.name || "Viknesh Varen";
-            document.getElementById("summaryCustAddress").textContent = `${customerData.address || '8/30 Church Street'}, ${customerData.city || 'Nagercoil'} - ${customerData.pincode || '629401'}`;
+            // Delivery info display
+            const hasCustDetails = Boolean(customerData && customerData.name && customerData.phone && customerData.address);
+            if (hasCustDetails) {
+                document.getElementById("summaryCustName").textContent = customerData.name;
+                const addrParts = [customerData.address, customerData.city, customerData.state, customerData.pincode].filter(Boolean);
+                document.getElementById("summaryCustAddress").textContent = addrParts.join(", ");
+            } else {
+                document.getElementById("summaryCustName").innerHTML = '<span style="color:#f59e0b; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Customer details missing</span>';
+                document.getElementById("summaryCustAddress").innerHTML = '<a href="customer.html" style="color:var(--accent-lavender); font-weight:600; text-decoration:underline;">← Enter Shipping & Contact Details</a>';
+            }
 
-            // Pre-fill cardholder name
+            // Pre-fill cardholder name ONLY if customer entered their name
             const cardHolderEl = document.getElementById("rzpCardHolder");
-            if (cardHolderEl && customerData.name) {
-                cardHolderEl.value = customerData.name;
+            if (cardHolderEl) {
+                cardHolderEl.value = (customerData && customerData.name) ? customerData.name : "";
             }
 
             // Fetch live Razorpay config from backend if available
@@ -964,6 +1013,7 @@
         // ----------------------------------------------------
         async function processRazorpayDirectCard() {
             if (isProcessingPayment) return;
+            if (!ensureCustomerDetails()) return;
             isProcessingPayment = true;
 
             const submitBtn = document.getElementById("submitOrderBtn");
@@ -1007,13 +1057,13 @@
             const dummyOrderId = "order_test_" + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 
             const orderPayload = {
-                customer_name: customerData.name || "Viknesh Varen",
-                email: customerData.email || "vikneshvaren2@gmail.com",
-                phone: (customerData.phone && customerData.phone !== "9445437069") ? customerData.phone : "9445437069",
-                address: customerData.address || "8/30 Church Street",
-                city: customerData.city || "Nagercoil",
-                state: customerData.state || "Tamil Nadu",
-                pincode: customerData.pincode || "629001",
+                customer_name: customerData.name || "",
+                email: customerData.email || "",
+                phone: customerData.phone || "",
+                address: customerData.address || "",
+                city: customerData.city || "",
+                state: customerData.state || "",
+                pincode: customerData.pincode || "",
                 subtotal: grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50),
                 delivery: grandTotal >= 1000 ? 0 : 50,
                 grand_total: grandTotal,
@@ -1066,6 +1116,7 @@
         // ----------------------------------------------------
         async function processCodOrder() {
             if (isProcessingPayment) return;
+            if (!ensureCustomerDetails()) return;
             isProcessingPayment = true;
 
             const submitBtn = document.getElementById("submitOrderBtn");
@@ -1088,13 +1139,13 @@
             await sleep(700);
 
             const orderPayload = {
-                customer_name: customerData.name || "Viknesh Varen",
-                email: customerData.email || "vikneshvaren2@gmail.com",
-                phone: (customerData.phone && customerData.phone !== "9445437069") ? customerData.phone : "9445437069",
-                address: customerData.address || "8/30 Church Street",
-                city: customerData.city || "Nagercoil",
-                state: customerData.state || "Tamil Nadu",
-                pincode: customerData.pincode || "629001",
+                customer_name: customerData.name || "",
+                email: customerData.email || "",
+                phone: customerData.phone || "",
+                address: customerData.address || "",
+                city: customerData.city || "",
+                state: customerData.state || "",
+                pincode: customerData.pincode || "",
                 subtotal: grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50),
                 delivery: grandTotal >= 1000 ? 0 : 50,
                 grand_total: grandTotal,
@@ -1136,6 +1187,7 @@
         // ----------------------------------------------------
         async function openRazorpayModal() {
             if (isProcessingPayment) return;
+            if (!ensureCustomerDetails()) return;
 
             const submitBtn = document.getElementById("submitOrderBtn");
 
@@ -1173,8 +1225,6 @@
                 console.warn("[Razorpay] Create order pre-fetch note:", err);
             }
 
-            const activeContact = (customerData.phone && customerData.phone !== "9445437069") ? customerData.phone : "9445437069";
-
             const options = {
                 key: RAZORPAY_KEY_ID,
                 amount: Math.round(grandTotal * 100),
@@ -1184,13 +1234,13 @@
                 image: "images/logo.jpg",
                 order_id: razorpayOrderId,
                 prefill: {
-                    name: customerData.name || "Viknesh Varen",
-                    email: customerData.email || "vikneshvaren2@gmail.com",
-                    contact: activeContact
+                    name: customerData.name || "",
+                    email: customerData.email || "",
+                    contact: customerData.phone || ""
                 },
                 notes: {
                     store: "PET NEXA",
-                    customer_city: customerData.city || "Nagercoil",
+                    customer_city: customerData.city || "",
                     mode: "TEST_MODE"
                 },
                 theme: {
@@ -1244,13 +1294,13 @@
             await sleep(600);
 
             const orderPayload = {
-                customer_name: customerData.name || "Customer",
+                customer_name: customerData.name || "",
                 email: customerData.email || "",
                 phone: customerData.phone || "",
                 address: customerData.address || "",
-                city: customerData.city || "Nagercoil",
-                state: customerData.state || "Tamil Nadu",
-                pincode: customerData.pincode || "629001",
+                city: customerData.city || "",
+                state: customerData.state || "",
+                pincode: customerData.pincode || "",
                 subtotal: grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50),
                 delivery: grandTotal >= 1000 ? 0 : 50,
                 grand_total: grandTotal,
@@ -1301,13 +1351,13 @@
             const finalOrderId = serverOrderId || `ORD-${Date.now()}`;
             const finalOrderObj = serverOrderObj || {
                 id: finalOrderId,
-                customer_name: orderPayload.customer_name || customerData.name || "Customer",
+                customer_name: orderPayload.customer_name || customerData.name || "",
                 email: orderPayload.email || customerData.email || "",
                 phone: orderPayload.phone || customerData.phone || "",
                 address: orderPayload.address || customerData.address || "",
-                city: orderPayload.city || customerData.city || "Nagercoil",
-                state: orderPayload.state || customerData.state || "Tamil Nadu",
-                pincode: orderPayload.pincode || customerData.pincode || "629001",
+                city: orderPayload.city || customerData.city || "",
+                state: orderPayload.state || customerData.state || "",
+                pincode: orderPayload.pincode || customerData.pincode || "",
                 subtotal: orderPayload.subtotal || (grandTotal >= 1000 ? grandTotal : Math.max(0, grandTotal - 50)),
                 delivery: orderPayload.delivery || (grandTotal >= 1000 ? 0 : 50),
                 grand_total: orderPayload.grand_total || grandTotal,
@@ -1325,6 +1375,19 @@
             // Clear Cart
             localStorage.removeItem("cart");
             localStorage.removeItem("pawzoCart");
+
+            // If customer did NOT opt into "Remember my details", clean up all customer keys
+            if (localStorage.getItem("petnexa_remember_customer") !== "true") {
+                localStorage.removeItem("customerDetails");
+                localStorage.removeItem("customer_name");
+                localStorage.removeItem("phone");
+                localStorage.removeItem("email");
+                localStorage.removeItem("address");
+                localStorage.removeItem("city");
+                localStorage.removeItem("state");
+                localStorage.removeItem("pincode");
+                localStorage.removeItem("notes");
+            }
 
             if (fillEl) fillEl.style.width = "100%";
             if (titleEl) {

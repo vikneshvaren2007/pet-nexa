@@ -317,10 +317,67 @@ function changeBreed() {
     } else {
         breed.innerHTML = '<option value="">Select Pet Type First</option>';
     }
+// Legacy customer purge helper
+function purgeLegacyPersonalData() {
+    const legacyValues = [
+        "viknesh varen", "viknesh", "9445437069", "9488259088",
+        "vikneshvaren2@gmail.com", "karthikthanesh92@gmail.com",
+        "8/30 church street", "azhagappapuram"
+    ];
+    function containsLegacy(val) {
+        if (!val || typeof val !== "string") return false;
+        const lower = val.toLowerCase();
+        return legacyValues.some(leg => lower.includes(leg));
+    }
+
+    const keysToCheck = ["customer_name", "phone", "email", "address", "city", "state", "pincode", "notes"];
+    keysToCheck.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (containsLegacy(v)) {
+            localStorage.removeItem(k);
+        }
+    });
+
+    const custDetailsStr = localStorage.getItem("customerDetails");
+    if (custDetailsStr && containsLegacy(custDetailsStr)) {
+        localStorage.removeItem("customerDetails");
+    }
+
+    const savedDetailsStr = localStorage.getItem("petnexa_saved_customer");
+    if (savedDetailsStr && containsLegacy(savedDetailsStr)) {
+        localStorage.removeItem("petnexa_saved_customer");
+        localStorage.removeItem("petnexa_remember_customer");
+    }
+}
+
+function clearSavedBookingCustomerDetails() {
+    localStorage.removeItem("petnexa_saved_customer");
+    localStorage.removeItem("petnexa_remember_customer");
+    localStorage.removeItem("customerDetails");
+    localStorage.removeItem("customer_name");
+    localStorage.removeItem("phone");
+    localStorage.removeItem("email");
+    localStorage.removeItem("address");
+
+    if (document.getElementById("custNameInput")) document.getElementById("custNameInput").value = "";
+    if (document.getElementById("custPhoneInput")) document.getElementById("custPhoneInput").value = "";
+    if (document.getElementById("custEmailInput")) document.getElementById("custEmailInput").value = "";
+    if (document.getElementById("custAddressInput")) document.getElementById("custAddressInput").value = "";
+
+    const rememberCheckbox = document.getElementById("bookingRememberDetails");
+    if (rememberCheckbox) rememberCheckbox.checked = false;
+
+    const clearBox = document.getElementById("bookingClearSavedBox");
+    if (clearBox) clearBox.style.display = "none";
+
+    alert("Saved customer details cleared from this browser.");
 }
 
 // 5. On DOM Ready: Populate Fields, Load API Data
 document.addEventListener("DOMContentLoaded", async function() {
+    // Purge legacy contaminated data
+    purgeLegacyPersonalData();
+
     // Set minimum date to today
     const dateInput = document.getElementById("appointmentDateInput");
     if (dateInput) {
@@ -329,18 +386,43 @@ document.addEventListener("DOMContentLoaded", async function() {
         dateInput.value = today;
     }
 
-    // Prefill customer details if stored in localStorage
-    if (document.getElementById("custNameInput")) {
-        document.getElementById("custNameInput").value = localStorage.getItem("customer_name") || "";
-    }
-    if (document.getElementById("custPhoneInput")) {
-        document.getElementById("custPhoneInput").value = localStorage.getItem("phone") || "";
-    }
-    if (document.getElementById("custEmailInput")) {
-        document.getElementById("custEmailInput").value = localStorage.getItem("email") || "";
-    }
-    if (document.getElementById("custAddressInput")) {
-        document.getElementById("custAddressInput").value = localStorage.getItem("address") || "";
+    // Prefill customer details ONLY if user explicitly opted in on this device
+    const isRemembered = localStorage.getItem("petnexa_remember_customer") === "true";
+    const rememberCheckbox = document.getElementById("bookingRememberDetails");
+    const clearBox = document.getElementById("bookingClearSavedBox");
+
+    if (isRemembered) {
+        if (rememberCheckbox) rememberCheckbox.checked = true;
+        if (clearBox) clearBox.style.display = "flex";
+
+        let saved = {};
+        try {
+            saved = JSON.parse(localStorage.getItem("petnexa_saved_customer") || "{}");
+        } catch(e) {
+            saved = {};
+        }
+
+        if (document.getElementById("custNameInput")) {
+            document.getElementById("custNameInput").value = saved.name || localStorage.getItem("customer_name") || "";
+        }
+        if (document.getElementById("custPhoneInput")) {
+            document.getElementById("custPhoneInput").value = saved.phone || localStorage.getItem("phone") || "";
+        }
+        if (document.getElementById("custEmailInput")) {
+            document.getElementById("custEmailInput").value = saved.email || localStorage.getItem("email") || "";
+        }
+        if (document.getElementById("custAddressInput")) {
+            document.getElementById("custAddressInput").value = saved.address || localStorage.getItem("address") || "";
+        }
+    } else {
+        // New customer: completely empty
+        if (rememberCheckbox) rememberCheckbox.checked = false;
+        if (clearBox) clearBox.style.display = "none";
+
+        if (document.getElementById("custNameInput")) document.getElementById("custNameInput").value = "";
+        if (document.getElementById("custPhoneInput")) document.getElementById("custPhoneInput").value = "";
+        if (document.getElementById("custEmailInput")) document.getElementById("custEmailInput").value = "";
+        if (document.getElementById("custAddressInput")) document.getElementById("custAddressInput").value = "";
     }
 
     // 1. Resolve requested service from URL or session
@@ -518,11 +600,25 @@ document.getElementById("bookingForm").addEventListener("submit", async function
         Message: message
     };
 
-    // Store customer details in localStorage for future visits
-    localStorage.setItem("customer_name", custName);
-    localStorage.setItem("phone", phone);
-    localStorage.setItem("email", email);
-    if (address) localStorage.setItem("address", address);
+    // Store customer details in localStorage ONLY if customer opted in
+    const shouldRemember = document.getElementById("bookingRememberDetails") ? document.getElementById("bookingRememberDetails").checked : false;
+    if (shouldRemember) {
+        const custObj = {
+            name: custName,
+            phone: phone,
+            email: email,
+            address: address
+        };
+        localStorage.setItem("petnexa_remember_customer", "true");
+        localStorage.setItem("petnexa_saved_customer", JSON.stringify(custObj));
+        localStorage.setItem("customer_name", custName);
+        localStorage.setItem("phone", phone);
+        localStorage.setItem("email", email);
+        if (address) localStorage.setItem("address", address);
+    } else {
+        localStorage.removeItem("petnexa_remember_customer");
+        localStorage.removeItem("petnexa_saved_customer");
+    }
 
     try {
         const response = await fetch(API_BASE + "/api/bookings/create", {

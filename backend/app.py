@@ -1497,8 +1497,8 @@ def api_create_order_internal(data, payment_status="Pending", payment_method="Ca
         phone = (data.get("phone") or cust.get("phone") or "").strip()
         email = (data.get("email") or cust.get("email") or "").strip()
         address = (data.get("address") or cust.get("address") or "").strip()
-        city = (data.get("city") or cust.get("city") or "Nagercoil").strip()
-        state = (data.get("state") or cust.get("state") or "Tamil Nadu").strip()
+        city = (data.get("city") or cust.get("city") or "").strip()
+        state = (data.get("state") or cust.get("state") or "").strip()
         pincode = (data.get("pincode") or cust.get("pincode") or "").strip()
         notes = (data.get("notes") or cust.get("notes") or "").strip()
         items = data.get("items") or data.get("products") or data.get("cart") or []

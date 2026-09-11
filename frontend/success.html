@@ -385,9 +385,43 @@ function formatISTDisplay(dateStr) {
     }
 }
 
+// Legacy customer purge helper
+function purgeLegacyPersonalData() {
+    const legacyValues = [
+        "viknesh varen", "viknesh", "9445437069", "9488259088",
+        "vikneshvaren2@gmail.com", "karthikthanesh92@gmail.com",
+        "8/30 church street", "azhagappapuram"
+    ];
+    function containsLegacy(val) {
+        if (!val || typeof val !== "string") return false;
+        const lower = val.toLowerCase();
+        return legacyValues.some(leg => lower.includes(leg));
+    }
+
+    const keysToCheck = ["customer_name", "phone", "email", "address", "city", "state", "pincode", "notes"];
+    keysToCheck.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (containsLegacy(v)) {
+            localStorage.removeItem(k);
+        }
+    });
+
+    const custDetailsStr = localStorage.getItem("customerDetails");
+    if (custDetailsStr && containsLegacy(custDetailsStr)) {
+        localStorage.removeItem("customerDetails");
+    }
+
+    const savedDetailsStr = localStorage.getItem("petnexa_saved_customer");
+    if (savedDetailsStr && containsLegacy(savedDetailsStr)) {
+        localStorage.removeItem("petnexa_saved_customer");
+        localStorage.removeItem("petnexa_remember_customer");
+    }
+}
+
 let currentRawId = "";
 
 document.addEventListener("DOMContentLoaded", async () => {
+    purgeLegacyPersonalData();
     const urlParams = new URLSearchParams(window.location.search);
     const queryId = (urlParams.get('id') || urlParams.get('order_id') || urlParams.get('booking_id') || localStorage.getItem("lastOrderId") || localStorage.getItem("lastBookingId") || "").trim();
 
@@ -447,14 +481,14 @@ async function renderOrderSuccess(orderId) {
         } else if (cachedCust) {
             order = {
                 id: orderId,
-                customer_name: cachedCust.name || localStorage.getItem("customer_name") || "Customer",
+                customer_name: cachedCust.name || localStorage.getItem("customer_name") || "Valued Customer",
                 email: cachedCust.email || localStorage.getItem("email") || "",
                 phone: cachedCust.phone || localStorage.getItem("phone") || "",
-                address: cachedCust.address || localStorage.getItem("address") || "Nagercoil",
-                city: cachedCust.city || localStorage.getItem("city") || "Nagercoil",
-                state: cachedCust.state || localStorage.getItem("state") || "Tamil Nadu",
-                pincode: cachedCust.pincode || localStorage.getItem("pincode") || "629001",
-                payment_method: "UPI",
+                address: cachedCust.address || localStorage.getItem("address") || "",
+                city: cachedCust.city || localStorage.getItem("city") || "",
+                state: cachedCust.state || localStorage.getItem("state") || "",
+                pincode: cachedCust.pincode || localStorage.getItem("pincode") || "",
+                payment_method: "Online Payment",
                 payment_status: "Paid",
                 status: "Confirmed",
                 subtotal: parseFloat(localStorage.getItem("subtotal") || "0"),
@@ -464,32 +498,25 @@ async function renderOrderSuccess(orderId) {
             };
             items = cachedItems;
         } else {
-            // Default demo fallback order
+            // Generic fallback order if no order record found
             order = {
                 id: orderId,
-                customer_name: localStorage.getItem("customer_name") || "Viknesh Varen",
-                email: localStorage.getItem("email") || "customer@petnexa.com",
-                phone: localStorage.getItem("phone") || "9445437069",
-                address: localStorage.getItem("address") || "8/30 Church Street, Azhagappapuram",
-                city: localStorage.getItem("city") || "Nagercoil",
-                state: localStorage.getItem("state") || "Tamil Nadu",
-                pincode: localStorage.getItem("pincode") || "629401",
-                payment_method: "UPI / Demo Gateway",
+                customer_name: "Valued Customer",
+                email: "",
+                phone: "",
+                address: "",
+                city: "",
+                state: "",
+                pincode: "",
+                payment_method: "Online Payment",
                 payment_status: "Paid",
                 status: "Confirmed",
-                subtotal: 849,
+                subtotal: 0,
                 delivery: 0,
-                grand_total: 849,
+                grand_total: 0,
                 created_at: new Date().toISOString()
             };
-            items = [
-                {
-                    product_name: "Royal Canin Dog Food",
-                    price: 849,
-                    quantity: 1,
-                    image: "images/dogfood.png"
-                }
-            ];
+            items = [];
         }
     }
 

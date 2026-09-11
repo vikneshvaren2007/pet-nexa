@@ -101,7 +101,7 @@
             <!-- CUSTOMER NAME -->
             <div class="form-group" style="margin-bottom:16px;">
                 <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Customer Name *</label>
-                <input type="text" name="Customer_Name" id="custNameInput" placeholder="Enter Your Full Name" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                <input type="text" name="Customer_Name" id="custNameInput" autocomplete="name" placeholder="Enter Your Full Name" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
                 <small class="field-error" id="nameError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
             </div>
 
@@ -109,12 +109,12 @@
             <div class="form-row-grid">
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Phone Number *</label>
-                    <input type="tel" name="Phone_Number" id="custPhoneInput" placeholder="10-Digit Mobile Number" maxlength="10" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <input type="tel" name="Phone_Number" id="custPhoneInput" autocomplete="tel" placeholder="10-Digit Mobile Number" maxlength="10" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
                     <small class="field-error" id="phoneError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
                 </div>
                 <div>
                     <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Email Address *</label>
-                    <input type="email" name="Email" id="custEmailInput" placeholder="Email for Appointment Slip" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                    <input type="email" name="Email" id="custEmailInput" autocomplete="email" placeholder="Email for Appointment Slip" required style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
                     <small class="field-error" id="emailError" style="color:#ef4444; font-size:12px; display:none; margin-top:4px;"></small>
                 </div>
             </div>
@@ -191,13 +191,26 @@
             <!-- ADDRESS IF REQUIRED -->
             <div class="form-group" style="margin-bottom:16px;">
                 <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Customer Address / Location <small style="color:var(--text-muted); font-weight:normal;">(For Home Pickup or Visit Reference)</small></label>
-                <input type="text" name="Address" id="custAddressInput" placeholder="House / Flat No., Street, Area, Nagercoil" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
+                <input type="text" name="Address" id="custAddressInput" autocomplete="street-address" placeholder="House / Flat No., Street, Area, Nagercoil" style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;">
             </div>
 
             <!-- SPECIAL NOTES -->
             <div class="form-group" style="margin-bottom:20px;">
                 <label style="display:block; font-size:13px; font-weight:700; color:#cbd5e1; margin-bottom:6px;">Special Instructions / Medical Notes</label>
                 <textarea name="Message" id="custMessageInput" rows="3" placeholder="Any temperament notes, skin allergies, coat matting, or specific grooming preferences..." style="width:100%; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:14px; outline:none;"></textarea>
+            </div>
+
+            <!-- Remember Details Opt-in -->
+            <div style="margin:16px 0; padding:12px 14px; background:#0b1120; border:1px solid var(--border-color); border-radius:8px; display:flex; flex-direction:column; gap:8px;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; color:#cbd5e1; user-select:none; margin:0;">
+                    <input type="checkbox" id="bookingRememberDetails" style="width:17px; height:17px; accent-color:var(--primary); cursor:pointer;">
+                    <span><strong>Remember my details on this device</strong> <span style="font-size:11px; color:#94a3b8;">(Only saves locally on your current browser)</span></span>
+                </label>
+                <div id="bookingClearSavedBox" style="display:none; justify-content:flex-end;">
+                    <button type="button" onclick="clearSavedBookingCustomerDetails()" style="background:transparent; border:none; color:#ef4444; font-size:12px; cursor:pointer; text-decoration:underline; padding:0; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fa-solid fa-trash-can"></i> Clear Saved Details
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="confirm-btn">
